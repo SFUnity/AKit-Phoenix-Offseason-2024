@@ -14,8 +14,12 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.PowerDistribution;
+import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import frc.robot.Constants.DriveConstants;
+
 import org.littletonrobotics.junction.LogFileUtil;
 import org.littletonrobotics.junction.LoggedRobot;
 import org.littletonrobotics.junction.Logger;
@@ -37,6 +41,7 @@ public class Robot extends LoggedRobot {
    * This function is run when the robot is first started up and should be used for any
    * initialization code.
    */
+  @SuppressWarnings("resource")
   @Override
   public void robotInit() {
     // Record metadata
@@ -63,6 +68,7 @@ public class Robot extends LoggedRobot {
         // Running on a real robot, log to a USB stick ("/U/logs")
         Logger.addDataReceiver(new WPILOGWriter());
         Logger.addDataReceiver(new NT4Publisher());
+        new PowerDistribution(DriveConstants.PDHID, ModuleType.kRev); // Enables power distribution logging
         break;
 
       case SIM:
