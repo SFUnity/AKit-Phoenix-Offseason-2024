@@ -49,7 +49,7 @@ public class ModuleIOTalonFX implements ModuleIO {
   private final StatusSignal<Double> driveCurrent;
 
   private final StatusSignal<Double> turnAbsolutePosition;
-  private final StatusSignal<Double> turnRelativePosition;
+  private final StatusSignal<Double> turnPosition;
   private final StatusSignal<Double> turnVelocity;
   private final StatusSignal<Double> turnAppliedVolts;
   private final StatusSignal<Double> turnCurrent;
@@ -111,13 +111,13 @@ public class ModuleIOTalonFX implements ModuleIO {
     driveCurrent = driveTalon.getSupplyCurrent();
 
     turnAbsolutePosition = cancoder.getAbsolutePosition();
-    turnRelativePosition = turnTalon.getPosition();
+    turnPosition = turnTalon.getPosition();
     turnVelocity = turnTalon.getVelocity();
     turnAppliedVolts = turnTalon.getMotorVoltage();
     turnCurrent = turnTalon.getSupplyCurrent();
 
     BaseStatusSignal.setUpdateFrequencyForAll(
-        100.0, drivePosition, turnRelativePosition); // Required for odometry, use faster rate
+        100.0, drivePosition, turnPosition); // Required for odometry, use faster rate
     BaseStatusSignal.setUpdateFrequencyForAll(
         50.0,
         driveVelocity,
@@ -139,7 +139,7 @@ public class ModuleIOTalonFX implements ModuleIO {
         driveAppliedVolts,
         driveCurrent,
         turnAbsolutePosition,
-        turnRelativePosition,
+        turnPosition,
         turnVelocity,
         turnAppliedVolts,
         turnCurrent);
@@ -154,8 +154,8 @@ public class ModuleIOTalonFX implements ModuleIO {
     inputs.turnAbsolutePosition =
         Rotation2d.fromRotations(turnAbsolutePosition.getValueAsDouble())
             .minus(absoluteEncoderOffset);
-    inputs.turnRelativePosition =
-        Rotation2d.fromRotations(turnRelativePosition.getValueAsDouble() / TURN_GEAR_RATIO);
+    inputs.turnPosition =
+        Rotation2d.fromRotations(turnPosition.getValueAsDouble() / TURN_GEAR_RATIO);
     inputs.turnVelocityRadPerSec =
         Units.rotationsToRadians(turnVelocity.getValueAsDouble()) / TURN_GEAR_RATIO;
     inputs.turnAppliedVolts = turnAppliedVolts.getValueAsDouble();
