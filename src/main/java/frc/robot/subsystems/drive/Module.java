@@ -34,7 +34,7 @@ public class Module {
   private final PIDController turnFeedback;
   private Rotation2d angleSetpoint = null; // Setpoint for closed loop control, null for open loop
   private Double speedSetpoint = null; // Setpoint for closed loop control, null for open loop
-  private Rotation2d turnRelativeOffset = null; // Relative + Offset = Absolute
+  private Rotation2d turnRelativeOffset = null; // relativeEncoderOutput + turnRelativeOffset = absoluteEncoderOutput
 
   public Module(ModuleIO io, int index) {
     this.io = io;
