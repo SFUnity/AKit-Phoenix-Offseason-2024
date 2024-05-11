@@ -28,7 +28,7 @@ public interface ModuleIO {
     /**
      * Relative turn encoder position
      */
-    public Rotation2d turnPosition = new Rotation2d();
+    public Rotation2d turnRelativePosition = new Rotation2d();
     public double turnVelocityRadPerSec = 0.0;
     public double turnAppliedVolts = 0.0;
     public double[] turnCurrentAmps = new double[] {};

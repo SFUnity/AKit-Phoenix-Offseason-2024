@@ -34,7 +34,7 @@ public class Module {
   private final PIDController turnFeedback;
   private Rotation2d angleSetpoint = null; // Setpoint for closed loop control, null for open loop
   private Double speedSetpoint = null; // Setpoint for closed loop control, null for open loop
-  private Rotation2d turnRelativeOffset = null; // relativeEncoderOutput + turnRelativeOffset = absoluteEncoderOutput
+  private Rotation2d turnRelativeOffset = null; // Relative + Offset = Absolute
 
   public Module(ModuleIO io, int index) {
     this.io = io;
@@ -72,7 +72,8 @@ public class Module {
     // On first cycle, reset relative turn encoder
     // Wait until absolute angle is nonzero in case it wasn't initialized yet
     if (turnRelativeOffset == null && inputs.turnAbsolutePosition.getRadians() != 0.0) {
-      turnRelativeOffset = inputs.turnAbsolutePosition.minus(inputs.turnPosition);
+      turnRelativeOffset = inputs.turnAbsolutePosition.minus(inputs.turnRelativePosition);
+      // turnRelativePosition + turnRelativeOffset = turnAbsolutePosition
     }
 
     // Run closed loop turn control
@@ -143,7 +144,7 @@ public class Module {
     if (turnRelativeOffset == null) {
       return new Rotation2d();
     } else {
-      return inputs.turnPosition.plus(turnRelativeOffset);
+      return inputs.turnRelativePosition.plus(turnRelativeOffset);
     }
   }
 
