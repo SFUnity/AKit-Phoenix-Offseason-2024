@@ -157,7 +157,6 @@ public class Drive extends SubsystemBase {
       Twist2d twist = kinematics.toTwist2d(moduleDeltas);
       rawGyroRotation = rawGyroRotation.plus(new Rotation2d(twist.dtheta));
     }
-    Logger.recordOutput("Drive/rawGyroRotationRad", rawGyroRotation.getRadians());
 
     // Apply odometry update
     poseEstimator.update(rawGyroRotation, modulePositions);
