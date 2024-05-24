@@ -2,6 +2,8 @@ package frc.robot.subsystems.intake;
 
 import static frc.robot.subsystems.intake.IntakeConstants.*;
 
+import org.littletonrobotics.junction.Logger;
+
 import frc.robot.util.LoggedTunableNumber;
 
 public class Intake {
@@ -19,7 +21,16 @@ public class Intake {
 
     public Intake(IntakeIO io) {
         this.io = io;
-        
+
         io.setPID(kP.get());
+    }
+
+    public void periodic() {
+        io.updateInputs(inputs);
+        Logger.processInputs("Intake", inputs);
+
+        // Update controllers
+        LoggedTunableNumber.ifChanged(
+            hashCode(), () -> io.setPID(kP.get()), kP);
     }
 }
