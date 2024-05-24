@@ -11,6 +11,9 @@ public class Intake {
   private static final LoggedTunableNumber raisedAngle = new LoggedTunableNumber("Intake/Angles/raised", kRaisedAngle);
   private static final LoggedTunableNumber climbingAngle = new LoggedTunableNumber("Intake/Angles/climbing", kClimbingAngle);
 
+  private static final LoggedTunableNumber rollersSpeed = new LoggedTunableNumber("Intake/Speeds/intakeRollers", kRollersSpeed);
+  private static final LoggedTunableNumber indexerSpeed = new LoggedTunableNumber("Intake/Speeds/indexer", kIndexerSpeed);
+
   private final IntakeIO io;
   private final IntakeIOInputsAutoLogged inputs = new IntakeIOInputsAutoLogged();
 }
