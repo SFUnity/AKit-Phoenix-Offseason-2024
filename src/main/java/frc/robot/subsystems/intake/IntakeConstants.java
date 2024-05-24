@@ -20,8 +20,8 @@ public class IntakeConstants {
   
   public static final Gains gains =
       switch (Constants.currentMode) {
-        default -> new Gains(90.0);
-        case SIM -> new Gains(75.0);
+        default -> new Gains(0.08);
+        case SIM -> new Gains(0.08);
       };
 
   public record Gains(double kP) {}
