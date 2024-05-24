@@ -19,5 +19,7 @@ public class Intake {
 
     public Intake(IntakeIO io) {
         this.io = io;
+        
+        io.setPID(kP.get());
     }
 }
