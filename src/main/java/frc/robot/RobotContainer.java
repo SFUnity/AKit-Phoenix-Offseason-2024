@@ -34,6 +34,8 @@ import frc.robot.subsystems.flywheel.Flywheel;
 import frc.robot.subsystems.flywheel.FlywheelIO;
 import frc.robot.subsystems.flywheel.FlywheelIOSim;
 import frc.robot.subsystems.flywheel.FlywheelIOSparkMax;
+import frc.robot.util.Alert;
+import frc.robot.util.Alert.AlertType;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 import org.littletonrobotics.junction.networktables.LoggedDashboardNumber;
 
@@ -135,6 +137,11 @@ public class RobotContainer {
 
     // Configure the button bindings
     configureButtonBindings();
+
+    // Alerts for constants
+    if (Constants.tuningMode) {
+      new Alert("Tuning mode enabled", AlertType.INFO).set(true);
+    }
   }
 
   /**
