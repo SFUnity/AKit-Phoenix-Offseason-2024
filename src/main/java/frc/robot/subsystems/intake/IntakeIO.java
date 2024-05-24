@@ -19,7 +19,7 @@ public interface IntakeIO {
   default void intakeRollersDutyCycle(double percentOutput) {}
 
   /** Set PID values */
-  default void setPID(double p, double i, double d) {}
+  default void setPID(double p) {}
 
   /** Stops motors */
   default void stop() {}
