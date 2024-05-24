@@ -5,9 +5,15 @@ import org.littletonrobotics.junction.AutoLog;
 public interface IntakeIO {
   @AutoLog
   public static class IntakeIOInputs {
-    public double positionRad = 0.0;
-    public double appliedVolts = 0.0;
-    public double[] currentAmps = new double[] {};
+    public double pivotPositionRad = 0.0;
+    public double pivotAppliedVolts = 0.0;
+    public double[] pivotCurrentAmps = new double[] {};
+
+    public double rollersAppliedVolts = 0.0;
+    public double[] rollersCurrentAmps = new double[] {};
+
+    public double indexerAppliedVolts = 0.0;
+    public double[] indexerCurrentAmps = new double[] {};
   }
 
   default void updateInputs(IntakeIOInputs inputs) {}
