@@ -7,20 +7,20 @@ public interface IntakeIO {
   public static class IntakeIOInputs {
     public double pivotPositionRad = 0.0;
     public double pivotAppliedVolts = 0.0;
-    public double[] pivotCurrentAmps = new double[] {};
+    public double pivotCurrentAmps = 0.0;
 
     public double rollersAppliedVolts = 0.0;
-    public double[] rollersCurrentAmps = new double[] {};
+    public double rollersCurrentAmps = 0.0;
 
     public double indexerAppliedVolts = 0.0;
-    public double[] indexerCurrentAmps = new double[] {};
+    public double indexerCurrentAmps = 0.0;
   }
 
   default void updateInputs(IntakeIOInputs inputs) {}
 
   default void runIndexer(double percentOutput) {}
 
-  default void setPivotPosition(double positionRotations) {}
+  default void setPivotPosition(double setpointRads) {}
 
   default void runIntakeRollers(double percentOutput) {}
 

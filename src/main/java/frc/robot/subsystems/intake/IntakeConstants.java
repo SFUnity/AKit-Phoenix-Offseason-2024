@@ -17,7 +17,7 @@ public class IntakeConstants {
   public static final double kRollersSpeed = 1.0;
   /** duty cycle */
   public static final double kIndexerSpeed = 1.0;
-  
+
   public static final Gains gains =
       switch (Constants.currentMode) {
         default -> new Gains(0.08);
