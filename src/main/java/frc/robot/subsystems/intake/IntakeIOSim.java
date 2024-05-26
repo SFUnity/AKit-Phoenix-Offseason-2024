@@ -9,7 +9,7 @@ import edu.wpi.first.wpilibj.simulation.SingleJointedArmSim;
 import frc.robot.Constants;
 
 public class IntakeIOSim implements IntakeIO {
-  private static final double autoStartAngle = Units.degreesToRadians(80.0);
+  private static final double autoStartAngle = Units.degreesToRadians(0.0);
 
   private final SingleJointedArmSim sim =
       new SingleJointedArmSim(
