@@ -49,7 +49,7 @@ public class IntakeIOSim implements IntakeIO {
 
     sim.update(Constants.loopPeriodSecs);
 
-    inputs.pivotPositionRad = sim.getAngleRads() + positionOffset;
+    inputs.pivotPositionRad = sim.getAngleRads();
     inputs.pivotAppliedVolts = pivotAppliedVoltage;
     inputs.pivotCurrentAmps = sim.getCurrentDrawAmps(); // TODO WPILib spelling issue
 
