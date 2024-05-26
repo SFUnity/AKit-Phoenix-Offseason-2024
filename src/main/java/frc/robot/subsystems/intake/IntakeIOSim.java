@@ -32,7 +32,6 @@ public class IntakeIOSim implements IntakeIO {
   public IntakeIOSim() {
     controller = new PIDController(0.0, 0.0, 0.0);
     sim.setState(0.0, 0.0);
-    setPosition(0.0);
   }
 
   @Override
@@ -65,7 +64,7 @@ public class IntakeIOSim implements IntakeIO {
       controllerNeedsReset = false;
     }
 
-    double volts = controller.calculate(sim.getAngleRads(), setpointRads + positionOffset);
+    double volts = controller.calculate(sim.getAngleRads(), setpointRads);
     pivotAppliedVoltage = MathUtil.clamp(volts, -12.0, 12.0);
     sim.setInputVoltage(pivotAppliedVoltage);
   }
@@ -79,9 +78,5 @@ public class IntakeIOSim implements IntakeIO {
   public void stop() {
     pivotAppliedVoltage = 0.0;
     sim.setInputVoltage(pivotAppliedVoltage);
-  }
-
-  private void setPosition(double position) {
-    positionOffset = position - sim.getAngleRads();
   }
 }
