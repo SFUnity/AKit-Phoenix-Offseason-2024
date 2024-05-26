@@ -2,7 +2,6 @@ package frc.robot.subsystems.intake;
 
 import static frc.robot.subsystems.intake.IntakeConstants.*;
 
-import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.util.LoggedTunableNumber;
 import org.littletonrobotics.junction.Logger;
@@ -41,8 +40,7 @@ public class Intake extends SubsystemBase {
     // Update controllers
     LoggedTunableNumber.ifChanged(hashCode(), () -> io.setPID(kP.get()), kP);
 
-    Logger.recordOutput(
-        "Intake/positionSetpointRads", positionSetpoint);
+    Logger.recordOutput("Intake/positionSetpointRotations", positionSetpoint);
   }
 
   public void indexerIn() {
