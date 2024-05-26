@@ -57,12 +57,13 @@ public class IntakeIOSim implements IntakeIO {
   }
 
   @Override
-  public void setPivotPosition(double setpointRads) {
+  public void setPivotPosition(double setpointRots) {
     if (controllerNeedsReset) {
       controller.reset();
       controllerNeedsReset = false;
     }
 
+    double setpointRads = Units.rotationsToRadians(setpointRots) / 100;
     double volts = controller.calculate(sim.getAngleRads(), setpointRads);
     pivotAppliedVoltage = MathUtil.clamp(volts, -12.0, 12.0);
     sim.setInputVoltage(pivotAppliedVoltage);
