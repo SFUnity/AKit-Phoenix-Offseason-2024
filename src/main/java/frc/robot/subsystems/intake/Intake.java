@@ -22,6 +22,8 @@ public class Intake extends SubsystemBase {
   private static final LoggedTunableNumber indexerSpeed =
       new LoggedTunableNumber("Intake/Speeds/indexer", kIndexerSpeed);
 
+  private double positionSetpoint = 0;
+
   private final IntakeIO io;
   private final IntakeIOInputsAutoLogged inputs = new IntakeIOInputsAutoLogged();
 
@@ -37,6 +39,8 @@ public class Intake extends SubsystemBase {
 
     // Update controllers
     LoggedTunableNumber.ifChanged(hashCode(), () -> io.setPID(kP.get()), kP);
+
+    Logger.recordOutput("Intake/positionSetpoint", positionSetpoint);
   }
 
   public void indexerIn() {
@@ -52,11 +56,13 @@ public class Intake extends SubsystemBase {
   }
 
   public void lower() {
-    io.setPivotPosition(loweredAngle.get());
+    positionSetpoint = loweredAngle.get();
+    io.setPivotPosition(positionSetpoint);
   }
 
   public void raise() {
-    io.setPivotPosition(raisedAngle.get());
+    positionSetpoint = raisedAngle.get();
+    io.setPivotPosition(positionSetpoint);
   }
 
   public void climb() {
