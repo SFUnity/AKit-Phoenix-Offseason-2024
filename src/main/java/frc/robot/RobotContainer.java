@@ -34,6 +34,9 @@ import frc.robot.subsystems.flywheel.Flywheel;
 import frc.robot.subsystems.flywheel.FlywheelIO;
 import frc.robot.subsystems.flywheel.FlywheelIOSim;
 import frc.robot.subsystems.flywheel.FlywheelIOSparkMax;
+import frc.robot.subsystems.intake.Intake;
+import frc.robot.subsystems.intake.IntakeIO;
+import frc.robot.subsystems.intake.IntakeIOSim;
 import frc.robot.util.Alert;
 import frc.robot.util.Alert.AlertType;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
@@ -49,6 +52,7 @@ public class RobotContainer {
   // Subsystems
   private final Drive drive;
   private final Flywheel flywheel;
+  private final Intake intake;
 
   // Controller
   private final CommandXboxController controller = new CommandXboxController(0);
@@ -71,6 +75,7 @@ public class RobotContainer {
                 new ModuleIOMixed(2),
                 new ModuleIOMixed(3));
         flywheel = new Flywheel(new FlywheelIOSparkMax());
+        intake = new Intake(new IntakeIOSim());
         break;
 
       case SIM:
@@ -83,6 +88,7 @@ public class RobotContainer {
                 new ModuleIOSim(),
                 new ModuleIOSim());
         flywheel = new Flywheel(new FlywheelIOSim());
+        intake = new Intake(new IntakeIOSim());
         break;
 
       default:
@@ -95,14 +101,17 @@ public class RobotContainer {
                 new ModuleIO() {},
                 new ModuleIO() {});
         flywheel = new Flywheel(new FlywheelIO() {});
+        intake = new Intake(new IntakeIO() {});
         break;
     }
 
     // Set up auto routines
     NamedCommands.registerCommand(
-        "Run Flywheel",
+        "Run Flywheel", // also does stuff w/ the intake
         Commands.startEnd(
                 () -> flywheel.runVelocity(flywheelSpeedInput.get()), flywheel::stop, flywheel)
+            .withTimeout(5.0)
+            .alongWith(Commands.startEnd(intake::lower, intake::raise, intake))
             .withTimeout(5.0));
     autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
 

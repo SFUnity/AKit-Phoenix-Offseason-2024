@@ -2,10 +2,11 @@ package frc.robot.subsystems.intake;
 
 import static frc.robot.subsystems.intake.IntakeConstants.*;
 
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.util.LoggedTunableNumber;
 import org.littletonrobotics.junction.Logger;
 
-public class Intake {
+public class Intake extends SubsystemBase {
   private static final LoggedTunableNumber kP =
       new LoggedTunableNumber("Intake/Gains/kP", gains.kP());
 
