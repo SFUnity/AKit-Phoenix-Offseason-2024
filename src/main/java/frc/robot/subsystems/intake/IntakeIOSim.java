@@ -24,7 +24,6 @@ public class IntakeIOSim implements IntakeIO {
 
   private final PIDController controller;
   private double pivotAppliedVoltage = 0.0;
-  private double positionOffset = 0.0;
 
   private boolean controllerNeedsReset = false;
   private boolean wasNotAuto = true;
