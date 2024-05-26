@@ -2,6 +2,7 @@ package frc.robot.subsystems.intake;
 
 import static frc.robot.subsystems.intake.IntakeConstants.*;
 
+import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.util.LoggedTunableNumber;
 import org.littletonrobotics.junction.Logger;
@@ -27,10 +28,16 @@ public class Intake extends SubsystemBase {
   private final IntakeIO io;
   private final IntakeIOInputsAutoLogged inputs = new IntakeIOInputsAutoLogged();
 
+  private final IntakeVisualizer measuredVisualizer;
+  private final IntakeVisualizer setpointVisualizer;
+
   public Intake(IntakeIO io) {
     this.io = io;
 
     io.setPID(kP.get());
+
+    measuredVisualizer = new IntakeVisualizer("Measured", Color.kRed);
+    setpointVisualizer = new IntakeVisualizer("Setpoint", Color.kBlue);
   }
 
   public void periodic() {
@@ -40,6 +47,9 @@ public class Intake extends SubsystemBase {
     // Update controllers
     LoggedTunableNumber.ifChanged(hashCode(), () -> io.setPID(kP.get()), kP);
 
+    // Logs
+    measuredVisualizer.update(inputs.pivotPositionRads);
+    setpointVisualizer.update(positionSetpoint);
     Logger.recordOutput("Intake/positionSetpointRotations", positionSetpoint);
   }
 

@@ -1,5 +1,7 @@
 package frc.robot.subsystems.intake;
 
+import static frc.robot.subsystems.intake.IntakeConstants.*;
+
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.system.plant.DCMotor;
@@ -16,7 +18,7 @@ public class IntakeIOSim implements IntakeIO {
           DCMotor.getNEO(1),
           100,
           1.06328,
-          Units.inchesToMeters(13.835),
+          intakeLength,
           Math.toRadians(0.0),
           Math.toRadians(125.0),
           false,
@@ -48,7 +50,7 @@ public class IntakeIOSim implements IntakeIO {
 
     sim.update(Constants.loopPeriodSecs);
 
-    inputs.pivotPositionRad = Units.radiansToRotations(sim.getAngleRads()) * 100;
+    inputs.pivotPositionRads = Units.radiansToRotations(sim.getAngleRads()) * 100;
     inputs.pivotAppliedVolts = pivotAppliedVoltage;
     inputs.pivotCurrentAmps = sim.getCurrentDrawAmps(); // TODO WPILib spelling issue
 

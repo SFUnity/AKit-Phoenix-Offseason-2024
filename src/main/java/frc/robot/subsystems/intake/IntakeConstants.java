@@ -1,5 +1,7 @@
 package frc.robot.subsystems.intake;
 
+import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.util.Units;
 import frc.robot.Constants;
 
 public class IntakeConstants {
@@ -17,6 +19,9 @@ public class IntakeConstants {
   public static final double kRollersSpeed = 1.0;
   /** duty cycle */
   public static final double kIndexerSpeed = 1.0;
+
+  public static final double intakeLength = Units.inchesToMeters(13.835);
+  public static final Translation2d intakeOrigin = new Translation2d(-0.238, 0.298);
 
   public static final Gains gains =
       switch (Constants.currentMode) {
