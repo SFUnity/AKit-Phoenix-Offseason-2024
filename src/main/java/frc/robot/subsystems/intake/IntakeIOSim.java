@@ -9,9 +9,11 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.simulation.SingleJointedArmSim;
 import frc.robot.Constants;
+import frc.robot.util.LoggedTunableNumber;
 
 public class IntakeIOSim implements IntakeIO {
   private static final double autoStartAngle = Units.degreesToRadians(0.0);
+  private static final LoggedTunableNumber angleOffsetRads = new LoggedTunableNumber("Intake/angleOffset", 0.0);
 
   private final SingleJointedArmSim sim =
       new SingleJointedArmSim(
@@ -50,7 +52,7 @@ public class IntakeIOSim implements IntakeIO {
 
     sim.update(Constants.loopPeriodSecs);
 
-    inputs.pivotPositionRads = Units.radiansToRotations(sim.getAngleRads()) * 100;
+    inputs.pivotPositionRots = Units.radiansToRotations(sim.getAngleRads()) * 100;
     inputs.pivotAppliedVolts = pivotAppliedVoltage;
     inputs.pivotCurrentAmps = sim.getCurrentDrawAmps(); // TODO WPILib spelling issue
 

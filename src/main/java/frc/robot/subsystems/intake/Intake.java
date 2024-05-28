@@ -48,7 +48,7 @@ public class Intake extends SubsystemBase {
     LoggedTunableNumber.ifChanged(hashCode(), () -> io.setPID(kP.get()), kP);
 
     // Logs
-    measuredVisualizer.update(inputs.pivotPositionRads);
+    measuredVisualizer.update(inputs.pivotPositionRots);
     setpointVisualizer.update(positionSetpoint);
     Logger.recordOutput("Intake/positionSetpointRotations", positionSetpoint);
   }
