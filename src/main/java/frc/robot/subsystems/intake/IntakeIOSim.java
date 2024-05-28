@@ -54,7 +54,7 @@ public class IntakeIOSim implements IntakeIO {
 
     inputs.pivotPositionRots = Units.radiansToRotations(sim.getAngleRads()) * 100;
     inputs.pivotAppliedVolts = pivotAppliedVoltage;
-    inputs.pivotCurrentAmps = sim.getCurrentDrawAmps(); // TODO WPILib spelling issue
+    inputs.pivotCurrentAmps = sim.getCurrentDrawAmps();
 
     // Reset input
     sim.setInputVoltage(0.0);
