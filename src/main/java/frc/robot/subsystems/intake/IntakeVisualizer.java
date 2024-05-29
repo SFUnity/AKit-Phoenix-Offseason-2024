@@ -28,7 +28,7 @@ public class IntakeVisualizer {
   public IntakeVisualizer(String key, Color color) {
     this.key = key;
     mechanism = new Mechanism2d(3.0, 3.0, new Color8Bit(Color.kBlack));
-    MechanismRoot2d root = mechanism.getRoot("pivot", 1.0, 0.4);
+    MechanismRoot2d root = mechanism.getRoot("pivot", 1.5, 2.0);
     intake = new MechanismLigament2d("intake", intakeLength, 20.0, 6, new Color8Bit(color));
     root.append(intake);
   }
