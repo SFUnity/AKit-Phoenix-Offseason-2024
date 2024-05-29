@@ -1,0 +1,88 @@
+{
+  "name": "PhoenixBase",
+  "sourceUrl": "https://cad.onshape.com/documents/6c4a4552fec9f973e41fed45/w/cfa1bf10dfc5ac4cbc82915f/e/99190d6eb7acc6bc023756e4?renderMode=0&uiState=665676020ac02f072f75caad",
+  "rotations": [
+    {
+      "axis": "x",
+      "degrees": 90
+    },
+    {
+      "axis": "y",
+      "degrees": 0
+    },
+    {
+      "axis": "z",
+      "degrees": 0
+    }
+  ],
+  "position": [
+    0.22,
+    -0.35,
+    0.05
+  ],
+  "cameras": [
+    {
+      "name": "limelight",
+      "rotations": {
+        "axis": "x",
+        "degrees": 40
+      },
+      "position": [
+        0,
+        0,
+        0
+      ],
+      "resolution": [
+        640,
+        480
+      ],
+      "fov": 55
+    }
+  ],
+  "components": [
+    {
+      "name": "Intake",
+      "zeroedRotations": [
+        {
+          "axis": "x",
+          "degrees": -50
+        },
+        {
+          "axis": "y",
+          "degrees": 0
+        },
+        {
+          "axis": "z",
+          "degrees": 0
+        }
+      ],
+      "zeroedPosition": [
+        0.04,
+        -0.24,
+        0.3
+      ]
+    },
+    {
+      "name": "Shooter",
+      "zeroedRotations": [
+        {
+          "axis": "x",
+          "degrees": 90
+        },
+        {
+          "axis": "y",
+          "degrees": 0
+        },
+        {
+          "axis": "z",
+          "degrees": 0
+        }
+      ],
+      "zeroedPosition": [
+        0.3,
+        0.33,
+        0.31
+      ]
+    }
+  ]
+}

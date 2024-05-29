@@ -13,6 +13,8 @@
 
 package frc.robot;
 
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
@@ -95,6 +97,8 @@ public class Robot extends LoggedRobot {
     robotContainer = new RobotContainer();
 
     DriverStation.silenceJoystickConnectionWarning(true);
+    Logger.recordOutput("ZeroedPose", new Pose2d());
+    Logger.recordOutput("ZeroedPoseIntake", new Pose3d());
   }
 
   /** This function is called periodically during all modes. */

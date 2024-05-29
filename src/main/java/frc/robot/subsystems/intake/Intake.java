@@ -2,6 +2,7 @@ package frc.robot.subsystems.intake;
 
 import static frc.robot.subsystems.intake.IntakeConstants.*;
 
+import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.util.LoggedTunableNumber;
@@ -51,6 +52,7 @@ public class Intake extends SubsystemBase {
     measuredVisualizer.update(inputs.pivotPositionRots);
     setpointVisualizer.update(positionSetpoint);
     Logger.recordOutput("Intake/positionSetpointRotations", positionSetpoint);
+    Logger.recordOutput("intakeRealPose", new Pose3d());
   }
 
   public void indexerIn() {
