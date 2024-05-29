@@ -23,14 +23,20 @@
   "cameras": [
     {
       "name": "limelight",
-      "rotations": {
-        "axis": "x",
-        "degrees": 40
-      },
+      "rotations": [
+        {
+          "axis": "y",
+          "degrees": -30
+        },
+        {
+          "axis": "z",
+          "degrees": 90
+        }
+      ],
       "position": [
         0,
         0,
-        0
+        0.6
       ],
       "resolution": [
         640,
