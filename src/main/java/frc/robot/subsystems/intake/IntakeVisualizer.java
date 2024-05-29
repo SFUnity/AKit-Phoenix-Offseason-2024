@@ -18,17 +18,12 @@ import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismRoot2d;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj.util.Color8Bit;
-import frc.robot.util.LoggedTunableNumber;
 import org.littletonrobotics.junction.Logger;
 
 public class IntakeVisualizer {
   private final Mechanism2d mechanism;
   private final MechanismLigament2d intake;
   private final String key;
-
-  private LoggedTunableNumber intakeOriginX = new LoggedTunableNumber("Intake/IntakeOriginX", 0);
-  private LoggedTunableNumber intakeOriginY = new LoggedTunableNumber("Intake/IntakeOriginY", 0);
-  private LoggedTunableNumber intakeOriginZ = new LoggedTunableNumber("Intake/IntakeOriginZ", 0);
 
   public IntakeVisualizer(String key, Color color) {
     this.key = key;
