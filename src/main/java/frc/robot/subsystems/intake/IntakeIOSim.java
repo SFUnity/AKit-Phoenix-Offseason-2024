@@ -9,12 +9,9 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.simulation.SingleJointedArmSim;
 import frc.robot.Constants;
-import frc.robot.util.LoggedTunableNumber;
 
 public class IntakeIOSim implements IntakeIO {
   private static final double autoStartAngle = Units.degreesToRadians(0.0);
-  private static final LoggedTunableNumber angleOffsetRads =
-      new LoggedTunableNumber("Intake/angleOffset", 0.0);
 
   private final SingleJointedArmSim sim =
       new SingleJointedArmSim(
