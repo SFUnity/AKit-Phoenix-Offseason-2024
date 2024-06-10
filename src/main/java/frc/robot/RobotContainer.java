@@ -113,9 +113,8 @@ public class RobotContainer {
         Commands.startEnd(
                 () -> flywheel.runVelocity(flywheelSpeedInput.get()), flywheel::stop, flywheel)
             .withTimeout(5.0));
-    autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
     NamedCommands.registerCommand("Lower Intake", Commands.run(intake::lower, intake));
-
+    autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
     // Set up SysId routines
     autoChooser.addOption(
         "Drive SysId (Quasistatic Forward)",
