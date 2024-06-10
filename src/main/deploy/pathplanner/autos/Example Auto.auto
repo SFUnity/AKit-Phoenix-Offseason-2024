@@ -20,37 +20,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Amp to 1"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "1 to Shoot"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Lower Intake"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Shooting to 2"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "2 to Shoot"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Lower Intake"
+            "pathName": "Example Path"
           }
         }
       ]
