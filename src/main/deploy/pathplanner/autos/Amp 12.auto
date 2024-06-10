@@ -14,7 +14,7 @@
         {
           "type": "named",
           "data": {
-            "name": "fullSpeakerShoot"
+            "name": "Lower Intake"
           }
         },
         {
@@ -32,7 +32,7 @@
         {
           "type": "named",
           "data": {
-            "name": "autoShoot"
+            "name": "Lower Intake"
           }
         },
         {
@@ -50,7 +50,7 @@
         {
           "type": "named",
           "data": {
-            "name": "autoShoot"
+            "name": "Lower Intake"
           }
         }
       ]
