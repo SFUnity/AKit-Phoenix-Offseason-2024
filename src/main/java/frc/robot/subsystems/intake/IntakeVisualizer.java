@@ -25,9 +25,9 @@ public class IntakeVisualizer {
   private final MechanismLigament2d intake;
   private final String key;
 
-  private static final double angleOffset = 1.5;
+  private static final double angleOffset = 1.63;
 
-  private static final double gearReduction = 65;
+  private static final double gearReduction = 73;
 
   public IntakeVisualizer(String key, Color color) {
     this.key = key;
@@ -40,7 +40,8 @@ public class IntakeVisualizer {
   /** Update intake visualizer with current intake angle */
   public void update(double angleRots) {
     // Log Mechanism2d
-    double angleRads = (Units.rotationsToRadians(-angleRots)) / gearReduction + angleOffset;
+    double angleRads =
+        (Units.rotationsToRadians(-angleRots)) / gearReduction + angleOffset;
     intake.setAngle(Rotation2d.fromRadians(angleRads));
     Logger.recordOutput("Intake/Mechanism2d/" + key, mechanism);
 
