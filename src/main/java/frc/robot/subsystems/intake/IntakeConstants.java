@@ -21,7 +21,7 @@ public class IntakeConstants {
   public static final double kIndexerSpeed = 1.0;
 
   public static final double intakeLength = Units.inchesToMeters(13.835);
-  public static final Translation2d intakeOrigin = new Translation2d(-0.23, .285);
+  public static final Translation2d intakeOrigin = new Translation2d(.263, .28);
 
   public static final Gains gains =
       switch (Constants.currentMode) {

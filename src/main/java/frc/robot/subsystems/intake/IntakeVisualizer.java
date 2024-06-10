@@ -25,9 +25,9 @@ public class IntakeVisualizer {
   private final MechanismLigament2d intake;
   private final String key;
 
-  private static final double angleOffset = 1.5;
+  private static final double angleOffset = 1.63;
 
-  private static final double gearReduction = 65;
+  private static final double gearReduction = 73;
 
   public IntakeVisualizer(String key, Color color) {
     this.key = key;
@@ -46,8 +46,7 @@ public class IntakeVisualizer {
 
     // Log 3D poses
     Pose3d pivot =
-        new Pose3d(
-            0, intakeOrigin.getX(), intakeOrigin.getY(), new Rotation3d(-angleRads, 0.0, 0.0));
+        new Pose3d(intakeOrigin.getX(), 0, intakeOrigin.getY(), new Rotation3d(0, -angleRads, 0.0));
     Logger.recordOutput("Intake/Mechanism3d/" + key, pivot);
   }
 }

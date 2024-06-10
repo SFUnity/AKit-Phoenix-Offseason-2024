@@ -16,8 +16,8 @@
     }
   ],
   "position": [
-    0.22,
-    -0.35,
+    0.0,
+    0.0,
     0.05
   ],
   "cameras": [
@@ -51,7 +51,7 @@
       "zeroedRotations": [
         {
           "axis": "x",
-          "degrees": 35
+          "degrees": 50
         },
         {
           "axis": "y",
@@ -59,13 +59,13 @@
         },
         {
           "axis": "z",
-          "degrees": 0
+          "degrees": 90
         }
       ],
       "zeroedPosition": [
-        0.04,
-        -0.06,
-        0.01
+        -0.02,
+        0.02,
+        -0.37
       ]
     },
     {
@@ -73,11 +73,11 @@
       "zeroedRotations": [
         {
           "axis": "x",
-          "degrees": 90
+          "degrees": 0
         },
         {
           "axis": "y",
-          "degrees": 0
+          "degrees": 200
         },
         {
           "axis": "z",
@@ -85,9 +85,9 @@
         }
       ],
       "zeroedPosition": [
-        0.3,
-        0.33,
-        0.31
+        -0.06,
+        0.19,
+        0.27
       ]
     }
   ]
