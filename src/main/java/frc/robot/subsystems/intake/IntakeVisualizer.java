@@ -40,8 +40,7 @@ public class IntakeVisualizer {
   /** Update intake visualizer with current intake angle */
   public void update(double angleRots) {
     // Log Mechanism2d
-    double angleRads =
-        (Units.rotationsToRadians(-angleRots)) / gearReduction + angleOffset;
+    double angleRads = (Units.rotationsToRadians(-angleRots)) / gearReduction + angleOffset;
     intake.setAngle(Rotation2d.fromRadians(angleRads));
     Logger.recordOutput("Intake/Mechanism2d/" + key, mechanism);
 
