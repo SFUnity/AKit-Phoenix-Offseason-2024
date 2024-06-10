@@ -5,7 +5,7 @@
       "x": 2.0,
       "y": 7.0
     },
-    "rotation": 180.0
+    "rotation": 156.29047715513957
   },
   "command": {
     "type": "sequential",
@@ -18,9 +18,15 @@
           }
         },
         {
+          "type": "path",
+          "data": {
+            "pathName": "Amp to 1"
+          }
+        },
+        {
           "type": "named",
           "data": {
-            "name": "Intake Lower"
+            "name": "Lower Intake"
           }
         }
       ]

@@ -94,4 +94,12 @@ public class Intake extends SubsystemBase {
   public void stopAll() {
     io.stop();
   }
+
+  public double getIntakePosition() {
+    return inputs.pivotPositionRots;
+  }
+
+  public boolean isIntakeLowered() {
+    return inputs.pivotPositionRots == loweredAngle.get();
+  }
 }

@@ -113,7 +113,8 @@ public class RobotContainer {
         Commands.startEnd(
                 () -> flywheel.runVelocity(flywheelSpeedInput.get()), flywheel::stop, flywheel)
             .withTimeout(5.0));
-    NamedCommands.registerCommand("Lower Intake", Commands.run(intake::lower, intake));
+    NamedCommands.registerCommand(
+        "Lower Intake", new RunCommand(intake::lower, intake).until(intake::isIntakeLowered));
     autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
     // Set up SysId routines
     autoChooser.addOption(
@@ -146,6 +147,7 @@ public class RobotContainer {
     }
 
     SmartDashboard.putData(new RunCommand(intake::lower, intake).withName("Lower Intake"));
+    SmartDashboard.putData(intake);
   }
 
   /**
