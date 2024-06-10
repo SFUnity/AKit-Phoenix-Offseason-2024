@@ -46,8 +46,7 @@ public class IntakeVisualizer {
 
     // Log 3D poses
     Pose3d pivot =
-        new Pose3d(
-            0, intakeOrigin.getX(), intakeOrigin.getY(), new Rotation3d(-angleRads, 0.0, 0.0));
+        new Pose3d(intakeOrigin.getX(), 0, intakeOrigin.getY(), new Rotation3d(0, -angleRads, 0.0));
     Logger.recordOutput("Intake/Mechanism3d/" + key, pivot);
   }
 }
