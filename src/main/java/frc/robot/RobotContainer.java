@@ -115,6 +115,10 @@ public class RobotContainer {
             .withTimeout(5.0));
     NamedCommands.registerCommand(
         "Lower Intake", new RunCommand(intake::lower, intake).until(intake::isIntakeLowered));
+    NamedCommands.registerCommand("Run Intake", new RunCommand(intake::in, intake));
+    NamedCommands.registerCommand("Stop Intake", new RunCommand(intake::stopRollers, intake));
+    NamedCommands.registerCommand("Run Indexer", new RunCommand(intake::indexerIn, intake));
+    NamedCommands.registerCommand("Stop Indexer", new RunCommand(intake::indexerStop, intake));
     autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
     // Set up SysId routines
     autoChooser.addOption(
