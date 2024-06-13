@@ -2,15 +2,34 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 2,
-      "y": 2
+      "x": 0.6766573533147066,
+      "y": 6.744683307548434
     },
-    "rotation": 0
+    "rotation": 59.32722629157787
   },
   "command": {
     "type": "sequential",
     "data": {
-      "commands": []
+      "commands": [
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Amp to A"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Lower Intake"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "A to 1"
+          }
+        }
+      ]
     }
   },
   "folder": null,
