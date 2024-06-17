@@ -4,6 +4,7 @@ import static frc.robot.subsystems.intake.IntakeConstants.*;
 
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants;
 import frc.robot.util.LoggedTunableNumber;
 import org.littletonrobotics.junction.Logger;
 
@@ -34,7 +35,19 @@ public class Intake extends SubsystemBase {
   public Intake(IntakeIO io) {
     this.io = io;
 
-    io.setPID(kP.get());
+    // Switch constants based on mode (the physics simulator is treated as a
+    // separate robot with different tuning)
+    switch (Constants.currentMode) {
+      case REAL:
+      case REPLAY:
+        io.setPID(0.08);
+        break;
+      case SIM:
+        io.setPID(20);
+        break;
+      default:
+        break;
+    }
 
     measuredVisualizer = new IntakeVisualizer("Measured", Color.kRed);
     setpointVisualizer = new IntakeVisualizer("Setpoint", Color.kBlue);
