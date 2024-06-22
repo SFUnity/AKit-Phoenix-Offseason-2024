@@ -25,7 +25,7 @@ public class Vision extends SubsystemBase {
     io.updateInputs(inputs);
     Logger.processInputs("Vision", inputs);
 
-    noTagDetectedAlert.set(!inputs.targetDetected);
+    noTagDetectedAlert.set(!inputs.targetDetected); // TODO remove once LEDs are added
   }
 
   public boolean alignedWithTag() {
