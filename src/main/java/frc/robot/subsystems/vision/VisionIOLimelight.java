@@ -13,8 +13,10 @@ public class VisionIOLimelight implements VisionIO {
   public VisionIOLimelight() {
     table = NetworkTableInstance.getDefault().getTable("limelight");
 
-    tx = table.getEntry("tx"); // Horizontal offset from crosshair to target (-29.8 to 29.8 degrees).
-    ty = table.getEntry("ty"); // Vertical offset from crosshair to target (-24.85 to 24.85 degrees).
+    tx =
+        table.getEntry("tx"); // Horizontal offset from crosshair to target (-29.8 to 29.8 degrees).
+    ty =
+        table.getEntry("ty"); // Vertical offset from crosshair to target (-24.85 to 24.85 degrees).
     tv = table.getEntry("tv"); // Whether the limelight has any valid targets (0 or 1).
     ta = table.getEntry("ta"); // Target area (0% of image to 100% of image).
     tid = table.getEntry("tid"); // current id of the april tag
