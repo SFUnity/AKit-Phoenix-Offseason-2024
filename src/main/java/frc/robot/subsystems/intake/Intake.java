@@ -12,17 +12,19 @@ public class Intake extends SubsystemBase {
   private static final LoggedTunableNumber kP =
       new LoggedTunableNumber("Intake/Gains/kP", gains.kP());
 
+  // In rotations
   private static final LoggedTunableNumber loweredAngle =
-      new LoggedTunableNumber("Intake/Angles/lowered", kLoweredAngle);
+      new LoggedTunableNumber("Intake/Angles/lowered", 26);
   private static final LoggedTunableNumber raisedAngle =
-      new LoggedTunableNumber("Intake/Angles/raised", kRaisedAngle);
+      new LoggedTunableNumber("Intake/Angles/raised", 0);
   private static final LoggedTunableNumber climbingAngle =
-      new LoggedTunableNumber("Intake/Angles/climbing", kClimbingAngle);
+      new LoggedTunableNumber("Intake/Angles/climbing", 5);
 
+  // In percent output
   private static final LoggedTunableNumber rollersSpeed =
-      new LoggedTunableNumber("Intake/Speeds/intakeRollers", kRollersSpeed);
+      new LoggedTunableNumber("Intake/Speeds/intakeRollers", 1);
   private static final LoggedTunableNumber indexerSpeed =
-      new LoggedTunableNumber("Intake/Speeds/indexer", kIndexerSpeed);
+      new LoggedTunableNumber("Intake/Speeds/indexer", 1);
 
   private double positionSetpoint = 0;
 

@@ -9,17 +9,6 @@ public class IntakeConstants {
   public static final int rollersMotorId = 10;
   public static final int handoffMotorId = 11;
 
-  /** in rotations */
-  public static final double kLoweredAngle = 26;
-  /** in rotations */
-  public static final double kRaisedAngle = 0;
-  /** in rotations */
-  public static final double kClimbingAngle = 5;
-  /** duty cycle */
-  public static final double kRollersSpeed = 1.0;
-  /** duty cycle */
-  public static final double kIndexerSpeed = 1.0;
-
   public static final double intakeLength = Units.inchesToMeters(13.835);
   public static final Translation2d intakeOrigin = new Translation2d(.263, .28);
 
