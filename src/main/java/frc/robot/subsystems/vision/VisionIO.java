@@ -10,6 +10,7 @@ public interface VisionIO {
     public boolean targetDetected = false;
     public double targetArea = 0;
     public double targetID = 0; // For aprilTags
+    
     public double priorityID = 0; // For aprilTags
     public double pipeline = 0; // TODO store the pipelines where the code can see them
 
