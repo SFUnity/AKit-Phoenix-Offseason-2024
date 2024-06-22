@@ -7,7 +7,7 @@ public interface VisionIO {
   public static class VisionIOInputs {
     public double targetXOffset = 0;
     public double targetYOffset = 0;
-    public double targetIsDetected = 0;
+    public boolean targetDetected = false;
     public double targetArea = 0;
     public double targetID = 0; // For aprilTags
     public double priorityID = 0; // For aprilTags
