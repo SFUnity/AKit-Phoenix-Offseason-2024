@@ -12,7 +12,7 @@ public class VisionIOLimelight implements VisionIO {
 
   public VisionIOLimelight() {
     table = NetworkTableInstance.getDefault().getTable("limelight");
-
+    
     tx =
         table.getEntry("tx"); // Horizontal offset from crosshair to target (-29.8 to 29.8 degrees).
     ty =
