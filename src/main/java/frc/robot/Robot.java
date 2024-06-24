@@ -18,6 +18,7 @@ import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.subsystems.leds.Leds;
@@ -36,8 +37,10 @@ import org.littletonrobotics.junction.wpilog.WPILOGWriter;
  * project.
  */
 public class Robot extends LoggedRobot {
-  private Command autonomousCommand;
+  private Command autoCommand;
   private RobotContainer robotContainer;
+  private double autoStart;
+  private boolean autoMessagePrinted;
 
   /**
    * This function is run when the robot is first started up and should be used for any
@@ -114,6 +117,21 @@ public class Robot extends LoggedRobot {
     // This must be called from the robot's periodic block in order for anything in
     // the Command-based framework to work.
     CommandScheduler.getInstance().run();
+
+    if (autoCommand != null) {
+      if (!autoCommand.isScheduled() && !autoMessagePrinted) {
+        if (DriverStation.isAutonomousEnabled()) {
+          System.out.printf(
+              "*** Auto finished in %.2f secs ***%n", Timer.getFPGATimestamp() - autoStart);
+        } else {
+          System.out.printf(
+              "*** Auto cancelled in %.2f secs ***%n", Timer.getFPGATimestamp() - autoStart);
+        }
+        autoMessagePrinted = true;
+        Leds.getInstance().autoFinished = true;
+        Leds.getInstance().autoFinishedTime = Timer.getFPGATimestamp();
+      }
+    }
   }
 
   /** This function is called once when the robot is disabled. */
@@ -127,11 +145,11 @@ public class Robot extends LoggedRobot {
   /** This autonomous runs the autonomous command selected by your {@link RobotContainer} class. */
   @Override
   public void autonomousInit() {
-    autonomousCommand = robotContainer.getAutonomousCommand();
+    autoCommand = robotContainer.getAutonomousCommand();
 
     // schedule the autonomous command (example)
-    if (autonomousCommand != null) {
-      autonomousCommand.schedule();
+    if (autoCommand != null) {
+      autoCommand.schedule();
     }
   }
 
@@ -146,8 +164,8 @@ public class Robot extends LoggedRobot {
     // teleop starts running. If you want the autonomous to
     // continue until interrupted by another command, remove
     // this line or comment it out.
-    if (autonomousCommand != null) {
-      autonomousCommand.cancel();
+    if (autoCommand != null) {
+      autoCommand.cancel();
     }
   }
 
