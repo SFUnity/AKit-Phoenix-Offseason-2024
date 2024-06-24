@@ -6,7 +6,6 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.subsystems.vision.VisionConstants.Pipelines;
 import frc.robot.util.Alert;
 import frc.robot.util.Alert.AlertType;
-
 import org.littletonrobotics.junction.Logger;
 
 public class Vision extends SubsystemBase {
@@ -32,7 +31,7 @@ public class Vision extends SubsystemBase {
     return Math.abs(inputs.targetXOffset) < 2;
   }
 
-  public double getDistance () {
+  public double getDistance() {
     double angleToGoalDegrees = limelightMountAngleDegrees + inputs.targetYOffset;
     double angleToGoalRadians = Math.toRadians(angleToGoalDegrees);
 
