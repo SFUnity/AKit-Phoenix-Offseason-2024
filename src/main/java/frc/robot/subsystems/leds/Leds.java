@@ -70,7 +70,8 @@ public class Leds extends VirtualSubsystem {
   private static final double autoFadeTime = 2.5; // 3s nominal
   private static final double autoFadeMaxTime = 5.0; // Return to normal
 
-  private Leds() {
+  // TODO rework the the statemachine to work with our code
+  private Leds() { // ! May have lost something when moving into our code
     leds = new AddressableLED(9);
     buffer = new AddressableLEDBuffer(length);
     leds.setLength(length);
