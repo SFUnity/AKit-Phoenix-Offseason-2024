@@ -18,10 +18,13 @@ import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
+import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.subsystems.leds.Leds;
+import frc.robot.util.Alert;
+import frc.robot.util.Alert.AlertType;
 
 import org.littletonrobotics.junction.LogFileUtil;
 import org.littletonrobotics.junction.LoggedRobot;
@@ -37,10 +40,24 @@ import org.littletonrobotics.junction.wpilog.WPILOGWriter;
  * project.
  */
 public class Robot extends LoggedRobot {
+  private static final double canErrorTimeThreshold = 0.5; // Seconds to disable alert
+  private static final double lowBatteryVoltage = 11.8;
+  private static final double lowBatteryDisabledTime = 1.5;
+
   private Command autoCommand;
   private RobotContainer robotContainer;
   private double autoStart;
   private boolean autoMessagePrinted;
+  private final Timer disabledTimer = new Timer();
+  private final Timer canInitialErrorTimer = new Timer();
+  private final Timer canErrorTimer = new Timer();
+
+  private final Alert canErrorAlert =
+      new Alert("CAN errors detected, robot may not be controllable.", AlertType.ERROR);
+  private final Alert lowBatteryAlert =
+      new Alert(
+          "Battery voltage is very low, consider turning off the robot or replacing the battery.",
+          AlertType.WARNING);
 
   /**
    * This function is run when the robot is first started up and should be used for any
@@ -131,6 +148,25 @@ public class Robot extends LoggedRobot {
         Leds.getInstance().autoFinished = true;
         Leds.getInstance().autoFinishedTime = Timer.getFPGATimestamp();
       }
+    }
+
+    // Check CAN status
+    var canStatus = RobotController.getCANStatus();
+    if (canStatus.transmitErrorCount > 0 || canStatus.receiveErrorCount > 0) {
+      canErrorTimer.restart();
+    }
+    canErrorAlert.set(
+        !canErrorTimer.hasElapsed(canErrorTimeThreshold)
+            && !canInitialErrorTimer.hasElapsed(canErrorTimeThreshold));
+
+    // Low battery alert
+    if (DriverStation.isEnabled()) {
+      disabledTimer.reset();
+    }
+    if (RobotController.getBatteryVoltage() <= lowBatteryVoltage
+        && disabledTimer.hasElapsed(lowBatteryDisabledTime)) {
+      lowBatteryAlert.set(true);
+      Leds.getInstance().lowBatteryAlert = true;
     }
   }
 
