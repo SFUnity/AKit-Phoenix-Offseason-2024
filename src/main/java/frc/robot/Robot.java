@@ -26,7 +26,6 @@ import frc.robot.subsystems.leds.Leds;
 import frc.robot.util.Alert;
 import frc.robot.util.Alert.AlertType;
 import frc.robot.util.VirtualSubsystem;
-
 import org.littletonrobotics.junction.LogFileUtil;
 import org.littletonrobotics.junction.LoggedRobot;
 import org.littletonrobotics.junction.Logger;
@@ -159,7 +158,8 @@ public class Robot extends LoggedRobot {
     }
     canErrorAlert.set(
         !canErrorTimer.hasElapsed(canErrorTimeThreshold)
-            && !canInitialErrorTimer.hasElapsed(canErrorTimeThreshold)); // ! this doesn't make sense, won't it pretty much always return false bc after .5 seconds it will always be not true
+            && !canInitialErrorTimer.hasElapsed(canErrorTimeThreshold));
+    // ! this doesn't make sense, won't it pretty much always return false bc after .5 seconds it will always be not true
 
     // Low battery alert
     if (DriverStation.isEnabled()) {

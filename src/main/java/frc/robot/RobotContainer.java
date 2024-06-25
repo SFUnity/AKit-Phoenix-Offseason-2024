@@ -24,6 +24,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.RunCommand;
+import edu.wpi.first.wpilibj2.command.button.CommandPS5Controller;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.commands.DriveCommands;
@@ -59,8 +60,11 @@ public class RobotContainer {
 
   // Controller
   private final CommandXboxController driver = new CommandXboxController(0);
+  private final CommandPS5Controller operator = new CommandPS5Controller(0);
   private final Alert driverDisconnected =
       new Alert("Driver controller disconnected (port 0).", AlertType.WARNING);
+  private final Alert operatorDisconnected =
+      new Alert("Operator controller disconnected (port 1).", AlertType.WARNING);
 
   // Dashboard inputs
   private final LoggedDashboardChooser<Command> autoChooser;
@@ -160,10 +164,7 @@ public class RobotContainer {
   private void configureButtonBindings() {
     drive.setDefaultCommand(
         DriveCommands.joystickDrive(
-            drive,
-            () -> -driver.getLeftY(),
-            () -> -driver.getLeftX(),
-            () -> -driver.getRightX()));
+            drive, () -> -driver.getLeftY(), () -> -driver.getLeftX(), () -> -driver.getRightX()));
     intake.setDefaultCommand(new RunCommand(intake::raise, intake));
 
     driver.x().onTrue(Commands.runOnce(drive::stopWithX, drive));
@@ -187,10 +188,12 @@ public class RobotContainer {
   public void checkControllers() {
     driverDisconnected.set(
         !DriverStation.isJoystickConnected(driver.getHID().getPort())
-            || !DriverStation.getJoystickIsXbox(driver.getHID().getPort()));
-    // operatorDisconnected.set(
-    //     !DriverStation.isJoystickConnected(operator.getHID().getPort())
-    //         || !DriverStation.getJoystickIsXbox(operator.getHID().getPort()));
+            || !DriverStation.getJoystickIsXbox(
+                driver.getHID().getPort())); // Should be an XBox controller
+    operatorDisconnected.set(
+        !DriverStation.isJoystickConnected(operator.getHID().getPort())
+            || DriverStation.getJoystickIsXbox(
+                operator.getHID().getPort())); // Should not be an XBox controller
   }
 
   /**
