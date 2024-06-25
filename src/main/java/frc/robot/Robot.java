@@ -159,7 +159,8 @@ public class Robot extends LoggedRobot {
     canErrorAlert.set(
         !canErrorTimer.hasElapsed(canErrorTimeThreshold)
             && !canInitialErrorTimer.hasElapsed(canErrorTimeThreshold));
-    // ! this doesn't make sense, won't it pretty much always return false bc after .5 seconds it will always be not true
+    // ! this doesn't make sense, won't it pretty much always return false bc after .5 seconds it
+    // will always be not true
 
     // Low battery alert
     if (DriverStation.isEnabled()) {

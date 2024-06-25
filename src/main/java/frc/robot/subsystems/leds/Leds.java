@@ -26,10 +26,10 @@ public class Leds extends VirtualSubsystem {
 
   // Robot state tracking
   public int loopCycleCount = 0;
-  public boolean intaking = false;
-  public boolean hasNote = false;
-  public boolean autoShoot = false;
-  public boolean autoDrive = false;
+  public boolean intakeWorking = true;
+  public boolean noteInShooter = false;
+  public boolean targetDetected = false;
+  public boolean alignedWithTarget = false;
   public boolean autoFinished = false;
   public double autoFinishedTime = 0.0;
   public boolean lowBatteryAlert = false;
@@ -50,10 +50,10 @@ public class Leds extends VirtualSubsystem {
   private static final boolean prideLeds = false;
   private static final int minLoopCycleCount = 10;
   private static final int length = 150;
-  private static final double strobeDuration = 0.1;
+  // private static final double strobeDuration = 0.1;
   private static final double breathDuration = 1.0;
-  private static final double rainbowCycleLength = 25.0;
-  private static final double rainbowDuration = 0.25;
+  // private static final double rainbowCycleLength = 25.0;
+  // private static final double rainbowDuration = 0.25;
   private static final double waveExponent = 0.4;
   private static final double waveFastCycleLength = 25.0;
   private static final double waveFastDuration = 0.25;
@@ -116,7 +116,7 @@ public class Leds extends VirtualSubsystem {
     // Select LED mode
     solid(Color.kBlack); // Default to off
     if (estopped) {
-      solid(Color.kRed);
+      solid(Color.kDarkRed);
     } else if (DriverStation.isDisabled()) {
       if (lastEnabledAuto && Timer.getFPGATimestamp() - lastEnabledTime < autoFadeMaxTime) {
         // Auto fade
@@ -153,11 +153,17 @@ public class Leds extends VirtualSubsystem {
         solid((Timer.getFPGATimestamp() - autoFinishedTime) / fullTime, Color.kGreen);
       }
     } else { // Enabled
-      if (autoShoot) {
-        strobe(Color.kWhite, strobeDuration);
-      } else if (autoDrive || autoShoot) {
-        rainbow(rainbowCycleLength, rainbowDuration);
-      } else if (hasNote) {
+      if (!noteInShooter) {
+        if (intakeWorking) {
+          solid(Color.kRed);
+        } else {
+          solid(Color.kYellow);
+        }
+      } else if (!targetDetected) {
+        solid(Color.kBlue);
+      } else if (!alignedWithTarget) {
+        solid(Color.kPurple);
+      } else if (alignedWithTarget) {
         solid(Color.kGreen);
       }
     }
@@ -180,18 +186,18 @@ public class Leds extends VirtualSubsystem {
     }
   }
 
-  private void strobe(Color c1, Color c2, double duration) {
-    boolean c1On = ((Timer.getFPGATimestamp() % duration) / duration) > 0.5;
-    solid(c1On ? c1 : c2);
-  }
+  // private void strobe(Color c1, Color c2, double duration) {
+  //   boolean c1On = ((Timer.getFPGATimestamp() % duration) / duration) > 0.5;
+  //   solid(c1On ? c1 : c2);
+  // }
 
-  private void strobe(Color color, double duration) {
-    strobe(color, Color.kBlack, duration);
-  }
+  // private void strobe(Color color, double duration) {
+  //   strobe(color, Color.kBlack, duration);
+  // }
 
-  private void breath(Color c1, Color c2) {
-    breath(c1, c2, Timer.getFPGATimestamp());
-  }
+  // private void breath(Color c1, Color c2) {
+  //   breath(c1, c2, Timer.getFPGATimestamp());
+  // }
 
   private void breath(Color c1, Color c2, double timestamp) {
     double x = ((timestamp % breathDuration) / breathDuration) * 2.0 * Math.PI;
@@ -202,15 +208,15 @@ public class Leds extends VirtualSubsystem {
     solid(new Color(red, green, blue));
   }
 
-  private void rainbow(double cycleLength, double duration) {
-    double x = (1 - ((Timer.getFPGATimestamp() / duration) % 1.0)) * 180.0;
-    double xDiffPerLed = 180.0 / cycleLength;
-    for (int i = 0; i < length; i++) {
-      x += xDiffPerLed;
-      x %= 180.0;
-      buffer.setHSV(i, (int) x, 255, 255);
-    }
-  }
+  // private void rainbow(double cycleLength, double duration) {
+  //   double x = (1 - ((Timer.getFPGATimestamp() / duration) % 1.0)) * 180.0;
+  //   double xDiffPerLed = 180.0 / cycleLength;
+  //   for (int i = 0; i < length; i++) {
+  //     x += xDiffPerLed;
+  //     x %= 180.0;
+  //     buffer.setHSV(i, (int) x, 255, 255);
+  //   }
+  // }
 
   private void wave(Color c1, Color c2, double cycleLength, double duration) {
     double x = (1 - ((Timer.getFPGATimestamp() % duration) / duration)) * 2.0 * Math.PI;
