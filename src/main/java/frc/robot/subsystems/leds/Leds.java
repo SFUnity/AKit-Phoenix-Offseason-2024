@@ -153,8 +153,8 @@ public class Leds extends VirtualSubsystem {
         solid((Timer.getFPGATimestamp() - autoFinishedTime) / fullTime, Color.kGreen);
       }
     } else { // Enabled
-      if (!noteInShooter) {
-        if (intakeWorking) {
+      if (!noteInShooter) { // TODO for minjae
+        if (intakeWorking) { // TODO once I figure out the Shuffleboard stuff
           solid(Color.kRed);
         } else {
           solid(Color.kYellow);

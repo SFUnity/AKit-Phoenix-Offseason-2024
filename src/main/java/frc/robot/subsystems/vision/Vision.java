@@ -22,6 +22,7 @@ public class Vision extends SubsystemBase {
     Logger.processInputs("Vision", inputs);
 
     Leds.getInstance().targetDetected = inputs.targetDetected;
+    Leds.getInstance().alignedWithTarget = alignedWithTag();
   }
 
   public boolean alignedWithTag() {
