@@ -130,8 +130,10 @@ public class ModuleIOMixed implements ModuleIO {
 
   @Override
   public void updateInputs(ModuleIOInputs inputs) {
-    BaseStatusSignal.refreshAll(
-        drivePosition, driveVelocity, driveAppliedVolts, driveCurrent, turnAbsolutePosition);
+    inputs.driveMotorConnected =
+        BaseStatusSignal.refreshAll(drivePosition, driveVelocity, driveAppliedVolts, driveCurrent)
+            .isOK();
+    inputs.turnMotorConnected = BaseStatusSignal.refreshAll(turnAbsolutePosition).isOK();
 
     inputs.drivePositionRad =
         Units.rotationsToRadians(drivePosition.getValueAsDouble()) / DRIVE_GEAR_RATIO;
