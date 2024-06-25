@@ -116,8 +116,12 @@ public class Robot extends LoggedRobot {
     // Start AdvantageKit logger
     Logger.start();
 
-    // Instantiate our RobotContainer. This will perform all our button bindings,
-    // and put our autonomous chooser on the dashboard.
+    // Reset alert timers
+    canInitialErrorTimer.restart();
+    canErrorTimer.restart();
+    disabledTimer.restart();
+
+    RobotController.setBrownoutVoltage(6.0);
     robotContainer = new RobotContainer();
 
     DriverStation.silenceJoystickConnectionWarning(true);
@@ -157,7 +161,7 @@ public class Robot extends LoggedRobot {
     }
     canErrorAlert.set(
         !canErrorTimer.hasElapsed(canErrorTimeThreshold)
-            && !canInitialErrorTimer.hasElapsed(canErrorTimeThreshold));
+            && !canInitialErrorTimer.hasElapsed(canErrorTimeThreshold)); // ! this doesn't make sense, won't it pretty much always return false bc after .5 seconds it will always be not true
 
     // Low battery alert
     if (DriverStation.isEnabled()) {
