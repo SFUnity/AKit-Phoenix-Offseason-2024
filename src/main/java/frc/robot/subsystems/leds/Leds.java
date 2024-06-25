@@ -1,4 +1,4 @@
-// Edited version of Mechanical Advantages 2024 class
+// Edited version of Mechanical Advantages 2024 Leds class
 
 package frc.robot.subsystems.leds;
 
@@ -26,24 +26,16 @@ public class Leds extends VirtualSubsystem {
 
   // Robot state tracking
   public int loopCycleCount = 0;
-  public boolean boost = false;
   public boolean intaking = false;
   public boolean hasNote = false;
   public boolean autoShoot = false;
   public boolean autoDrive = false;
-  public boolean climbing = false;
-  public boolean trapping = false;
-  public boolean endgameAlert = false;
-  public boolean sameBattery = false;
-  public boolean armCoast = false;
-  public boolean armEstopped = false;
   public boolean autoFinished = false;
   public double autoFinishedTime = 0.0;
   public boolean lowBatteryAlert = false;
-  public boolean demoMode = false;
 
   private Optional<Alliance> alliance = Optional.empty();
-  private Color allianceColor = Color.kGold;
+  private Color allianceColor = Color.kOrange;
   private Color secondaryDisabledColor = Color.kDarkBlue;
   private boolean lastEnabledAuto = false;
   private double lastEnabledTime = 0.0;
@@ -70,8 +62,8 @@ public class Leds extends VirtualSubsystem {
   private static final double autoFadeTime = 2.5; // 3s nominal
   private static final double autoFadeMaxTime = 5.0; // Return to normal
 
-  // TODO rework the the statemachine to work with our code
-  private Leds() { // ! May have lost something when moving into our code
+  // ! May have lost something when copying into our code
+  private Leds() {
     leds = new AddressableLED(9);
     buffer = new AddressableLEDBuffer(length);
     leds.setLength(length);
@@ -95,7 +87,7 @@ public class Leds extends VirtualSubsystem {
       allianceColor =
           alliance
               .map(alliance -> alliance == Alliance.Blue ? Color.kBlue : Color.kRed)
-              .orElse(Color.kGold);
+              .orElse(Color.kOrange);
       secondaryDisabledColor = alliance.isPresent() ? Color.kBlack : Color.kDarkBlue;
     }
 
@@ -126,14 +118,10 @@ public class Leds extends VirtualSubsystem {
     if (estopped) {
       solid(Color.kRed);
     } else if (DriverStation.isDisabled()) {
-      if (armCoast) {
-        // Arm coast alert
-        solid(Color.kWhite);
-      } else if (lastEnabledAuto && Timer.getFPGATimestamp() - lastEnabledTime < autoFadeMaxTime) {
+      if (lastEnabledAuto && Timer.getFPGATimestamp() - lastEnabledTime < autoFadeMaxTime) {
         // Auto fade
         solid(1.0 - ((Timer.getFPGATimestamp() - lastEnabledTime) / autoFadeTime), Color.kGreen);
       } else if (lowBatteryAlert) {
-        // Low battery
         solid(Color.kOrangeRed);
       } else if (prideLeds) {
         // Pride stripes
@@ -158,34 +146,20 @@ public class Leds extends VirtualSubsystem {
         // Default pattern
         wave(allianceColor, secondaryDisabledColor, waveAllianceCycleLength, waveAllianceDuration);
       }
-
-      // Same battery alert
-      if (sameBattery) {
-        breath(Color.kRed, Color.kBlack);
-      }
     } else if (DriverStation.isAutonomous()) {
-      wave(Color.kGold, Color.kDarkBlue, waveFastCycleLength, waveFastDuration);
+      wave(Color.kOrange, Color.kDarkBlue, waveFastCycleLength, waveFastDuration);
       if (autoFinished) {
         double fullTime = (double) length / waveFastCycleLength * waveFastDuration;
         solid((Timer.getFPGATimestamp() - autoFinishedTime) / fullTime, Color.kGreen);
       }
     } else { // Enabled
-      if (boost) {
+      if (autoShoot) {
         strobe(Color.kWhite, strobeDuration);
-      } else if (trapping || climbing || autoDrive || autoShoot) {
+      } else if (autoDrive || autoShoot) {
         rainbow(rainbowCycleLength, rainbowDuration);
       } else if (hasNote) {
         solid(Color.kGreen);
       }
-
-      if (endgameAlert) {
-        strobe(Color.kRed, Color.kGold, strobeDuration);
-      }
-    }
-
-    // Arm estop alert
-    if (armEstopped) {
-      solid(Color.kRed);
     }
 
     // Update LEDs
