@@ -20,10 +20,14 @@ import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.util.Units;
 import frc.robot.Constants;
+import frc.robot.util.Alert;
+
 import org.littletonrobotics.junction.Logger;
 
 public class Module {
   private static final double WHEEL_RADIUS = Units.inchesToMeters(2.0);
+
+  private static final String[] moduleNames = new String[] {"FL", "FR", "BL", "BR"};
 
   private final ModuleIO io;
   private final ModuleIOInputsAutoLogged inputs = new ModuleIOInputsAutoLogged();
@@ -36,9 +40,18 @@ public class Module {
   private Double speedSetpoint = null; // Setpoint for closed loop control, null for open loop
   private Rotation2d turnRelativeOffset = null; // Relative + Offset = Absolute
 
+  // Alerts
+  private final Alert driveMotorDisconnected;
+  private final Alert turnMotorDisconnected;
+
   public Module(ModuleIO io, int index) {
     this.io = io;
     this.index = index;
+
+    driveMotorDisconnected =
+        new Alert(moduleNames[index] + " drive motor disconnected!", Alert.AlertType.WARNING);
+    turnMotorDisconnected =
+        new Alert(moduleNames[index] + " turn motor disconnected!", Alert.AlertType.WARNING);
 
     // Switch constants based on mode (the physics simulator is treated as a
     // separate robot with different tuning)
@@ -75,6 +88,10 @@ public class Module {
       turnRelativeOffset = inputs.turnAbsolutePosition.minus(inputs.turnPosition);
       // turnPosition + turnRelativeOffset = turnAbsolutePosition
     }
+
+    // Display alerts
+    driveMotorDisconnected.set(!inputs.driveMotorConnected);
+    turnMotorDisconnected.set(!inputs.turnMotorConnected);
 
     // Run closed loop turn control
     if (angleSetpoint != null) {
