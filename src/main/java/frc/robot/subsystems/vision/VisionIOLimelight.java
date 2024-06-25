@@ -30,8 +30,7 @@ public class VisionIOLimelight implements VisionIO {
     ledMode = table.getEntry("ledMode"); // limelight's LED state (0-3).
     camMode = table.getEntry("camMode"); // limelight's operation mode (0-1).
 
-    disconnectedAlert =
-        new Alert("No data from: " + name, Alert.AlertType.ERROR);
+    disconnectedAlert = new Alert("No data from: " + name, Alert.AlertType.ERROR);
     disconnectedTimer.start();
   }
 

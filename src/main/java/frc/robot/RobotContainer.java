@@ -39,6 +39,9 @@ import frc.robot.subsystems.flywheel.FlywheelIOSparkMax;
 import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.intake.IntakeIO;
 import frc.robot.subsystems.intake.IntakeIOSim;
+import frc.robot.subsystems.vision.Vision;
+import frc.robot.subsystems.vision.VisionIO;
+import frc.robot.subsystems.vision.VisionIOLimelight;
 import frc.robot.util.Alert;
 import frc.robot.util.Alert.AlertType;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
@@ -55,6 +58,7 @@ public class RobotContainer {
   private final Drive drive;
   private final Flywheel flywheel;
   private final Intake intake;
+  private final Vision vision;
 
   // Controller
   private final CommandXboxController controller = new CommandXboxController(0);
@@ -78,6 +82,7 @@ public class RobotContainer {
                 new ModuleIOMixed(3));
         flywheel = new Flywheel(new FlywheelIOSparkMax());
         intake = new Intake(new IntakeIOSim());
+        vision = new Vision(new VisionIOLimelight("limelight"));
         break;
 
       case SIM:
@@ -91,6 +96,7 @@ public class RobotContainer {
                 new ModuleIOSim());
         flywheel = new Flywheel(new FlywheelIOSim());
         intake = new Intake(new IntakeIOSim());
+        vision = new Vision(new VisionIO() {}); // TODO make a sim IO for vision
         break;
 
       default:
@@ -104,6 +110,7 @@ public class RobotContainer {
                 new ModuleIO() {});
         flywheel = new Flywheel(new FlywheelIO() {});
         intake = new Intake(new IntakeIO() {});
+        vision = new Vision(new VisionIO() {});
         break;
     }
 
