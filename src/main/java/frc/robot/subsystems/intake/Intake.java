@@ -3,6 +3,7 @@ package frc.robot.subsystems.intake;
 import static frc.robot.subsystems.intake.IntakeConstants.*;
 
 import edu.wpi.first.wpilibj.util.Color;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.util.LoggedTunableNumber;
@@ -94,19 +95,35 @@ public class Intake extends SubsystemBase {
     io.setPivotPosition(climbingAngle.get());
   }
 
-  public void in() {
+  public void rollersIn() {
     io.runIntakeRollers(rollersSpeed.get());
   }
 
-  public void out() {
+  public void rollersOut() {
     io.runIntakeRollers(-rollersSpeed.get());
   }
 
-  public void stopRollers() {
+  public void rollersStop() {
     io.runIntakeRollers(0);
   }
 
   public void stopAll() {
     io.stop();
   }
+
+  public Command lowerAndRunIntakeCmd() {
+        return run(() -> {
+            lower();
+            rollersIn();
+            indexerIn();
+        });
+    }
+
+    public Command raiseAndStopIntakeCmd() {
+        return runOnce(() -> {
+            raise();
+            rollersStop();
+            indexerStop();
+        });
+    }
 }
