@@ -8,6 +8,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.util.LoggedTunableNumber;
 import org.littletonrobotics.junction.Logger;
+import org.littletonrobotics.junction.networktables.LoggedDashboardBoolean;
 
 public class Intake extends SubsystemBase {
   private static final LoggedTunableNumber kP =
@@ -26,6 +27,9 @@ public class Intake extends SubsystemBase {
       new LoggedTunableNumber("Intake/Speeds/intakeRollers", 1);
   private static final LoggedTunableNumber indexerSpeed =
       new LoggedTunableNumber("Intake/Speeds/indexer", 1);
+
+  private final LoggedDashboardBoolean intakeWorking =
+      new LoggedDashboardBoolean("Intake Working", true);
 
   private double positionSetpoint = 0;
 
@@ -111,30 +115,47 @@ public class Intake extends SubsystemBase {
     io.stop();
   }
 
-  public Command lowerAndRunIntakeCmd() {
-    return run(
-        () -> {
-          lower();
-          rollersIn();
-          indexerIn();
-        });
+  public Command intakeCmd(boolean lower) {
+    if (intakeWorking.get()) {
+      return runOnce(
+          () -> {
+            indexerIn();
+            if (lower) {
+              lower();
+              rollersIn();
+            } else {
+              raise();
+              rollersStop();
+            }
+          });
+    } else {
+      return runOnce(() -> {});
+    }
   }
 
-  public Command raiseAndStopIntakeCmd() {
-    return runOnce(
-        () -> {
-          raise();
-          rollersStop();
-          indexerStop();
-        });
+  public Command raiseAndStopCmd() {
+    if (intakeWorking.get()) {
+      return runOnce(
+          () -> {
+            raise();
+            rollersStop();
+            indexerStop();
+          });
+    } else {
+      return runOnce(() -> {});
+    }
   }
 
-  public Command intakePoopCmd() {
-    return runOnce(
-        () -> {
-          raise();
-          rollersOut();
-          indexerOut();
-        });
+  public Command poopCmd() {
+    if (intakeWorking.get()) {
+      return runOnce(
+          () -> {
+            raise();
+            rollersOut();
+            indexerOut();
+          });
+    } else {
+      return runOnce(() -> {});
+    }
   }
 }

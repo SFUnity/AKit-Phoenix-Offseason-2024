@@ -173,7 +173,7 @@ public class RobotContainer {
     drive.setDefaultCommand(
         DriveCommands.joystickDrive(
             drive, () -> -driver.getLeftY(), () -> -driver.getLeftX(), () -> -driver.getRightX()));
-    intake.setDefaultCommand(new RunCommand(intake::raise, intake));
+    intake.setDefaultCommand(intake.raiseAndStopCmd());
 
     // Driver controls
     driver.x().onTrue(Commands.runOnce(drive::stopWithX, drive));
@@ -186,6 +186,11 @@ public class RobotContainer {
                             new Pose2d(drive.getPose().getTranslation(), new Rotation2d())),
                     drive)
                 .ignoringDisable(true));
+
+    // Operator controls for intake
+    operator.triangle().onTrue(intake.poopCmd());
+    operator.square().onTrue(intake.intakeCmd(operator.cross().getAsBoolean()));
+    operator.circle().onTrue(intake.intakeCmd(false));
   }
 
   /** Updates the alerts for disconnected controllers. */
