@@ -64,7 +64,7 @@ public class RobotContainer {
 
   // Controller
   private final CommandXboxController driver = new CommandXboxController(0);
-  private final CommandPS5Controller operator = new CommandPS5Controller(0);
+  private final CommandPS5Controller operator = new CommandPS5Controller(1);
   private final Alert driverDisconnected =
       new Alert("Driver controller disconnected (port 0).", AlertType.WARNING);
   private final Alert operatorDisconnected =
