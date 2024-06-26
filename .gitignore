@@ -169,7 +169,8 @@ out/
 .fleet
 
 # Simulation GUI and other tools window save file
-simgui*.json
+simgui.json
+simgui-window.json
 
 # Version file
 src/main/java/frc/robot/BuildConstants.java
