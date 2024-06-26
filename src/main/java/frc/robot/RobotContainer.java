@@ -169,14 +169,16 @@ public class RobotContainer {
    * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
    */
   private void configureButtonBindings() {
+    // Default cmds
     drive.setDefaultCommand(
         DriveCommands.joystickDrive(
             drive, () -> -driver.getLeftY(), () -> -driver.getLeftX(), () -> -driver.getRightX()));
     intake.setDefaultCommand(new RunCommand(intake::raise, intake));
 
+    // Driver controls
     driver.x().onTrue(Commands.runOnce(drive::stopWithX, drive));
     driver
-        .b()
+        .a()
         .onTrue(
             Commands.runOnce(
                     () ->
@@ -184,11 +186,6 @@ public class RobotContainer {
                             new Pose2d(drive.getPose().getTranslation(), new Rotation2d())),
                     drive)
                 .ignoringDisable(true));
-    driver
-        .a()
-        .whileTrue(
-            Commands.startEnd(
-                () -> flywheel.runVelocity(flywheelSpeedInput.get()), flywheel::stop, flywheel));
   }
 
   /** Updates the alerts for disconnected controllers. */
