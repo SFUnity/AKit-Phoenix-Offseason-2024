@@ -91,11 +91,6 @@ public class Intake extends SubsystemBase {
     io.setPivotPosition(positionSetpoint);
   }
 
-  public void stay() {
-    positionSetpoint = inputs.pivotPositionRots;
-    io.setPivotPosition(positionSetpoint);
-  }
-
   public void climb() {
     io.setPivotPosition(climbingAngle.get());
   }
@@ -116,15 +111,6 @@ public class Intake extends SubsystemBase {
     io.stop();
   }
 
-  public Command defaultCommand() {
-    return run(
-        () -> {
-          stay();
-          rollersStop();
-          indexerStop();
-        });
-  }
-
   public Command lowerAndRunIntakeCmd() {
     return run(
         () -> {
@@ -140,6 +126,15 @@ public class Intake extends SubsystemBase {
           raise();
           rollersStop();
           indexerStop();
+        });
+  }
+
+  public Command intakePoopCmd() {
+    return runOnce(
+        () -> {
+          raise();
+          rollersOut();
+          indexerOut();
         });
   }
 }
