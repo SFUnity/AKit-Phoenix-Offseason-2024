@@ -35,6 +35,7 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
+import frc.robot.util.Alert;
 import frc.robot.util.LocalADStarAK;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
@@ -63,6 +64,10 @@ public class Drive extends SubsystemBase {
       };
   private SwerveDrivePoseEstimator poseEstimator =
       new SwerveDrivePoseEstimator(kinematics, rawGyroRotation, lastModulePositions, new Pose2d());
+
+  // Alerts
+  private final Alert gyroDisconnected =
+  new Alert("Gyro disconnected!", Alert.AlertType.WARNING);
 
   public Drive(
       GyroIO gyroIO,
@@ -123,6 +128,9 @@ public class Drive extends SubsystemBase {
     for (var module : modules) {
       module.periodic();
     }
+
+    // Set alerts
+    gyroDisconnected.set(!gyroInputs.connected);
 
     // Stop moving when disabled
     if (DriverStation.isDisabled()) {
