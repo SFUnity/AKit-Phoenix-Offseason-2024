@@ -1,13 +1,14 @@
 package frc.robot.util.loggedShuffleboardClasses;
 
 import edu.wpi.first.networktables.GenericEntry;
+import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import org.littletonrobotics.junction.LogTable;
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.inputs.LoggableInputs;
 import org.littletonrobotics.junction.networktables.LoggedDashboardInput;
 
-public class LoggedShuffleboardBoolean implements LoggedDashboardInput {
+public class LoggedShuffleboardButton implements LoggedDashboardInput {
   private final String key;
   private boolean defaultValue;
   private boolean value;
@@ -30,7 +31,7 @@ public class LoggedShuffleboardBoolean implements LoggedDashboardInput {
    * @param key The key for the boolean, published to "/SmartDashboard/{key}" for NT or
    *     "/DashboardInputs/{key}" when logged.
    */
-  public LoggedShuffleboardBoolean(String key, String tab) {
+  public LoggedShuffleboardButton(String key, String tab) {
     this(key, tab, false);
   }
 
@@ -42,14 +43,19 @@ public class LoggedShuffleboardBoolean implements LoggedDashboardInput {
    * @param tab // TODO edit these docs
    * @param defaultValue The default value if no value in NT is found.
    */
-  public LoggedShuffleboardBoolean(String key, String tab, boolean defaultValue) {
+  public LoggedShuffleboardButton(String key, String tab, boolean defaultValue) {
     this.key = key;
     this.defaultValue = defaultValue;
     this.value = defaultValue;
-    this.entry = Shuffleboard.getTab(tab).add(key, defaultValue).getEntry();
+    this.entry =
+        Shuffleboard.getTab(tab)
+            .add(key, defaultValue)
+            .withWidget(BuiltInWidgets.kToggleButton)
+            .getEntry();
     periodic();
     Logger.registerDashboardInput(this);
   }
+  // TODO figure out how to have setPosition
 
   /** Updates the default value, which is used if no value in NT is found. */
   public void setDefault(boolean defaultValue) {
