@@ -156,7 +156,7 @@ public class RobotContainer {
       new Alert("Tuning mode enabled", AlertType.INFO).set(true);
     }
 
-    SmartDashboard.putData(intake.intakeCmd(true));
+    SmartDashboard.putData(intake.intakeCmd(true).withTimeout(5).withName("Lower and Run Intake"));
   }
 
   /** Use this method to define your button->command mappings. */
@@ -180,9 +180,9 @@ public class RobotContainer {
                 .ignoringDisable(true));
 
     // Operator controls for intake
-    operator.triangle().onTrue(intake.poopCmd());
-    operator.square().onTrue(intake.intakeCmd(operator.cross().getAsBoolean()));
-    operator.circle().onTrue(intake.intakeCmd(false));
+    operator.triangle().whileTrue(intake.poopCmd());
+    operator.square().whileTrue(intake.intakeCmd(operator.cross()));
+    operator.circle().whileTrue(intake.intakeCmd(false));
   }
 
   /** Updates the alerts for disconnected controllers. */

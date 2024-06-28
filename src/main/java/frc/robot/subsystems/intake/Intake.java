@@ -119,7 +119,19 @@ public class Intake extends SubsystemBase {
     io.stop();
   }
 
+  public Command raiseAndStopCmd() {
+    return run(() -> {
+          raise();
+          rollersStop();
+          indexerStop();
+        })
+        .withName("raise and stop");
+  }
+
   public Command intakeCmd(boolean lower) { // TODO figure out how to combine these
+    if (!intakeWorking.get()) {
+      return raiseAndStopCmd();
+    }
     return run(() -> {
           indexerIn();
           if (lower) {
@@ -130,11 +142,13 @@ public class Intake extends SubsystemBase {
             rollersStop();
           }
         })
-        .unless(intakeWorking::get)
         .withName("intake");
   }
 
   public Command intakeCmd(Trigger lowerTrig) {
+    if (!intakeWorking.get()) {
+      return raiseAndStopCmd();
+    }
     return run(() -> {
           boolean lower = lowerTrig.getAsBoolean();
           indexerIn();
@@ -146,26 +160,18 @@ public class Intake extends SubsystemBase {
             rollersStop();
           }
         })
-        .unless(intakeWorking::get)
-        .withName("intake");
-  }
-
-  public Command raiseAndStopCmd() {
-    return run(() -> {
-          raise();
-          rollersStop();
-          indexerStop();
-        })
-        .withName("raise and stop");
+        .withName("intake " + (lowerTrig.getAsBoolean() ? "full" : "indexer only"));
   }
 
   public Command poopCmd() {
+    if (!intakeWorking.get()) {
+      return raiseAndStopCmd();
+    }
     return run(() -> {
           raise();
           rollersOut();
           indexerOut();
         })
-        .unless(intakeWorking::get)
         .withName("poop");
   }
 }
