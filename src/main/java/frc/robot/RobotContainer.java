@@ -158,7 +158,7 @@ public class RobotContainer {
       new Alert("Tuning mode enabled", AlertType.INFO).set(true);
     }
 
-    SmartDashboard.putData(intake.intakeCmd(true).withName("Lower and Run Intake"));
+    SmartDashboard.putData(intake.intakeCmd(true));
   }
 
   /**

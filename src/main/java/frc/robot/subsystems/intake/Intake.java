@@ -121,16 +121,17 @@ public class Intake extends SubsystemBase {
   public Command intakeCmd(boolean lower) {
     if (intakeWorking.get()) {
       return runOnce(
-          () -> {
-            indexerIn();
-            if (lower) {
-              lower();
-              rollersIn();
-            } else {
-              raise();
-              rollersStop();
-            }
-          });
+              () -> {
+                indexerIn();
+                if (lower) {
+                  lower();
+                  rollersIn();
+                } else {
+                  raise();
+                  rollersStop();
+                }
+              })
+          .withName((lower ? "lower and run" : "indexer only") + " - inCmd");
     } else {
       return runOnce(() -> {});
     }
@@ -139,11 +140,12 @@ public class Intake extends SubsystemBase {
   public Command raiseAndStopCmd() {
     if (intakeWorking.get()) {
       return runOnce(
-          () -> {
-            raise();
-            rollersStop();
-            indexerStop();
-          });
+              () -> {
+                raise();
+                rollersStop();
+                indexerStop();
+              })
+          .withName("raiseAndStop");
     } else {
       return runOnce(() -> {});
     }
@@ -152,11 +154,12 @@ public class Intake extends SubsystemBase {
   public Command poopCmd() {
     if (intakeWorking.get()) {
       return runOnce(
-          () -> {
-            raise();
-            rollersOut();
-            indexerOut();
-          });
+              () -> {
+                raise();
+                rollersOut();
+                indexerOut();
+              })
+          .withName("poop");
     } else {
       return runOnce(() -> {});
     }
