@@ -160,7 +160,7 @@ public class Intake extends SubsystemBase {
             rollersStop();
           }
         })
-        .withName("intake " + (lowerTrig.getAsBoolean() ? "full" : "indexer only"));
+        .withName("intake ");
   }
 
   public Command poopCmd() {
