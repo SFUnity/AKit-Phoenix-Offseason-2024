@@ -9,8 +9,8 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants;
 import frc.robot.util.GeneralUtil;
 import frc.robot.util.LoggedTunableNumber;
+import frc.robot.util.loggedShuffleboardClasses.LoggedShuffleboardBoolean;
 import org.littletonrobotics.junction.Logger;
-import org.littletonrobotics.junction.networktables.LoggedDashboardBoolean;
 
 public class Intake extends SubsystemBase {
   private static final LoggedTunableNumber kP =
@@ -30,8 +30,8 @@ public class Intake extends SubsystemBase {
   private static final LoggedTunableNumber indexerSpeed =
       new LoggedTunableNumber("Intake/Speeds/indexer", 1);
 
-  private final LoggedDashboardBoolean intakeWorking =
-      new LoggedDashboardBoolean("Intake Working", true);
+  private final LoggedShuffleboardBoolean intakeWorking =
+      new LoggedShuffleboardBoolean("Intake Working", "Intake", true);
 
   private double positionSetpoint = 0;
 
