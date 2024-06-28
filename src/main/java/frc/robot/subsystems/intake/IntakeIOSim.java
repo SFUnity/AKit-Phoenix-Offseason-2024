@@ -27,6 +27,9 @@ public class IntakeIOSim implements IntakeIO {
   private final PIDController controller;
   private double pivotAppliedVoltage = 0.0;
 
+  private double rollersAppliedVoltage = 0.0;
+  private double indexerAppliedVoltage = 0.0;
+
   private boolean controllerNeedsReset = false;
   private boolean wasNotAuto = true;
 
@@ -54,8 +57,21 @@ public class IntakeIOSim implements IntakeIO {
     inputs.pivotAppliedVolts = pivotAppliedVoltage;
     inputs.pivotCurrentAmps = sim.getCurrentDrawAmps();
 
+    inputs.rollersAppliedVolts = rollersAppliedVoltage;
+    inputs.indexerAppliedVolts = indexerAppliedVoltage;
+
     // Reset input
     sim.setInputVoltage(0.0);
+  }
+
+  @Override
+  public void runIntakeRollers(double percentOutput) {
+    rollersAppliedVoltage = 12 * percentOutput;
+  }
+
+  @Override
+  public void runIndexer(double percentOutput) {
+    indexerAppliedVoltage = 12 * percentOutput;
   }
 
   @Override

@@ -18,11 +18,11 @@ public interface IntakeIO {
 
   default void updateInputs(IntakeIOInputs inputs) {}
 
+  default void runIntakeRollers(double percentOutput) {}
+
   default void runIndexer(double percentOutput) {}
 
   default void setPivotPosition(double setpointRads) {}
-
-  default void runIntakeRollers(double percentOutput) {}
 
   /** Set PID values */
   default void setPID(double p) {}
