@@ -145,7 +145,7 @@ public class Intake extends SubsystemBase {
                 rollersStop();
                 indexerStop();
               })
-          .withName("raiseAndStop");
+          .withName("raise and stop");
     } else {
       return runOnce(() -> {});
     }
