@@ -152,6 +152,9 @@ public class Robot extends LoggedRobot {
       }
     }
 
+    // Robot container periodic methods
+    robotContainer.checkControllers();
+
     // Check CAN status
     var canStatus = RobotController.getCANStatus();
     if (canStatus.transmitErrorCount > 0 || canStatus.receiveErrorCount > 0) {
