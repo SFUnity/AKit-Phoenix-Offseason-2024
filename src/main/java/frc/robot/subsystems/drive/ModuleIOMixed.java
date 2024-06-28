@@ -133,7 +133,7 @@ public class ModuleIOMixed implements ModuleIO {
     inputs.driveMotorConnected =
         BaseStatusSignal.refreshAll(drivePosition, driveVelocity, driveAppliedVolts, driveCurrent)
             .isOK();
-    inputs.turnMotorConnected = BaseStatusSignal.refreshAll(turnAbsolutePosition).isOK();
+    inputs.cancoderConnected = BaseStatusSignal.refreshAll(turnAbsolutePosition).isOK();
 
     inputs.drivePositionRad =
         Units.rotationsToRadians(drivePosition.getValueAsDouble()) / DRIVE_GEAR_RATIO;

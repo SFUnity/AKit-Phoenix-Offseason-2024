@@ -21,6 +21,7 @@ public interface ModuleIO {
   public static class ModuleIOInputs {
     public boolean driveMotorConnected = true;
     public boolean turnMotorConnected = true;
+    public boolean cancoderConnected = true;
 
     public double drivePositionRad = 0.0;
     public double driveVelocityRadPerSec = 0.0;

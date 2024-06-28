@@ -42,6 +42,7 @@ public class Module {
   // Alerts
   private final Alert driveMotorDisconnected;
   private final Alert turnMotorDisconnected;
+  private final Alert cancoderDisconnected;
 
   public Module(ModuleIO io, int index) {
     this.io = io;
@@ -51,6 +52,8 @@ public class Module {
         new Alert(moduleNames[index] + " drive motor disconnected!", Alert.AlertType.WARNING);
     turnMotorDisconnected =
         new Alert(moduleNames[index] + " turn motor disconnected!", Alert.AlertType.WARNING);
+    cancoderDisconnected =
+        new Alert(moduleNames[index] + " cancoder disconnected!", Alert.AlertType.WARNING);
 
     // Switch constants based on mode (the physics simulator is treated as a
     // separate robot with different tuning)
@@ -91,6 +94,7 @@ public class Module {
     // Display alerts
     driveMotorDisconnected.set(!inputs.driveMotorConnected);
     turnMotorDisconnected.set(!inputs.turnMotorConnected);
+    cancoderDisconnected.set(!inputs.cancoderConnected);
 
     // Run closed loop turn control
     if (angleSetpoint != null) {
