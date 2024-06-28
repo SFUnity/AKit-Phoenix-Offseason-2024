@@ -23,6 +23,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandPS5Controller;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.commands.DriveCommands;
 import frc.robot.subsystems.drive.Drive;
@@ -156,7 +157,12 @@ public class RobotContainer {
       new Alert("Tuning mode enabled", AlertType.INFO).set(true);
     }
 
-    SmartDashboard.putData(intake.intakeCmd(true).withTimeout(5).withName("Lower and Run Intake"));
+    SmartDashboard
+        .putData( // ↓↓ this is an annoying workaround, better than the alternatives though IMO
+            intake
+                .intakeCmd(new Trigger(() -> true))
+                .withTimeout(5)
+                .withName("Lower and Run Intake"));
   }
 
   /** Use this method to define your button->command mappings. */
@@ -182,7 +188,7 @@ public class RobotContainer {
     // Operator controls for intake
     operator.triangle().whileTrue(intake.poopCmd());
     operator.square().whileTrue(intake.intakeCmd(operator.cross()));
-    operator.circle().whileTrue(intake.intakeCmd(false));
+    operator.circle().whileTrue(intake.intakeCmd(new Trigger(() -> false)));
   }
 
   /** Updates the alerts for disconnected controllers. */
