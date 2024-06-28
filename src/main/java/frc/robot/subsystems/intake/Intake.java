@@ -5,6 +5,7 @@ import static frc.robot.subsystems.intake.IntakeConstants.*;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants;
 import frc.robot.util.GeneralUtil;
 import frc.robot.util.LoggedTunableNumber;
@@ -118,50 +119,62 @@ public class Intake extends SubsystemBase {
     io.stop();
   }
 
-  public Command intakeCmd(boolean lower) {
+  public Command intakeCmd(boolean lower) { // TODO figure out how to combine these
     if (intakeWorking.get()) {
-      return runOnce(
-              () -> {
-                indexerIn();
-                if (lower) {
-                  lower();
-                  rollersIn();
-                } else {
-                  raise();
-                  rollersStop();
-                }
-              })
-          .withName((lower ? "lower and run" : "indexer only") + " - inCmd");
+      return run(() -> {
+            indexerIn();
+            if (lower) {
+              lower();
+              rollersIn();
+            } else {
+              raise();
+              rollersStop();
+            }
+          })
+          .withName("intake");
     } else {
-      return runOnce(() -> {});
+      return run(() -> {});
+    }
+  }
+
+  public Command intakeCmd(Trigger lowerTrig) {
+    if (intakeWorking.get()) {
+      return run(() -> {
+        boolean lower = lowerTrig.getAsBoolean();
+            indexerIn();
+            if (lower) {
+              lower();
+              rollersIn();
+            } else {
+              raise();
+              rollersStop();
+            }
+          })
+          .withName("intake");
+    } else {
+      return run(() -> {});
     }
   }
 
   public Command raiseAndStopCmd() {
-    if (intakeWorking.get()) {
-      return runOnce(
-              () -> {
-                raise();
-                rollersStop();
-                indexerStop();
-              })
+      return run(() -> {
+            raise();
+            rollersStop();
+            indexerStop();
+          })
           .withName("raise and stop");
-    } else {
-      return runOnce(() -> {});
-    }
   }
 
   public Command poopCmd() {
     if (intakeWorking.get()) {
-      return runOnce(
-              () -> {
-                raise();
-                rollersOut();
-                indexerOut();
-              })
+      return run(() -> {
+            raise();
+            rollersOut();
+            indexerOut();
+          })
           .withName("poop");
     } else {
-      return runOnce(() -> {});
+      return run(() -> {});
     }
   }
 }
