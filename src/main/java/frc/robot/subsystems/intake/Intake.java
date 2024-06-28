@@ -120,61 +120,52 @@ public class Intake extends SubsystemBase {
   }
 
   public Command intakeCmd(boolean lower) { // TODO figure out how to combine these
-    if (intakeWorking.get()) {
-      return run(() -> {
-            indexerIn();
-            if (lower) {
-              lower();
-              rollersIn();
-            } else {
-              raise();
-              rollersStop();
-            }
-          })
-          .withName("intake");
-    } else {
-      return run(() -> {});
-    }
+    return run(() -> {
+          indexerIn();
+          if (lower) {
+            lower();
+            rollersIn();
+          } else {
+            raise();
+            rollersStop();
+          }
+        })
+        .unless(intakeWorking::get)
+        .withName("intake");
   }
 
   public Command intakeCmd(Trigger lowerTrig) {
-    if (intakeWorking.get()) {
-      return run(() -> {
-        boolean lower = lowerTrig.getAsBoolean();
-            indexerIn();
-            if (lower) {
-              lower();
-              rollersIn();
-            } else {
-              raise();
-              rollersStop();
-            }
-          })
-          .withName("intake");
-    } else {
-      return run(() -> {});
-    }
+    return run(() -> {
+          boolean lower = lowerTrig.getAsBoolean();
+          indexerIn();
+          if (lower) {
+            lower();
+            rollersIn();
+          } else {
+            raise();
+            rollersStop();
+          }
+        })
+        .unless(intakeWorking::get)
+        .withName("intake");
   }
 
   public Command raiseAndStopCmd() {
-      return run(() -> {
-            raise();
-            rollersStop();
-            indexerStop();
-          })
-          .withName("raise and stop");
+    return run(() -> {
+          raise();
+          rollersStop();
+          indexerStop();
+        })
+        .withName("raise and stop");
   }
 
   public Command poopCmd() {
-    if (intakeWorking.get()) {
-      return run(() -> {
-            raise();
-            rollersOut();
-            indexerOut();
-          })
-          .withName("poop");
-    } else {
-      return run(() -> {});
-    }
+    return run(() -> {
+          raise();
+          rollersOut();
+          indexerOut();
+        })
+        .unless(intakeWorking::get)
+        .withName("poop");
   }
 }
