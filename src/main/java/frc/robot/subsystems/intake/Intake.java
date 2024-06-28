@@ -6,6 +6,7 @@ import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import frc.robot.util.GeneralUtil;
 import frc.robot.util.LoggedTunableNumber;
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.LoggedDashboardBoolean;
@@ -71,6 +72,8 @@ public class Intake extends SubsystemBase {
     measuredVisualizer.update(inputs.pivotPositionRots);
     setpointVisualizer.update(positionSetpoint);
     Logger.recordOutput("Intake/positionSetpointRotations", positionSetpoint);
+    GeneralUtil.logSubsystem(
+        this, "Intake"); // TODO figure out how to not have to put GeneralUtil at the start
   }
 
   public void indexerIn() {
