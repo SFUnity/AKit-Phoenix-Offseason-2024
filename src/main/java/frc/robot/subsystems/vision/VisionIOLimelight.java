@@ -8,13 +8,14 @@ import frc.robot.util.Alert;
 
 public class VisionIOLimelight implements VisionIO {
   private static NetworkTable table;
-  private static NetworkTableEntry tx, ty, tv, ta, tid, priorityid, pipeline;
+  private static NetworkTableEntry tx, ty, tv, ta, tid, priorityid, pipeline, hb;
   private static NetworkTableEntry camMode;
   private static NetworkTableEntry ledMode;
 
   private static final double disconnectedTimeout = 0.5;
   private final Alert disconnectedAlert;
   private final Timer disconnectedTimer = new Timer();
+  private double lastHB = 0;
 
   public VisionIOLimelight(String name) {
     table = NetworkTableInstance.getDefault().getTable(name);
@@ -29,6 +30,7 @@ public class VisionIOLimelight implements VisionIO {
     pipeline = table.getEntry("pipeline"); // Pipeline (0-9).
     ledMode = table.getEntry("ledMode"); // limelight's LED state (0-3).
     camMode = table.getEntry("camMode"); // limelight's operation mode (0-1).
+    hb = table.getEntry("hb"); // heartbeat value. Increases once per frame, resets at 2 billion
 
     disconnectedAlert = new Alert("No data from: " + name, Alert.AlertType.ERROR);
     disconnectedTimer.start();
@@ -48,7 +50,11 @@ public class VisionIOLimelight implements VisionIO {
     inputs.camMode = camMode.getDouble(0);
 
     // Update disconnected alert
-    // TODO check how to see the if limelight is disconnected
+    double currentHB = hb.getDouble(0);
+    if (currentHB != lastHB) {
+      lastHB = currentHB;
+      disconnectedTimer.reset();
+    }
     disconnectedAlert.set(disconnectedTimer.hasElapsed(disconnectedTimeout));
   }
 
