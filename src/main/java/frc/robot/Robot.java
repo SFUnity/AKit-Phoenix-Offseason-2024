@@ -99,6 +99,7 @@ public class Robot extends LoggedRobot {
       case SIM:
         // Running a physics simulator, log to NT
         Logger.addDataReceiver(new NT4Publisher());
+        // Logger.addDataReceiver(new WPILOGWriter()); for sim logging
         break;
 
       case REPLAY:
@@ -150,6 +151,9 @@ public class Robot extends LoggedRobot {
         Leds.getInstance().autoFinishedTime = Timer.getFPGATimestamp();
       }
     }
+
+    // Robot container periodic methods
+    robotContainer.checkControllers();
 
     // Check CAN status
     var canStatus = RobotController.getCANStatus();

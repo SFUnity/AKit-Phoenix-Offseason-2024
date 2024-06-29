@@ -3,9 +3,14 @@ package frc.robot.subsystems.intake;
 import static frc.robot.subsystems.intake.IntakeConstants.*;
 
 import edu.wpi.first.wpilibj.util.Color;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants;
+import frc.robot.util.GeneralUtil;
 import frc.robot.util.LoggedTunableNumber;
+import frc.robot.util.loggedShuffleboardClasses.LoggedShuffleboardButton;
 import org.littletonrobotics.junction.Logger;
 
 public class Intake extends SubsystemBase {
@@ -25,6 +30,9 @@ public class Intake extends SubsystemBase {
       new LoggedTunableNumber("Intake/Speeds/intakeRollers", 1);
   private static final LoggedTunableNumber indexerSpeed =
       new LoggedTunableNumber("Intake/Speeds/indexer", 1);
+
+  private final LoggedShuffleboardButton intakeWorking =
+      new LoggedShuffleboardButton("Intake Working", "Intake", true);
 
   private double positionSetpoint = 0;
 
@@ -66,6 +74,8 @@ public class Intake extends SubsystemBase {
     measuredVisualizer.update(inputs.pivotPositionRots);
     setpointVisualizer.update(positionSetpoint);
     Logger.recordOutput("Intake/positionSetpointRotations", positionSetpoint);
+    GeneralUtil.logSubsystem(
+        this, "Intake"); // TODO figure out how to not have to put GeneralUtil at the start
   }
 
   public void indexerIn() {
@@ -94,19 +104,58 @@ public class Intake extends SubsystemBase {
     io.setPivotPosition(climbingAngle.get());
   }
 
-  public void in() {
+  public void rollersIn() {
     io.runIntakeRollers(rollersSpeed.get());
   }
 
-  public void out() {
+  public void rollersOut() {
     io.runIntakeRollers(-rollersSpeed.get());
   }
 
-  public void stopRollers() {
+  public void rollersStop() {
     io.runIntakeRollers(0);
   }
 
   public void stopAll() {
     io.stop();
+  }
+
+  public Command raiseAndStopCmd() {
+    return run(() -> {
+          raise();
+          rollersStop();
+          indexerStop();
+        })
+        .withName("raise and stop");
+  }
+
+  public Command intakeCmd(Trigger lowerTrig) {
+    return Commands.either(
+        run(() -> {
+              boolean lower = lowerTrig.getAsBoolean();
+              indexerIn();
+              if (lower) {
+                lower();
+                rollersIn();
+              } else {
+                raise();
+                rollersStop();
+              }
+            })
+            .withName("intake"),
+        raiseAndStopCmd(),
+        intakeWorking::get);
+  }
+
+  public Command poopCmd() {
+    return Commands.either(
+        run(() -> {
+              raise();
+              rollersOut();
+              indexerOut();
+            })
+            .withName("poop"),
+        raiseAndStopCmd(),
+        intakeWorking::get);
   }
 }

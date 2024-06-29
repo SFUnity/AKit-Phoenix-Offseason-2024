@@ -18,14 +18,12 @@ import com.pathplanner.lib.auto.NamedCommands;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.GenericHID;
-import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandPS5Controller;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.commands.DriveCommands;
 import frc.robot.subsystems.drive.Drive;
@@ -64,7 +62,7 @@ public class RobotContainer {
 
   // Controller
   private final CommandXboxController driver = new CommandXboxController(0);
-  private final CommandPS5Controller operator = new CommandPS5Controller(0);
+  private final CommandPS5Controller operator = new CommandPS5Controller(1);
   private final Alert driverDisconnected =
       new Alert("Driver controller disconnected (port 0).", AlertType.WARNING);
   private final Alert operatorDisconnected =
@@ -159,24 +157,25 @@ public class RobotContainer {
       new Alert("Tuning mode enabled", AlertType.INFO).set(true);
     }
 
-    SmartDashboard.putData(new RunCommand(intake::lower, intake).withName("Lower Intake"));
+    SmartDashboard.putData(
+        intake //        this ↓↓ is an annoying workaround, but better than the alternatives IMO
+            .intakeCmd(new Trigger(() -> true))
+            .withTimeout(5)
+            .withName("Lower and Run Intake"));
   }
 
-  /**
-   * Use this method to define your button->command mappings. Buttons can be created by
-   * instantiating a {@link GenericHID} or one of its subclasses ({@link
-   * edu.wpi.first.wpilibj.Joystick} or {@link XboxController}), and then passing it to a {@link
-   * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
-   */
+  /** Use this method to define your button->command mappings. */
   private void configureButtonBindings() {
+    // Default cmds
     drive.setDefaultCommand(
         DriveCommands.joystickDrive(
             drive, () -> -driver.getLeftY(), () -> -driver.getLeftX(), () -> -driver.getRightX()));
-    intake.setDefaultCommand(new RunCommand(intake::raise, intake));
+    intake.setDefaultCommand(intake.raiseAndStopCmd());
 
+    // Driver controls
     driver.x().onTrue(Commands.runOnce(drive::stopWithX, drive));
     driver
-        .b()
+        .a()
         .onTrue(
             Commands.runOnce(
                     () ->
@@ -184,11 +183,11 @@ public class RobotContainer {
                             new Pose2d(drive.getPose().getTranslation(), new Rotation2d())),
                     drive)
                 .ignoringDisable(true));
-    driver
-        .a()
-        .whileTrue(
-            Commands.startEnd(
-                () -> flywheel.runVelocity(flywheelSpeedInput.get()), flywheel::stop, flywheel));
+
+    // Operator controls for intake
+    operator.triangle().whileTrue(intake.poopCmd());
+    operator.square().whileTrue(intake.intakeCmd(operator.cross()));
+    operator.circle().whileTrue(intake.intakeCmd(new Trigger(() -> false)));
   }
 
   /** Updates the alerts for disconnected controllers. */
