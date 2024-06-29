@@ -66,8 +66,7 @@ public class Drive extends SubsystemBase {
       new SwerveDrivePoseEstimator(kinematics, rawGyroRotation, lastModulePositions, new Pose2d());
 
   // Alerts
-  private final Alert gyroDisconnected =
-  new Alert("Gyro disconnected!", Alert.AlertType.WARNING);
+  private final Alert gyroDisconnected = new Alert("Gyro disconnected!", Alert.AlertType.WARNING);
 
   public Drive(
       GyroIO gyroIO,
