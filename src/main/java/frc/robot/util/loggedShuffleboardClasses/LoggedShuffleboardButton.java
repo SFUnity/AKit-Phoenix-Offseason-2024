@@ -62,14 +62,6 @@ public class LoggedShuffleboardButton implements LoggedDashboardInput {
     this.defaultValue = defaultValue;
   }
 
-  /**
-   * Publishes a new value. Note that the value will not be returned by {@link #get()} until the
-   * next cycle.
-   */
-  public void set(boolean value) {
-    entry.setBoolean(value);
-  }
-
   /** Returns the current value. */
   public boolean get() {
     return value;
