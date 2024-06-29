@@ -157,12 +157,11 @@ public class RobotContainer {
       new Alert("Tuning mode enabled", AlertType.INFO).set(true);
     }
 
-    SmartDashboard
-        .putData(
-            intake            // ↓↓ this is an annoying workaround, better than the alternatives though IMO
-                .intakeCmd(new Trigger(() -> true))
-                .withTimeout(5)
-                .withName("Lower and Run Intake"));
+    SmartDashboard.putData(
+        intake //            ↓↓ this is an annoying workaround, but better than the alternatives IMO
+            .intakeCmd(new Trigger(() -> true))
+            .withTimeout(5)
+            .withName("Lower and Run Intake"));
   }
 
   /** Use this method to define your button->command mappings. */
