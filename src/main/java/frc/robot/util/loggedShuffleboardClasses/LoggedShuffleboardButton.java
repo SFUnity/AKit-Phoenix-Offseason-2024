@@ -40,7 +40,7 @@ public class LoggedShuffleboardButton implements LoggedDashboardInput {
    *
    * @param key The key for the boolean, published to "/SmartDashboard/{key}" for NT or
    *     "/DashboardInputs/{key}" when logged.
-   * @param tab // TODO edit these docs
+   * @param tab name of the Shuffleboard tab you want the button to appear in
    * @param defaultValue The default value if no value in NT is found.
    */
   public LoggedShuffleboardButton(String key, String tab, boolean defaultValue) {
