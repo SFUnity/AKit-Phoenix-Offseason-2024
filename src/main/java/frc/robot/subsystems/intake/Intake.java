@@ -4,6 +4,7 @@ import static frc.robot.subsystems.intake.IntakeConstants.*;
 
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants;
@@ -129,32 +130,32 @@ public class Intake extends SubsystemBase {
   }
 
   public Command intakeCmd(Trigger lowerTrig) {
-    if (!intakeWorking.get()) {
-      return raiseAndStopCmd();
-    }
-    return run(() -> {
-          boolean lower = lowerTrig.getAsBoolean();
-          indexerIn();
-          if (lower) {
-            lower();
-            rollersIn();
-          } else {
-            raise();
-            rollersStop();
-          }
-        })
-        .withName("intake");
+    return Commands.either(
+        run(() -> {
+              boolean lower = lowerTrig.getAsBoolean();
+              indexerIn();
+              if (lower) {
+                lower();
+                rollersIn();
+              } else {
+                raise();
+                rollersStop();
+              }
+            })
+            .withName("intake"),
+        raiseAndStopCmd(),
+        intakeWorking::get);
   }
 
   public Command poopCmd() {
-    if (!intakeWorking.get()) {
-      return raiseAndStopCmd();
-    }
-    return run(() -> {
-          raise();
-          rollersOut();
-          indexerOut();
-        })
-        .withName("poop");
+    return Commands.either(
+        run(() -> {
+              raise();
+              rollersOut();
+              indexerOut();
+            })
+            .withName("poop"),
+        raiseAndStopCmd(),
+        intakeWorking::get);
   }
 }
