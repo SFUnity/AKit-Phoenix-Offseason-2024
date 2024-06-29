@@ -158,8 +158,8 @@ public class RobotContainer {
     }
 
     SmartDashboard
-        .putData( // ↓↓ this is an annoying workaround, better than the alternatives though IMO
-            intake
+        .putData(
+            intake            // ↓↓ this is an annoying workaround, better than the alternatives though IMO
                 .intakeCmd(new Trigger(() -> true))
                 .withTimeout(5)
                 .withName("Lower and Run Intake"));
