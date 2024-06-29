@@ -36,7 +36,7 @@ public class VisionIOLimelight implements VisionIO {
 
   @Override
   public void updateInputs(VisionIOInputs inputs) {
-    inputs.targetXOffset = tx.getDouble(0) + 3;
+    inputs.targetXOffset = tx.getDouble(0) + 3; // 3 is a target offset we tuned
     inputs.targetYOffset = ty.getDouble(0);
     inputs.targetDetected = tv.getNumber(0).intValue() == 1;
     inputs.targetArea = ta.getDouble(0);
