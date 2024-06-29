@@ -67,7 +67,8 @@ public class LoggedShuffleboardButton implements LoggedDashboardInput {
    * @param width The width of the button
    * @param height The height of the button
    */
-  public LoggedShuffleboardButton(String key, String tab, boolean defaultValue, int width, int height) {
+  public LoggedShuffleboardButton(
+      String key, String tab, boolean defaultValue, int width, int height) {
     this.key = key;
     this.defaultValue = defaultValue;
     this.value = defaultValue;
@@ -91,7 +92,8 @@ public class LoggedShuffleboardButton implements LoggedDashboardInput {
    * @param width The width of the button
    * @param height The height of the button
    */
-  public LoggedShuffleboardButton(String key, String tab, boolean defaultValue, int width, int height, int column, int row) {
+  public LoggedShuffleboardButton(
+      String key, String tab, boolean defaultValue, int width, int height, int column, int row) {
     this.key = key;
     this.defaultValue = defaultValue;
     this.value = defaultValue;
