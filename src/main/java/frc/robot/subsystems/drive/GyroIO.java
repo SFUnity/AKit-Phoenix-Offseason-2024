@@ -19,7 +19,7 @@ import org.littletonrobotics.junction.AutoLog;
 public interface GyroIO {
   @AutoLog
   public static class GyroIOInputs {
-    public boolean connected = false;
+    public boolean connected = false; // started as false bc https://www.chiefdelphi.com/t/frc-6328-mechanical-advantage-2024-build-thread/442736
     public Rotation2d yawPosition = new Rotation2d();
     public double yawVelocityRadPerSec = 0.0;
   }
