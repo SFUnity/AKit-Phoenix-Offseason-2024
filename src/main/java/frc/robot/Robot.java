@@ -164,7 +164,7 @@ public class Robot extends LoggedRobot {
     }
     canErrorAlert.set(
         !canErrorTimer.hasElapsed(canErrorTimeThreshold)
-            && !canInitialErrorTimer.hasElapsed(canErrorTimeThreshold));
+            && canInitialErrorTimer.hasElapsed(canErrorTimeThreshold));
 
     // Low battery alert
     if (DriverStation.isEnabled()) {
