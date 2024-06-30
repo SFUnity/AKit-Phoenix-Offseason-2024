@@ -24,18 +24,19 @@ public class VisionIOLimelight implements VisionIO {
 
   @Override
   public void updateInputs(VisionIOInputs inputs) {
-    inputs.targetXOffset = LimelightHelpers.getTX(name) + 3; // Horizontal offset from crosshair to target (-29.8 to 29.8 degrees). 3 is a target offset we tuned
-    inputs.targetYOffset = LimelightHelpers.getTY(name); // Vertical offset from crosshair to target (-24.85 to 24.85 degrees)
-    inputs.targetDetected = LimelightHelpers.getTV(name); // Whether the limelight has any valid targets (0 or 1).
-    inputs.targetArea = LimelightHelpers.getTA(name); // Target area (0% of image to 100% of image).
-    inputs.targetID = LimelightHelpers.getFiducialID(name); // current id of the april tag. Fiducial == AprilTag
+    inputs.targetXOffset = LimelightHelpers.getTX(name) + 3; // 3 is a target offset we tuned
+    inputs.targetYOffset = LimelightHelpers.getTY(name);
+    inputs.targetDetected = LimelightHelpers.getTV(name);
+    inputs.targetArea = LimelightHelpers.getTA(name);
+    inputs.targetID = LimelightHelpers.getFiducialID(name); // Fiducial == AprilTag
 
     inputs.pipeline = LimelightHelpers.getCurrentPipelineIndex(name);
-    inputs.ledMode = LimelightHelpers.getLimelightNTDouble(name, "ledMode"); // 0 = pipeline control, 1 = force off, 2 = force blink, 3 = force on
-    inputs.camMode = LimelightHelpers.getLimelightNTDouble(name, "camMode"); // 0 = processor, 1 = driver
+    inputs.ledMode = LimelightHelpers.getLimelightNTDouble(name, "ledMode");
+    inputs.camMode = LimelightHelpers.getLimelightNTDouble(name, "camMode");
+    inputs.hb = LimelightHelpers.getLimelightNTDouble(name, "hb");
 
     // Update disconnected alert
-    double currentHB = LimelightHelpers.getLimelightNTDouble(name, "hb"); // heartbeat value. Increases once per frame, resets at 2 billion
+    double currentHB = inputs.hb;
     if (currentHB != lastHB) {
       lastHB = currentHB;
       disconnectedTimer.reset();
