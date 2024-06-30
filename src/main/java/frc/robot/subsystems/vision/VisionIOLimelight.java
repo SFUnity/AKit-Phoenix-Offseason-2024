@@ -30,7 +30,6 @@ public class VisionIOLimelight implements VisionIO {
     inputs.targetArea = LimelightHelpers.getTA(name); // Target area (0% of image to 100% of image).
     inputs.targetID = LimelightHelpers.getFiducialID(name); // current id of the april tag. Fiducial == AprilTag
 
-    inputs.priorityID = LimelightHelpers.getLimelightNTDouble(name, "priorityid"); // Preffered id of the april tag
     inputs.pipeline = LimelightHelpers.getCurrentPipelineIndex(name);
     inputs.ledMode = LimelightHelpers.getLimelightNTDouble(name, "ledMode"); // 0 = pipeline control, 1 = force off, 2 = force blink, 3 = force on
     inputs.camMode = LimelightHelpers.getLimelightNTDouble(name, "camMode"); // 0 = processor, 1 = driver
