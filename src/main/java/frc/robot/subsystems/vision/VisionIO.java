@@ -5,7 +5,10 @@ import org.littletonrobotics.junction.AutoLog;
 public interface VisionIO {
   @AutoLog
   public static class VisionIOInputs {
-    /** Horizontal offset from crosshair to target (-29.8 to 29.8 degrees). 3 is a target offset we tuned */
+    /**
+     * Horizontal offset from crosshair to target (-29.8 to 29.8 degrees). 3 is a target offset we
+     * tuned
+     */
     public double targetXOffset = 0;
     /** Vertical offset from crosshair to target (-24.85 to 24.85 degrees) */
     public double targetYOffset = 0;

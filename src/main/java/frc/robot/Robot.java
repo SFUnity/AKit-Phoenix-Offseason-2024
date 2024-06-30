@@ -58,6 +58,8 @@ public class Robot extends LoggedRobot {
       new Alert(
           "Battery voltage is very low, consider turning off the robot or replacing the battery.",
           AlertType.WARNING);
+  private final Alert gcAlert =
+      new Alert("Please wait to enable, collecting garbage. 🗑️", AlertType.WARNING);
 
   /**
    * This function is run when the robot is first started up and should be used for any
@@ -163,8 +165,6 @@ public class Robot extends LoggedRobot {
     canErrorAlert.set(
         !canErrorTimer.hasElapsed(canErrorTimeThreshold)
             && !canInitialErrorTimer.hasElapsed(canErrorTimeThreshold));
-    // ! this doesn't make sense, won't it pretty much always return false bc after .5 seconds it
-    // will always be not true
 
     // Low battery alert
     if (DriverStation.isEnabled()) {
@@ -175,6 +175,9 @@ public class Robot extends LoggedRobot {
       lowBatteryAlert.set(true);
       Leds.getInstance().lowBatteryAlert = true;
     }
+
+    // GC alert
+    gcAlert.set(Timer.getFPGATimestamp() < 45.0);
   }
 
   /** This function is called once when the robot is disabled. */
