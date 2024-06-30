@@ -1,36 +1,22 @@
 package frc.robot.subsystems.vision;
 
-import edu.wpi.first.networktables.NetworkTable;
-import edu.wpi.first.networktables.NetworkTableEntry;
-import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.Timer;
 import frc.robot.util.Alert;
+import frc.robot.util.LimelightHelpers;
 
 public class VisionIOLimelight implements VisionIO {
-  private static NetworkTable table;
-  private static NetworkTableEntry tx, ty, tv, ta, tid, priorityid, pipeline, hb;
-  private static NetworkTableEntry camMode;
-  private static NetworkTableEntry ledMode;
+  private String name;
 
   private static final double disconnectedTimeout = 0.5;
   private final Alert disconnectedAlert;
   private final Timer disconnectedTimer = new Timer();
   private double lastHB = 0;
 
-  public VisionIOLimelight(String name) {
-    table = NetworkTableInstance.getDefault().getTable(name);
+  public VisionIOLimelight(String camName) {
+    name = camName;
 
-    tx = table.getEntry("tx"); // Horizontal offset from crosshair to target (-29.8 to 29.8 degrees)
-    ty = table.getEntry("ty"); // Vertical offset from crosshair to target (-24.85 to 24.85 degrees)
-    tv = table.getEntry("tv"); // Whether the limelight has any valid targets (0 or 1).
-    ta = table.getEntry("ta"); // Target area (0% of image to 100% of image).
-    tid = table.getEntry("tid"); // current id of the april tag
-
-    priorityid = table.getEntry("priorityid"); // Preffered id of the april tag
-    pipeline = table.getEntry("pipeline"); // Pipeline (0-9).
-    ledMode = table.getEntry("ledMode"); // limelight's LED state (0-3).
-    camMode = table.getEntry("camMode"); // limelight's operation mode (0-1).
-    hb = table.getEntry("hb"); // heartbeat value. Increases once per frame, resets at 2 billion
+    LimelightHelpers.setLEDMode_PipelineControl(name);
+    LimelightHelpers.setCameraMode_Processor(name);
 
     disconnectedAlert = new Alert("No data from: " + name, Alert.AlertType.ERROR);
     disconnectedTimer.start();
@@ -38,19 +24,19 @@ public class VisionIOLimelight implements VisionIO {
 
   @Override
   public void updateInputs(VisionIOInputs inputs) {
-    inputs.targetXOffset = tx.getDouble(0) + 3; // 3 is a target offset we tuned
-    inputs.targetYOffset = ty.getDouble(0);
-    inputs.targetDetected = tv.getNumber(0).intValue() == 1;
-    inputs.targetArea = ta.getDouble(0);
-    inputs.targetID = tid.getDouble(0);
+    inputs.targetXOffset = LimelightHelpers.getTX(name) + 3; // Horizontal offset from crosshair to target (-29.8 to 29.8 degrees). 3 is a target offset we tuned
+    inputs.targetYOffset = LimelightHelpers.getTY(name); // Vertical offset from crosshair to target (-24.85 to 24.85 degrees)
+    inputs.targetDetected = LimelightHelpers.getTV(name); // Whether the limelight has any valid targets (0 or 1).
+    inputs.targetArea = LimelightHelpers.getTA(name); // Target area (0% of image to 100% of image).
+    inputs.targetID = LimelightHelpers.getFiducialID(name); // current id of the april tag. Fiducial == AprilTag
 
-    inputs.priorityID = priorityid.getDouble(0);
-    inputs.pipeline = pipeline.getDouble(0);
-    inputs.ledMode = ledMode.getDouble(0);
-    inputs.camMode = camMode.getDouble(0);
+    inputs.priorityID = LimelightHelpers.getLimelightNTDouble(name, "priorityid"); // Preffered id of the april tag
+    inputs.pipeline = LimelightHelpers.getCurrentPipelineIndex(name);
+    inputs.ledMode = LimelightHelpers.getLimelightNTDouble(name, "ledMode"); // 0 = pipeline control, 1 = force off, 2 = force blink, 3 = force on
+    inputs.camMode = LimelightHelpers.getLimelightNTDouble(name, "camMode"); // 0 = processor, 1 = driver
 
     // Update disconnected alert
-    double currentHB = hb.getDouble(0);
+    double currentHB = LimelightHelpers.getLimelightNTDouble(name, "hb"); // heartbeat value. Increases once per frame, resets at 2 billion
     if (currentHB != lastHB) {
       lastHB = currentHB;
       disconnectedTimer.reset();
@@ -60,6 +46,6 @@ public class VisionIOLimelight implements VisionIO {
 
   @Override
   public void setPipeline(int p) {
-    pipeline.setDouble(p);
+    LimelightHelpers.setPipelineIndex(name, p);
   }
 }
