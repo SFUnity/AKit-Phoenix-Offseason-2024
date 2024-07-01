@@ -33,7 +33,7 @@ public class Intake extends SubsystemBase {
       new LoggedTunableNumber("Intake/Speeds/indexer", 1);
 
   private final LoggedShuffleboardButton intakeWorking =
-      new LoggedShuffleboardButton("Intake Working", "Intake", true);
+      new LoggedShuffleboardButton("Intake Working", "Intake", true, 2, 1);
 
   private double positionSetpoint = 0;
 
