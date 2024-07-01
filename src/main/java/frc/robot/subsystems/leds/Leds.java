@@ -154,7 +154,7 @@ public class Leds extends VirtualSubsystem {
       }
     } else { // Enabled
       if (!noteInShooter) { // TODO for minjae
-        if (intakeWorking) { // TODO once I figure out the Shuffleboard stuff
+        if (intakeWorking) {
           solid(Color.kRed);
         } else {
           solid(Color.kYellow);
