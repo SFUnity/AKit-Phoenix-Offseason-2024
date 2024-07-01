@@ -44,16 +44,7 @@ public class LoggedShuffleboardButton implements LoggedDashboardInput {
    * @param defaultValue The default value if no value in NT is found.
    */
   public LoggedShuffleboardButton(String key, String tab, boolean defaultValue) {
-    this.key = key;
-    this.defaultValue = defaultValue;
-    this.value = defaultValue;
-    this.entry =
-        Shuffleboard.getTab(tab)
-            .add(key, defaultValue)
-            .withWidget(BuiltInWidgets.kToggleButton)
-            .getEntry();
-    periodic();
-    Logger.registerDashboardInput(this);
+    this(key, tab, false, 1, 1);
   }
   // TODO figure out better way to do position and size
 
