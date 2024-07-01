@@ -32,6 +32,7 @@ import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.NT4Publisher;
 import org.littletonrobotics.junction.wpilog.WPILOGReader;
 import org.littletonrobotics.junction.wpilog.WPILOGWriter;
+import org.littletonrobotics.urcl.URCL;
 
 /**
  * The VM is configured to automatically run this class, and to call the functions corresponding to
@@ -94,6 +95,7 @@ public class Robot extends LoggedRobot {
         Logger.addDataReceiver(new WPILOGWriter());
         Logger.addDataReceiver(new NT4Publisher());
         new PowerDistribution(0, ModuleType.kRev); // Enables power distribution logging
+        Logger.registerURCL(URCL.startExternal()); // Enables REV CAN logging !!! not replayable !!!
         break;
 
       case SIM:
