@@ -101,7 +101,7 @@ public class RobotContainer {
                 new ModuleIOSim());
         flywheel = new Flywheel(new FlywheelIOSim());
         intake = new Intake(new IntakeIOSim());
-        vision = new Vision(new VisionIO() {}); // TODO make a sim IO for vision
+        vision = new Vision(new VisionIO() {});
         break;
 
       default:
