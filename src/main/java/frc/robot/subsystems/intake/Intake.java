@@ -8,6 +8,7 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants;
+import frc.robot.subsystems.leds.Leds;
 import frc.robot.util.GeneralUtil;
 import frc.robot.util.LoggedTunableNumber;
 import frc.robot.util.loggedShuffleboardClasses.LoggedShuffleboardButton;
@@ -70,12 +71,14 @@ public class Intake extends SubsystemBase {
     // Update controllers
     LoggedTunableNumber.ifChanged(hashCode(), () -> io.setPID(kP.get()), kP);
 
+    // Update LEDs
+    Leds.getInstance().intakeWorking = intakeWorking.get();
+
     // Logs
     measuredVisualizer.update(inputs.pivotPositionRots);
     setpointVisualizer.update(positionSetpoint);
     Logger.recordOutput("Intake/positionSetpointRotations", positionSetpoint);
-    GeneralUtil.logSubsystem(
-        this, "Intake"); // TODO figure out how to not have to put GeneralUtil at the start
+    GeneralUtil.logSubsystem(this, "Intake");
   }
 
   public void indexerIn() {
