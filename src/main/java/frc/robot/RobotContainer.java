@@ -74,7 +74,7 @@ public class RobotContainer {
   private final LoggedDashboardNumber flywheelSpeedInput =
       new LoggedDashboardNumber("Flywheel Speed", 1500.0);
   private final LoggedDashboardNumber slowDriveMultiplier =
-      new LoggedDashboardNumber("Slow Drive Multiplier", 0.5);
+      new LoggedDashboardNumber("Slow Drive Multiplier", 0.6);
   private final LoggedDashboardNumber slowTurnMultiplier =
       new LoggedDashboardNumber("Slow Turn Multiplier", 0.5);
 
