@@ -24,7 +24,10 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.subsystems.drive.Drive;
+
+import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
+import org.littletonrobotics.junction.networktables.LoggedDashboardNumber;
 
 public class DriveCommands {
   private static final double DEADBAND = 0.05;
@@ -38,16 +41,29 @@ public class DriveCommands {
       Drive drive,
       DoubleSupplier xSupplier,
       DoubleSupplier ySupplier,
-      DoubleSupplier omegaSupplier) {
+      DoubleSupplier omegaSupplier,
+      BooleanSupplier fastMode,
+      LoggedDashboardNumber slowDriveMultiplier,
+      LoggedDashboardNumber slowTurnMultiplier) {
     return Commands.run(
         () -> {
+          // Convert to doubles
+          double x = xSupplier.getAsDouble();
+          double y = ySupplier.getAsDouble();
+          double o = omegaSupplier.getAsDouble();
+
+          // Check for slow mode
+          if (fastMode.getAsBoolean()) {
+            double multiplier = slowDriveMultiplier.get();
+            x *= multiplier;
+            y *= multiplier;
+            o *= slowTurnMultiplier.get();
+          }
+
           // Apply deadband
-          double linearMagnitude =
-              MathUtil.applyDeadband(
-                  Math.hypot(xSupplier.getAsDouble(), ySupplier.getAsDouble()), DEADBAND);
-          Rotation2d linearDirection =
-              new Rotation2d(xSupplier.getAsDouble(), ySupplier.getAsDouble());
-          double omega = MathUtil.applyDeadband(omegaSupplier.getAsDouble(), DEADBAND);
+          double linearMagnitude = MathUtil.applyDeadband(Math.hypot(x, y), DEADBAND);
+          Rotation2d linearDirection = new Rotation2d(x, y);
+          double omega = MathUtil.applyDeadband(o, DEADBAND);
 
           // Square values
           linearMagnitude = linearMagnitude * linearMagnitude;

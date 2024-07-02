@@ -67,11 +67,16 @@ public class RobotContainer {
       new Alert("Driver controller disconnected (port 0).", AlertType.WARNING);
   private final Alert operatorDisconnected =
       new Alert("Operator controller disconnected (port 1).", AlertType.WARNING);
+  public boolean fastMode = false;
 
   // Dashboard inputs
   private final LoggedDashboardChooser<Command> autoChooser;
   private final LoggedDashboardNumber flywheelSpeedInput =
       new LoggedDashboardNumber("Flywheel Speed", 1500.0);
+  private final LoggedDashboardNumber slowDriveMultiplier =
+      new LoggedDashboardNumber("Slow Drive Multiplier", 0.5);
+  private final LoggedDashboardNumber slowTurnMultiplier =
+      new LoggedDashboardNumber("Slow Turn Multiplier", 0.5);
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
@@ -169,7 +174,13 @@ public class RobotContainer {
     // Default cmds
     drive.setDefaultCommand(
         DriveCommands.joystickDrive(
-            drive, () -> -driver.getLeftY(), () -> -driver.getLeftX(), () -> -driver.getRightX()));
+            drive,
+            () -> -driver.getLeftY(),
+            () -> -driver.getLeftX(),
+            () -> -driver.getRightX(),
+            () -> fastMode,
+            slowDriveMultiplier,
+            slowTurnMultiplier));
     intake.setDefaultCommand(intake.raiseAndStopCmd());
 
     // Driver controls
@@ -183,6 +194,7 @@ public class RobotContainer {
                             new Pose2d(drive.getPose().getTranslation(), new Rotation2d())),
                     drive)
                 .ignoringDisable(true));
+    driver.leftBumper().onTrue(Commands.runOnce(() -> fastMode = !fastMode, drive));
 
     // Operator controls for intake
     operator.triangle().whileTrue(intake.poopCmd());
