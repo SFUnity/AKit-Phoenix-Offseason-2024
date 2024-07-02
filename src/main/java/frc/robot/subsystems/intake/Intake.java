@@ -24,8 +24,6 @@ public class Intake extends SubsystemBase {
       new LoggedTunableNumber("Intake/Angles/lowered", 26);
   private static final LoggedTunableNumber raisedAngle =
       new LoggedTunableNumber("Intake/Angles/raised", 0);
-  private static final LoggedTunableNumber climbingAngle =
-      new LoggedTunableNumber("Intake/Angles/climbing", 5);
 
   // In percent output
   private static final LoggedTunableNumber rollersSpeed =
@@ -104,10 +102,6 @@ public class Intake extends SubsystemBase {
   public void raise() {
     positionSetpoint = raisedAngle.get();
     io.setPivotPosition(positionSetpoint);
-  }
-
-  public void climb() {
-    io.setPivotPosition(climbingAngle.get());
   }
 
   public void rollersIn() {
