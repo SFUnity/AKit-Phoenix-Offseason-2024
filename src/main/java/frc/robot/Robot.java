@@ -105,6 +105,7 @@ public class Robot extends LoggedRobot {
         break;
 
       case REPLAY:
+        // In this case when you "Simulate Robot Code" you will enter replay mode
         // Replaying a log, set up replay source
         setUseTiming(false); // Run as fast as possible
         String logPath = LogFileUtil.findReplayLog();
