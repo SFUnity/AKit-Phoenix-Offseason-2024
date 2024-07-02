@@ -1,6 +1,6 @@
-package frc.robot.subsystems.vision;
+package frc.robot.subsystems.apriltagvision;
 
-public class VisionConstants {
+public class AprilTagVisionConstants {
   /** how many degrees back is your limelight rotated from perfectly vertical? */
   public static final double limelightMountAngleDegrees = 28.0;
 

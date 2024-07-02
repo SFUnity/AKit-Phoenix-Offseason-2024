@@ -1,10 +1,10 @@
-package frc.robot.subsystems.vision;
+package frc.robot.subsystems.apriltagvision;
 
 import edu.wpi.first.wpilibj.Timer;
 import frc.robot.util.Alert;
 import frc.robot.util.LimelightHelpers;
 
-public class VisionIOLimelight implements VisionIO {
+public class VisionIOLimelight implements AprilTagVisionIO {
   private String name;
 
   private static final double disconnectedTimeout = 0.5;
@@ -23,7 +23,7 @@ public class VisionIOLimelight implements VisionIO {
   }
 
   @Override
-  public void updateInputs(VisionIOInputs inputs) {
+  public void updateInputs(AprilTagVisionIOInputs inputs) {
     inputs.targetXOffset = LimelightHelpers.getTX(name) + 3; // 3 is a target offset we tuned
     inputs.targetYOffset = LimelightHelpers.getTY(name);
     inputs.targetDetected = LimelightHelpers.getTV(name);

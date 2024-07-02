@@ -26,6 +26,9 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.commands.DriveCommands;
+import frc.robot.subsystems.apriltagvision.AprilTagVision;
+import frc.robot.subsystems.apriltagvision.AprilTagVisionIO;
+import frc.robot.subsystems.apriltagvision.VisionIOLimelight;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.GyroIO;
 import frc.robot.subsystems.drive.GyroIOPigeon2;
@@ -39,9 +42,6 @@ import frc.robot.subsystems.flywheel.FlywheelIOSparkMax;
 import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.intake.IntakeIO;
 import frc.robot.subsystems.intake.IntakeIOSim;
-import frc.robot.subsystems.vision.Vision;
-import frc.robot.subsystems.vision.VisionIO;
-import frc.robot.subsystems.vision.VisionIOLimelight;
 import frc.robot.util.Alert;
 import frc.robot.util.Alert.AlertType;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
@@ -58,7 +58,7 @@ public class RobotContainer {
   private final Drive drive;
   private final Flywheel flywheel;
   private final Intake intake;
-  private final Vision vision;
+  private final AprilTagVision aprilTagVision;
 
   // Controller
   private final CommandXboxController driver = new CommandXboxController(0);
@@ -87,7 +87,7 @@ public class RobotContainer {
                 new ModuleIOMixed(3));
         flywheel = new Flywheel(new FlywheelIOSparkMax());
         intake = new Intake(new IntakeIOSim());
-        vision = new Vision(new VisionIOLimelight("limelight"));
+        aprilTagVision = new AprilTagVision(new VisionIOLimelight("limelight"));
         break;
 
       case SIM:
@@ -101,7 +101,7 @@ public class RobotContainer {
                 new ModuleIOSim());
         flywheel = new Flywheel(new FlywheelIOSim());
         intake = new Intake(new IntakeIOSim());
-        vision = new Vision(new VisionIO() {});
+        aprilTagVision = new AprilTagVision(new AprilTagVisionIO() {});
         break;
 
       default:
@@ -115,7 +115,7 @@ public class RobotContainer {
                 new ModuleIO() {});
         flywheel = new Flywheel(new FlywheelIO() {});
         intake = new Intake(new IntakeIO() {});
-        vision = new Vision(new VisionIO() {});
+        aprilTagVision = new AprilTagVision(new AprilTagVisionIO() {});
         break;
     }
 

@@ -1,10 +1,10 @@
-package frc.robot.subsystems.vision;
+package frc.robot.subsystems.apriltagvision;
 
 import org.littletonrobotics.junction.AutoLog;
 
-public interface VisionIO {
+public interface AprilTagVisionIO {
   @AutoLog
-  public static class VisionIOInputs {
+  public static class AprilTagVisionIOInputs {
     /**
      * Horizontal offset from crosshair to target (-29.8 to 29.8 degrees). 3 is a target offset we
      * tuned
@@ -29,7 +29,7 @@ public interface VisionIO {
   }
 
   /** Updates the set of loggable inputs. */
-  public default void updateInputs(VisionIOInputs inputs) {}
+  public default void updateInputs(AprilTagVisionIOInputs inputs) {}
 
   /** Sets the pipeline number. */
   public default void setPipeline(int pipeline) {}

@@ -1,17 +1,17 @@
-package frc.robot.subsystems.vision;
+package frc.robot.subsystems.apriltagvision;
 
-import static frc.robot.subsystems.vision.VisionConstants.*;
+import static frc.robot.subsystems.apriltagvision.AprilTagVisionConstants.*;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.subsystems.apriltagvision.AprilTagVisionConstants.Pipelines;
 import frc.robot.subsystems.leds.Leds;
-import frc.robot.subsystems.vision.VisionConstants.Pipelines;
 import org.littletonrobotics.junction.Logger;
 
-public class Vision extends SubsystemBase {
-  private final VisionIO io;
-  private final VisionIOInputsAutoLogged inputs = new VisionIOInputsAutoLogged();
+public class AprilTagVision extends SubsystemBase {
+  private final AprilTagVisionIO io;
+  private final AprilTagVisionIOInputsAutoLogged inputs = new AprilTagVisionIOInputsAutoLogged();
 
-  public Vision(VisionIO io) {
+  public AprilTagVision(AprilTagVisionIO io) {
     this.io = io;
 
     io.setPipeline(Pipelines.BLUE_SPEAKER.get());
