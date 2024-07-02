@@ -47,19 +47,16 @@ public class LoggedShuffleboardBoolean implements LoggedDashboardInput {
 
   public LoggedShuffleboardBoolean withWidget(WidgetType widgetType) {
     widget = widget.withWidget(widgetType);
-    entry = widget.getEntry();
     return this;
   }
 
   public LoggedShuffleboardBoolean withSize(int width, int height) {
     widget = widget.withSize(width, height);
-    entry = widget.getEntry();
     return this;
   }
 
   public LoggedShuffleboardBoolean withPosition(int x, int y) {
     widget = widget.withPosition(x, y);
-    entry = widget.getEntry();
     return this;
   }
 
