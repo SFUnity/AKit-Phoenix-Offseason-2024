@@ -3,13 +3,12 @@ package frc.robot.util.loggedShuffleboardClasses;
 import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.SimpleWidget;
-import edu.wpi.first.wpilibj.shuffleboard.WidgetType;
 import org.littletonrobotics.junction.LogTable;
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.inputs.LoggableInputs;
-import org.littletonrobotics.junction.networktables.LoggedDashboardInput;
 
-public class LoggedShuffleboardBoolean implements LoggedDashboardInput {
+public class LoggedShuffleboardBoolean
+    implements LoggedShuffleboardComponent<LoggedShuffleboardBoolean> {
   private final String key;
   private boolean defaultValue;
   private boolean value;
@@ -45,41 +44,6 @@ public class LoggedShuffleboardBoolean implements LoggedDashboardInput {
     Logger.registerDashboardInput(this);
   }
 
-  /**
-   * Sets the type of widget used to display the data. If not set, the default widget type will be
-   * used.
-   *
-   * @param widgetType the type of the widget used to display the data
-   */
-  public LoggedShuffleboardBoolean withWidget(WidgetType widgetType) {
-    widget = widget.withWidget(widgetType);
-    return this;
-  }
-
-  /**
-   * Sets the size of this component in the tab. This has no effect if this component is inside a
-   * layout.
-   *
-   * @param width how many columns wide the component should be
-   * @param height how many rows high the component should be
-   */
-  public LoggedShuffleboardBoolean withSize(int width, int height) {
-    widget = widget.withSize(width, height);
-    return this;
-  }
-
-  /**
-   * Sets the position of this component in the tab. This has no effect if this component is inside
-   * a layout.
-   *
-   * @param columnIndex the column in the tab to place this component
-   * @param rowIndex the row in the tab to place this component
-   */
-  public LoggedShuffleboardBoolean withPosition(int columnIndex, int rowIndex) {
-    widget = widget.withPosition(columnIndex, rowIndex);
-    return this;
-  }
-
   /** Updates the default value, which is used if no value in NT is found. */
   public void setDefault(boolean defaultValue) {
     this.defaultValue = defaultValue;
@@ -100,5 +64,15 @@ public class LoggedShuffleboardBoolean implements LoggedDashboardInput {
       value = entry.getBoolean(defaultValue);
     }
     Logger.processInputs(prefix, inputs);
+  }
+
+  @Override
+  public SimpleWidget getWidget() {
+    return widget;
+  }
+
+  @Override
+  public void setWidget(SimpleWidget widget) {
+    this.widget = widget;
   }
 }
