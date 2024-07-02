@@ -68,6 +68,11 @@ public class LoggedShuffleboardBoolean implements LoggedDashboardInput {
     this.defaultValue = defaultValue;
   }
 
+  /** Sets the value. */
+  public void set(boolean value) {
+    entry.setBoolean(value);
+  }
+
   /** Returns the current value. */
   public boolean get() {
     return value;
