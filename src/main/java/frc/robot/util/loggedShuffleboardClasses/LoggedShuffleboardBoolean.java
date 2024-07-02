@@ -27,7 +27,7 @@ public class LoggedShuffleboardBoolean
       };
 
   /**
-   * Creates a new LoggedShuffleboardBoolean, for handling a string input sent via NetworkTables.
+   * Creates a new LoggedShuffleboardBoolean, for handling a boolean input sent via NetworkTables.
    *
    * @param key The key for the boolean, published to "/Shuffleboard/{tab}/{key}" for NT or
    *     "/DashboardInputs/{key}" when logged.
