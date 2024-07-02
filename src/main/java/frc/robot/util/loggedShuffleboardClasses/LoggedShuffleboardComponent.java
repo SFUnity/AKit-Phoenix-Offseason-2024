@@ -2,6 +2,7 @@ package frc.robot.util.loggedShuffleboardClasses;
 
 import edu.wpi.first.wpilibj.shuffleboard.SimpleWidget;
 import edu.wpi.first.wpilibj.shuffleboard.WidgetType;
+import java.util.Map;
 import org.littletonrobotics.junction.networktables.LoggedDashboardInput;
 
 public interface LoggedShuffleboardComponent<T extends LoggedShuffleboardComponent<T>>
@@ -30,6 +31,19 @@ public interface LoggedShuffleboardComponent<T extends LoggedShuffleboardCompone
   @SuppressWarnings("unchecked")
   public default T withWidget(WidgetType widgetType) {
     setWidget(getWidget().withWidget(widgetType));
+    return (T) this;
+  }
+
+  /**
+   * Sets custom properties for this component. Property names are case- and whitespace-insensitive
+   * (capitalization and spaces do not matter).
+   *
+   * @param properties the properties for this component
+   * @return this component
+   */
+  @SuppressWarnings("unchecked")
+  public default T withProperties(Map<String, Object> properties) {
+    setWidget(getWidget().withProperties(properties));
     return (T) this;
   }
 
