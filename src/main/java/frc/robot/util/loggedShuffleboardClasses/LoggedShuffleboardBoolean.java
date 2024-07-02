@@ -1,5 +1,6 @@
 package frc.robot.util.loggedShuffleboardClasses;
 
+import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.SimpleWidget;
 import edu.wpi.first.wpilibj.shuffleboard.WidgetType;
@@ -13,6 +14,7 @@ public class LoggedShuffleboardBoolean implements LoggedDashboardInput {
   private boolean defaultValue;
   private boolean value;
   private SimpleWidget widget;
+  private GenericEntry entry;
 
   private final LoggableInputs inputs =
       new LoggableInputs() {
@@ -36,24 +38,28 @@ public class LoggedShuffleboardBoolean implements LoggedDashboardInput {
   public LoggedShuffleboardBoolean(String key, String tab, boolean defaultValue) {
     this.key = key;
     this.defaultValue = defaultValue;
-    this.value = defaultValue;
-    this.widget = Shuffleboard.getTab(tab).add(key, defaultValue);
+    value = defaultValue;
+    widget = Shuffleboard.getTab(tab).add(key, defaultValue);
+    entry = widget.getEntry();
     periodic();
     Logger.registerDashboardInput(this);
   }
 
   public LoggedShuffleboardBoolean withWidget(WidgetType widgetType) {
     widget = widget.withWidget(widgetType);
+    entry = widget.getEntry();
     return this;
   }
 
   public LoggedShuffleboardBoolean withSize(int width, int height) {
     widget = widget.withSize(width, height);
+    entry = widget.getEntry();
     return this;
   }
 
   public LoggedShuffleboardBoolean withPosition(int x, int y) {
     widget = widget.withPosition(x, y);
+    entry = widget.getEntry();
     return this;
   }
 
@@ -69,7 +75,7 @@ public class LoggedShuffleboardBoolean implements LoggedDashboardInput {
 
   public void periodic() {
     if (!Logger.hasReplaySource()) {
-      value = widget.getEntry().getBoolean(defaultValue);
+      value = entry.getBoolean(defaultValue);
     }
     Logger.processInputs(prefix, inputs);
   }
