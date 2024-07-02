@@ -28,7 +28,7 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.commands.DriveCommands;
 import frc.robot.subsystems.apriltagvision.AprilTagVision;
 import frc.robot.subsystems.apriltagvision.AprilTagVisionIO;
-import frc.robot.subsystems.apriltagvision.VisionIOLimelight;
+import frc.robot.subsystems.apriltagvision.AprilTagVisionIOLimelight;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.GyroIO;
 import frc.robot.subsystems.drive.GyroIOPigeon2;
@@ -87,7 +87,7 @@ public class RobotContainer {
                 new ModuleIOMixed(3));
         flywheel = new Flywheel(new FlywheelIOSparkMax());
         intake = new Intake(new IntakeIOSim());
-        aprilTagVision = new AprilTagVision(new VisionIOLimelight("limelight"));
+        aprilTagVision = new AprilTagVision(new AprilTagVisionIOLimelight("limelight"));
         break;
 
       case SIM:

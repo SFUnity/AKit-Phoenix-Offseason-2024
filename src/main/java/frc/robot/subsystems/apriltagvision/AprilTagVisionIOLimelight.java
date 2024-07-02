@@ -4,7 +4,7 @@ import edu.wpi.first.wpilibj.Timer;
 import frc.robot.util.Alert;
 import frc.robot.util.LimelightHelpers;
 
-public class VisionIOLimelight implements AprilTagVisionIO {
+public class AprilTagVisionIOLimelight implements AprilTagVisionIO {
   private String name;
 
   private static final double disconnectedTimeout = 0.5;
@@ -12,7 +12,7 @@ public class VisionIOLimelight implements AprilTagVisionIO {
   private final Timer disconnectedTimer = new Timer();
   private double lastHB = 0;
 
-  public VisionIOLimelight(String camName) {
+  public AprilTagVisionIOLimelight(String camName) {
     name = camName;
 
     LimelightHelpers.setLEDMode_PipelineControl(name);
