@@ -2,6 +2,7 @@ package frc.robot.subsystems.intake;
 
 import static frc.robot.subsystems.intake.IntakeConstants.*;
 
+import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -11,7 +12,7 @@ import frc.robot.Constants;
 import frc.robot.subsystems.leds.Leds;
 import frc.robot.util.GeneralUtil;
 import frc.robot.util.LoggedTunableNumber;
-import frc.robot.util.loggedShuffleboardClasses.LoggedShuffleboardButton;
+import frc.robot.util.loggedShuffleboardClasses.LoggedShuffleboardBoolean;
 import org.littletonrobotics.junction.Logger;
 
 public class Intake extends SubsystemBase {
@@ -32,8 +33,10 @@ public class Intake extends SubsystemBase {
   private static final LoggedTunableNumber indexerSpeed =
       new LoggedTunableNumber("Intake/Speeds/indexer", 1);
 
-  private final LoggedShuffleboardButton intakeWorking =
-      new LoggedShuffleboardButton("Intake Working", "Intake", true, 2, 1);
+  private final LoggedShuffleboardBoolean intakeWorking =
+      new LoggedShuffleboardBoolean("Intake Working", "Intake", true)
+          .withWidget(BuiltInWidgets.kToggleButton)
+          .withSize(2, 1);
 
   private double positionSetpoint = 0;
 
