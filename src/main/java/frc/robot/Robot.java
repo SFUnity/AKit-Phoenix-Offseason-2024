@@ -34,6 +34,8 @@ import org.littletonrobotics.junction.wpilog.WPILOGReader;
 import org.littletonrobotics.junction.wpilog.WPILOGWriter;
 import org.littletonrobotics.urcl.URCL;
 
+import com.ctre.phoenix6.SignalLogger;
+
 /**
  * The VM is configured to automatically run this class, and to call the functions corresponding to
  * each mode, as described in the TimedRobot documentation. If you change the name of this class or
@@ -96,6 +98,8 @@ public class Robot extends LoggedRobot {
         Logger.addDataReceiver(new NT4Publisher());
         new PowerDistribution(0, ModuleType.kRev); // Enables power distribution logging
         Logger.registerURCL(URCL.startExternal()); // Enables REV CAN logging !!! not replayable !!!
+        SignalLogger.setPath("/U/logs");
+        SignalLogger.start();
         break;
 
       case SIM:
