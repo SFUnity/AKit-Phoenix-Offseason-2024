@@ -21,7 +21,7 @@ public class AprilTagVision extends SubsystemBase {
     io.updateInputs(inputs);
     Logger.processInputs("Vision", inputs);
 
-    Leds.getInstance().targetDetected = inputs.targetDetected;
+    Leds.getInstance().tagsDetected = inputs.targetDetected;
     Leds.getInstance().alignedWithTarget = alignedWithTag();
   }
 
