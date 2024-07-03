@@ -155,6 +155,7 @@ public class Module {
 
   /** Sets whether brake mode is enabled. */
   public void setBrakeMode(boolean enabled) {
+    Logger.recordOutput("Drive/BrakeModeModule" + Integer.toString(index), enabled);
     io.setDriveBrakeMode(enabled);
     io.setTurnBrakeMode(enabled);
   }
