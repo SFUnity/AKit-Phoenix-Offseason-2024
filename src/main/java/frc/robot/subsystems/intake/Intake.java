@@ -82,42 +82,38 @@ public class Intake extends SubsystemBase {
     GeneralUtil.logSubsystem(this, "Intake");
   }
 
-  public void indexerIn() {
+  private void indexerIn() {
     io.runIndexer(indexerSpeed.get());
   }
 
-  public void indexerOut() {
+  private void indexerOut() {
     io.runIndexer(-indexerSpeed.get());
   }
 
-  public void indexerStop() {
+  private void indexerStop() {
     io.runIndexer(0);
   }
 
-  public void lower() {
+  private void lower() {
     positionSetpoint = loweredAngle.get();
     io.setPivotPosition(positionSetpoint);
   }
 
-  public void raise() {
+  private void raise() {
     positionSetpoint = raisedAngle.get();
     io.setPivotPosition(positionSetpoint);
   }
 
-  public void rollersIn() {
+  private void rollersIn() {
     io.runIntakeRollers(rollersSpeed.get());
   }
 
-  public void rollersOut() {
+  private void rollersOut() {
     io.runIntakeRollers(-rollersSpeed.get());
   }
 
-  public void rollersStop() {
+  private void rollersStop() {
     io.runIntakeRollers(0);
-  }
-
-  public void stopAll() {
-    io.stop();
   }
 
   public Command raiseAndStopCmd() {
