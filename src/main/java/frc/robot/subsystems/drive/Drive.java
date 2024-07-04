@@ -58,6 +58,9 @@ public class Drive extends SubsystemBase {
   private final Module[] modules = new Module[4]; // FL, FR, BL, BR
   private final SysIdRoutine sysId;
 
+  // Store previous positions and time for filtering odometry data
+  private double lastTime = 0.0;
+
   private SwerveDriveKinematics kinematics = new SwerveDriveKinematics(getModuleTranslations());
   private Rotation2d rawGyroRotation = new Rotation2d();
   private SwerveModulePosition[] lastModulePositions = // For delta tracking
@@ -164,7 +167,6 @@ public class Drive extends SubsystemBase {
               modulePositions[moduleIndex].distanceMeters
                   - lastModulePositions[moduleIndex].distanceMeters,
               modulePositions[moduleIndex].angle);
-      lastModulePositions[moduleIndex] = modulePositions[moduleIndex];
     }
 
     // Update gyro angle
@@ -177,8 +179,32 @@ public class Drive extends SubsystemBase {
       rawGyroRotation = rawGyroRotation.plus(new Rotation2d(twist.dtheta));
     }
 
-    // Apply odometry update
-    poseEstimator.update(rawGyroRotation, modulePositions);
+    // Filter odometry update based on delta wheel positions
+    double currentTime = Timer.getFPGATimestamp();
+    boolean includeMeasurement = true;
+    if (lastModulePositions != null) {
+      double dt = currentTime - lastTime;
+      for (int j = 0; j < modules.length; j++) {
+        double velocity = moduleDeltas[j].distanceMeters / dt;
+        double omega = moduleDeltas[j].angle.getRadians() / dt;
+        // Check if delta is too large
+        if (Math.abs(omega)
+                > Units.degreesToRadians(1080.0) * 5.0 // Max steering velocity = 1080 deg/sec
+            || Math.abs(velocity) > MAX_LINEAR_SPEED * 5.0) { // Max drive velocity = 15 ft/sec
+          includeMeasurement = false;
+          break;
+        }
+      }
+    }
+
+    // If delta isn't too large we can include the measurement.
+    if (includeMeasurement) {
+      lastModulePositions = modulePositions;
+      lastTime = currentTime;
+      poseEstimator.update(rawGyroRotation, modulePositions);
+    }
+
+    Logger.recordOutput("Drive/includeMeasurement", includeMeasurement);
   }
 
   /**
