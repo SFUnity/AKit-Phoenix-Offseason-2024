@@ -36,7 +36,7 @@ public class AprilTagVisionIOLimelight implements AprilTagVisionIO {
     inputs.estimatedPose = mt2.pose;
     inputs.timestamp = mt2.timestampSeconds; // take cares of latency for you
     inputs.tagCount = mt2.tagCount;
-    inputs.isNew = inputs.estimatedPose != lastEstimatedPose;
+    inputs.isNewPose = inputs.estimatedPose != lastEstimatedPose;
     lastEstimatedPose = inputs.estimatedPose;
 
     inputs.pipeline = LimelightHelpers.getCurrentPipelineIndex(name);
