@@ -8,7 +8,7 @@ public interface AprilTagVisionIO {
   public static class AprilTagVisionIOInputs {
     public Pose2d estimatedPose;
     public double timestamp;
-    public boolean isNew; // is new pose
+    public boolean isNewPose;
     public int tagCount;
 
     public double pipeline = 0; // TODO store the pipelines where the code can see them
