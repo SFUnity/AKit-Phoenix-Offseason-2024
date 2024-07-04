@@ -190,7 +190,7 @@ public class Drive extends SubsystemBase {
         // Check if delta is too large
         if (Math.abs(omega)
                 > Units.degreesToRadians(1080.0) * 5.0 // Max steering velocity = 1080 deg/sec
-            || Math.abs(velocity) > MAX_LINEAR_SPEED * 5.0) { // Max drive velocity = 15 ft/sec
+            || Math.abs(velocity) > MAX_LINEAR_SPEED * 5.0) { // Max drive velocity = 14.5 ft/sec
           includeMeasurement = false;
           break;
         }
