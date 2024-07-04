@@ -2,8 +2,6 @@ package frc.robot.subsystems.apriltagvision;
 
 import static frc.robot.subsystems.apriltagvision.AprilTagVisionConstants.*;
 
-import java.util.function.DoubleSupplier;
-
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.subsystems.apriltagvision.AprilTagVisionConstants.Pipelines;
 import frc.robot.subsystems.leds.Leds;
@@ -12,17 +10,15 @@ import org.littletonrobotics.junction.Logger;
 public class AprilTagVision extends SubsystemBase {
   private final AprilTagVisionIO io;
   private final AprilTagVisionIOInputsAutoLogged inputs = new AprilTagVisionIOInputsAutoLogged();
-  
-  private DoubleSupplier robotYawInDegrees;
 
-  public AprilTagVision(AprilTagVisionIO io, DoubleSupplier robotYawInDegrees) {
+  public AprilTagVision(AprilTagVisionIO io) {
     this.io = io;
 
     io.setPipeline(Pipelines.BLUE_SPEAKER.get());
   }
 
   public void periodic() {
-    io.updateInputs(inputs, robotYawInDegrees.getAsDouble());
+    io.updateInputs(inputs);
     Logger.processInputs("Vision", inputs);
 
     Leds.getInstance().tagsDetected = inputs.tagCount > 0;
