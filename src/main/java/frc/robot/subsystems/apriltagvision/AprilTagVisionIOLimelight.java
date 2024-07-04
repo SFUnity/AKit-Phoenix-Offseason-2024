@@ -1,5 +1,6 @@
 package frc.robot.subsystems.apriltagvision;
 
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.Timer;
 import frc.robot.util.Alert;
 import frc.robot.util.LimelightHelpers;
@@ -12,6 +13,8 @@ public class AprilTagVisionIOLimelight implements AprilTagVisionIO {
   private final Timer disconnectedTimer = new Timer();
   private double lastHB = 0;
 
+  private Pose2d lastEstimatedPose = null;
+
   public AprilTagVisionIOLimelight(String camName) {
     name = camName;
 
@@ -23,12 +26,15 @@ public class AprilTagVisionIOLimelight implements AprilTagVisionIO {
   }
 
   @Override
-  public void updateInputs(AprilTagVisionIOInputs inputs) {
-    inputs.targetXOffset = LimelightHelpers.getTX(name) + 3; // 3 is a target offset we tuned
-    inputs.targetYOffset = LimelightHelpers.getTY(name);
-    inputs.targetDetected = LimelightHelpers.getTV(name);
-    inputs.targetArea = LimelightHelpers.getTA(name);
-    inputs.targetID = LimelightHelpers.getFiducialID(name); // Fiducial == AprilTag
+  public void updateInputs(AprilTagVisionIOInputs inputs, double robotYawInDegrees) {
+    LimelightHelpers.SetRobotOrientation("limelight", robotYawInDegrees, 0, 0, 0, 0, 0);
+    LimelightHelpers.PoseEstimate mt2 = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(name);
+
+    inputs.estimatedPose = mt2.pose;
+    inputs.timestamp = mt2.timestampSeconds; // take cares of latency for you
+    inputs.tagCount = mt2.tagCount;
+    inputs.isNew = inputs.estimatedPose != lastEstimatedPose;
+    lastEstimatedPose = inputs.estimatedPose;
 
     inputs.pipeline = LimelightHelpers.getCurrentPipelineIndex(name);
     inputs.ledMode = LimelightHelpers.getLimelightNTDouble(name, "ledMode");

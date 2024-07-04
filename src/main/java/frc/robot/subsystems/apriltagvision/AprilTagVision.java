@@ -2,6 +2,8 @@ package frc.robot.subsystems.apriltagvision;
 
 import static frc.robot.subsystems.apriltagvision.AprilTagVisionConstants.*;
 
+import java.util.function.DoubleSupplier;
+
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.subsystems.apriltagvision.AprilTagVisionConstants.Pipelines;
 import frc.robot.subsystems.leds.Leds;
@@ -10,29 +12,28 @@ import org.littletonrobotics.junction.Logger;
 public class AprilTagVision extends SubsystemBase {
   private final AprilTagVisionIO io;
   private final AprilTagVisionIOInputsAutoLogged inputs = new AprilTagVisionIOInputsAutoLogged();
+  
+  private DoubleSupplier robotYawInDegrees;
 
-  public AprilTagVision(AprilTagVisionIO io) {
+  public AprilTagVision(AprilTagVisionIO io, DoubleSupplier robotYawInDegrees) {
     this.io = io;
 
     io.setPipeline(Pipelines.BLUE_SPEAKER.get());
   }
 
   public void periodic() {
-    io.updateInputs(inputs);
+    io.updateInputs(inputs, robotYawInDegrees.getAsDouble());
     Logger.processInputs("Vision", inputs);
 
-    Leds.getInstance().tagsDetected = inputs.targetDetected;
-    Leds.getInstance().alignedWithTarget = alignedWithTag();
-  }
-
-  public boolean alignedWithTag() {
-    return Math.abs(inputs.targetXOffset) < 2;
+    Leds.getInstance().tagsDetected = inputs.tagCount > 0;
+    // TODO figure out new way to align with speaker
   }
 
   public double getDistance() {
-    double angleToGoalDegrees = limelightMountAngleDegrees + inputs.targetYOffset;
+    // ! now returns a fake value
+    double angleToGoalDegrees = limelightMountAngleDegrees; // + inputs.targetYOffset;
     double angleToGoalRadians = Math.toRadians(angleToGoalDegrees);
-
+    // TODO find out new way to do this using pose
     // calculate distance
     return (heightOfTagInches - limelightLensHeightInches) / Math.tan(angleToGoalRadians);
   }
