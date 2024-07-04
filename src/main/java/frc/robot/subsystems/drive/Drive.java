@@ -45,12 +45,13 @@ import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
 public class Drive extends SubsystemBase {
-  private static final double MAX_LINEAR_SPEED = Units.feetToMeters(14.5);
-  private static final double TRACK_WIDTH_X = Units.inchesToMeters(25.0);
-  private static final double TRACK_WIDTH_Y = Units.inchesToMeters(25.0);
+  private static final double MAX_LINEAR_SPEED = Units.feetToMeters(14.5); // 6328 uses 15 ft/s
+  private static final double TRACK_WIDTH_X = Units.inchesToMeters(22.75); // Check when copying
+  private static final double TRACK_WIDTH_Y = Units.inchesToMeters(22.75);
   private static final double DRIVE_BASE_RADIUS =
       Math.hypot(TRACK_WIDTH_X / 2.0, TRACK_WIDTH_Y / 2.0);
-  private static final double MAX_ANGULAR_SPEED = MAX_LINEAR_SPEED / DRIVE_BASE_RADIUS;
+  private static final double MAX_ANGULAR_SPEED =
+      MAX_LINEAR_SPEED / DRIVE_BASE_RADIUS; // 6328 uses 12 rad/s (we're at 10)
 
   private final GyroIO gyroIO;
   private final GyroIOInputsAutoLogged gyroInputs = new GyroIOInputsAutoLogged();
