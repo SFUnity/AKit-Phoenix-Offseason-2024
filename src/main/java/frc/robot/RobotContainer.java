@@ -92,7 +92,7 @@ public class RobotContainer {
                 new ModuleIOMixed(3));
         flywheel = new Flywheel(new FlywheelIOSparkMax());
         intake = new Intake(new IntakeIOSim());
-        aprilTagVision = new AprilTagVision(new AprilTagVisionIOLimelight("limelight"));
+        aprilTagVision = new AprilTagVision(new AprilTagVisionIOLimelight("limelight", () -> drive.getRotation().getDegrees()));
         break;
 
       case SIM:
