@@ -2,22 +2,15 @@ package frc.robot.subsystems.apriltagvision;
 
 import org.littletonrobotics.junction.AutoLog;
 
+import edu.wpi.first.math.geometry.Pose2d;
+
 public interface AprilTagVisionIO {
   @AutoLog
   public static class AprilTagVisionIOInputs {
-    /**
-     * Horizontal offset from crosshair to target (-29.8 to 29.8 degrees). 3 is a target offset we
-     * tuned
-     */
-    public double targetXOffset = 0;
-    /** Vertical offset from crosshair to target (-24.85 to 24.85 degrees) */
-    public double targetYOffset = 0;
-    /** Whether the limelight has any valid targets */
-    public boolean targetDetected = false;
-    /** Target area (0% of image to 100% of image) */
-    public double targetArea = 0;
-    /** ID of the primary in-view AprilTag */
-    public double targetID = 0;
+    public Pose2d estimatedPose;
+    public double timestamp;
+    public boolean isNew; // is new pose
+    public int tagCount;
 
     public double pipeline = 0; // TODO store the pipelines where the code can see them
     /** 0 = pipeline control, 1 = force off, 2 = force blink, 3 = force on */
@@ -29,7 +22,7 @@ public interface AprilTagVisionIO {
   }
 
   /** Updates the set of loggable inputs. */
-  public default void updateInputs(AprilTagVisionIOInputs inputs) {}
+  public default void updateInputs(AprilTagVisionIOInputs inputs, double robotYawInDegrees) {}
 
   /** Sets the pipeline number. */
   public default void setPipeline(int pipeline) {}
