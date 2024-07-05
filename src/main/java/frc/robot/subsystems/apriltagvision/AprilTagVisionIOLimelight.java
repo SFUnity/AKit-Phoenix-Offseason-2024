@@ -1,6 +1,5 @@
 package frc.robot.subsystems.apriltagvision;
 
-import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.Timer;
 import frc.robot.util.Alert;
 import frc.robot.util.LimelightHelpers;
@@ -13,8 +12,6 @@ public class AprilTagVisionIOLimelight implements AprilTagVisionIO {
   private final Alert disconnectedAlert;
   private final Timer disconnectedTimer = new Timer();
   private double lastHB = 0;
-
-  private Pose2d lastEstimatedPose = null;
   private DoubleSupplier robotYawInDegrees;
 
   public AprilTagVisionIOLimelight(String camName, DoubleSupplier robotYawInDegrees) {
@@ -37,8 +34,6 @@ public class AprilTagVisionIOLimelight implements AprilTagVisionIO {
     inputs.estimatedPose = mt2.pose;
     inputs.timestamp = mt2.timestampSeconds; // take cares of latency for you
     inputs.tagCount = mt2.tagCount;
-    inputs.isNewPose = inputs.estimatedPose != lastEstimatedPose;
-    lastEstimatedPose = inputs.estimatedPose;
 
     inputs.pipeline = LimelightHelpers.getCurrentPipelineIndex(name);
     inputs.ledMode = LimelightHelpers.getLimelightNTDouble(name, "ledMode");
@@ -47,6 +42,7 @@ public class AprilTagVisionIOLimelight implements AprilTagVisionIO {
 
     // Update disconnected alert
     double currentHB = inputs.hb;
+    inputs.isNew = currentHB != lastHB;
     if (currentHB != lastHB) {
       lastHB = currentHB;
       disconnectedTimer.reset();
