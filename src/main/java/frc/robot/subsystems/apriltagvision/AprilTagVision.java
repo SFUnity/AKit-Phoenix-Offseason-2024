@@ -2,12 +2,13 @@ package frc.robot.subsystems.apriltagvision;
 
 import static frc.robot.subsystems.apriltagvision.AprilTagVisionConstants.*;
 
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.subsystems.apriltagvision.AprilTagVisionConstants.Pipelines;
 import frc.robot.subsystems.leds.Leds;
+import frc.robot.util.VirtualSubsystem;
+
 import org.littletonrobotics.junction.Logger;
 
-public class AprilTagVision extends SubsystemBase {
+public class AprilTagVision extends VirtualSubsystem {
   private final AprilTagVisionIO io;
   private final AprilTagVisionIOInputsAutoLogged inputs = new AprilTagVisionIOInputsAutoLogged();
 
