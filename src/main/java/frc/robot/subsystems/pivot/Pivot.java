@@ -19,7 +19,6 @@ import static frc.robot.subsystems.pivot.PivotConstants.*;
 
 import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.networktables.GenericEntry;
-import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -27,7 +26,8 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants;
 import frc.robot.subsystems.apriltagvision.AprilTagVisionConstants;
-
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
@@ -158,11 +158,38 @@ public class Pivot extends SubsystemBase {
   //   desiredAngle = angleDeg + angleOffset.getDouble(ShooterConstants.kSpeakerAngleOffsetRevRotations);
   // }
 
-  public void readyShootAmp() {
+    public void readyShootAmp() {
         desiredAngle = PivotConstants.kDesiredAmpAngleRevRotations;
     }
 
     public void readyShootFeed() {
         desiredAngle = feedingAngleEntry.getDouble(PivotConstants.kFeedingAngleRevRotations);
     }
+
+  public Command setShootAngleCommand(){
+    
+      return run(() -> {
+          readyShootSpeakerManual();
+          io.setAngleMotorSpeeds(desiredAngle);
+          })
+          .withName("setShootAngle");
+  }
+
+  public Command setAmpAngleCommand(){
+    return run(() -> {
+      readyShootAmp();
+      io.setAngleMotorSpeeds(desiredAngle);
+    })
+    .withName("setAmpAngle");
+  }
+
+  public Command setFeedAngleCommand(){
+    return run(() -> {
+      readyShootFeed();
+      io.setAngleMotorSpeeds(desiredAngle);
+    })
+    .withName("gotta be a team player");
+  }
 }
+
+
