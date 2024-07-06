@@ -41,7 +41,7 @@ public class AprilTagVision extends VirtualSubsystem {
     Pose2d robotPose = inputs.estimatedPose;
     boolean doRejectUpdate = false;
 
-    while (doRejectUpdate == false) {
+    while (!doRejectUpdate) {
       // Exit if old data
       doRejectUpdate = !inputs.isNew;
       // Exit if there are no tags
