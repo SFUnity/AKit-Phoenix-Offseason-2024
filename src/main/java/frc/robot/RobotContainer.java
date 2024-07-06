@@ -39,6 +39,12 @@ import frc.robot.subsystems.flywheel.Flywheel;
 import frc.robot.subsystems.flywheel.FlywheelIO;
 import frc.robot.subsystems.flywheel.FlywheelIOSim;
 import frc.robot.subsystems.flywheel.FlywheelIOSparkMax;
+
+import frc.robot.subsystems.pivot.Pivot;
+import frc.robot.subsystems.pivot.PivotIO;
+import frc.robot.subsystems.pivot.PivotIOSim;
+import frc.robot.subsystems.pivot.PivotIOSparkMax;
+
 import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.intake.IntakeIO;
 import frc.robot.subsystems.intake.IntakeIOSim;
@@ -58,6 +64,7 @@ public class RobotContainer {
   private final Drive drive;
   private final Flywheel flywheel;
   private final Intake intake;
+  private final Pivot pivot;
   private final AprilTagVision aprilTagVision;
 
   // Controller
@@ -86,6 +93,7 @@ public class RobotContainer {
                 new ModuleIOMixed(2),
                 new ModuleIOMixed(3));
         flywheel = new Flywheel(new FlywheelIOSparkMax());
+        pivot = new Pivot(new PivotIOSparkMax());
         intake = new Intake(new IntakeIOSim());
         aprilTagVision = new AprilTagVision(new AprilTagVisionIOLimelight("limelight"));
         break;
@@ -102,6 +110,7 @@ public class RobotContainer {
         flywheel = new Flywheel(new FlywheelIOSim());
         intake = new Intake(new IntakeIOSim());
         aprilTagVision = new AprilTagVision(new AprilTagVisionIO() {});
+        pivot = new Pivot(new PivotIOSim());
         break;
 
       default:
@@ -114,6 +123,7 @@ public class RobotContainer {
                 new ModuleIO() {},
                 new ModuleIO() {});
         flywheel = new Flywheel(new FlywheelIO() {});
+        pivot = new Pivot(new PivotIO() {});
         intake = new Intake(new IntakeIO() {});
         aprilTagVision = new AprilTagVision(new AprilTagVisionIO() {});
         break;
