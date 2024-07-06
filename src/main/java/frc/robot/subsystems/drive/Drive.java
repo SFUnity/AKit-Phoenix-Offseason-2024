@@ -39,6 +39,7 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
+import frc.robot.subsystems.apriltagvision.AprilTagVision;
 import frc.robot.util.Alert;
 import frc.robot.util.LocalADStarAK;
 import org.littletonrobotics.junction.AutoLogOutput;
@@ -56,6 +57,7 @@ public class Drive extends SubsystemBase {
   private final GyroIO gyroIO;
   private final GyroIOInputsAutoLogged gyroInputs = new GyroIOInputsAutoLogged();
   private final Module[] modules = new Module[4]; // FL, FR, BL, BR
+  private final AprilTagVision aprilTagVision;
   private final SysIdRoutine sysId;
 
   private SwerveDriveKinematics kinematics = new SwerveDriveKinematics(getModuleTranslations());
@@ -82,12 +84,14 @@ public class Drive extends SubsystemBase {
       ModuleIO flModuleIO,
       ModuleIO frModuleIO,
       ModuleIO blModuleIO,
-      ModuleIO brModuleIO) {
+      ModuleIO brModuleIO,
+      AprilTagVision aprilTagVision) {
     this.gyroIO = gyroIO;
     modules[0] = new Module(flModuleIO, 0);
     modules[1] = new Module(frModuleIO, 1);
     modules[2] = new Module(blModuleIO, 2);
     modules[3] = new Module(brModuleIO, 3);
+    this.aprilTagVision = aprilTagVision;
 
     // Configure AutoBuilder for PathPlanner
     AutoBuilder.configureHolonomic(
@@ -179,6 +183,16 @@ public class Drive extends SubsystemBase {
 
     // Apply odometry update
     poseEstimator.update(rawGyroRotation, modulePositions);
+
+    // Apply vision update
+    if (aprilTagVision.getResult() != null) {
+      AprilTagVision.VisionResult visionResult = aprilTagVision.getResult();
+      // Ignore vision updates if angular velocity > 720 deg/s
+      if (Math.abs(gyroInputs.yawVelocityRadPerSec) < 720) {
+        poseEstimator.addVisionMeasurement(
+            visionResult.pose(), visionResult.timestamp(), visionResult.stdDevs());
+      }
+    }
   }
 
   /**
