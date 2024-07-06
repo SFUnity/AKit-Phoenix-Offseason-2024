@@ -187,8 +187,16 @@ public class Drive extends SubsystemBase {
     // Apply vision update
     if (aprilTagVision.getResult() != null) {
       AprilTagVision.VisionResult visionResult = aprilTagVision.getResult();
-      // Ignore vision updates if angular velocity > 720 deg/s
-      if (Math.abs(gyroInputs.yawVelocityRadPerSec) < 720) {
+      boolean doRejectVisionResult = false;
+      while (!doRejectVisionResult) {
+        // Ignore vision updates if angular velocity > 720 deg/s
+        doRejectVisionResult = Math.abs(gyroInputs.yawVelocityRadPerSec) < 720;
+        // Ignore vision updates if too far away from current pose
+        double allowableDistance = aprilTagVision.getTagCount() * 3; // In meters
+        Translation2d visionTranslation = visionResult.pose().getTranslation();
+        Translation2d poseTranslation = poseEstimator.getEstimatedPosition().getTranslation();
+        doRejectVisionResult = visionTranslation.getDistance(poseTranslation) > allowableDistance;
+        // Add result once all checks have passed
         poseEstimator.addVisionMeasurement(
             visionResult.pose(), visionResult.timestamp(), visionResult.stdDevs());
       }

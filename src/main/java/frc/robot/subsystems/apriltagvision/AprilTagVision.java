@@ -11,8 +11,8 @@ import frc.robot.FieldConstants;
 import frc.robot.subsystems.apriltagvision.AprilTagVisionConstants.Pipelines;
 import frc.robot.subsystems.leds.Leds;
 import frc.robot.util.VirtualSubsystem;
-import org.littletonrobotics.junction.Logger;
 import java.util.function.DoubleSupplier;
+import org.littletonrobotics.junction.Logger;
 
 public class AprilTagVision extends VirtualSubsystem {
   private final AprilTagVisionIO io;
@@ -34,7 +34,7 @@ public class AprilTagVision extends VirtualSubsystem {
 
     Leds.getInstance().tagsDetected = inputs.tagCount > 0;
     // TODO figure out new way to align with speaker
-  
+
     // Clear previous result
     result = null;
 
@@ -64,6 +64,10 @@ public class AprilTagVision extends VirtualSubsystem {
   /** Returns the last recorded pose */
   public VisionResult getResult() {
     return result;
+  }
+
+  public double getTagCount() {
+    return inputs.tagCount;
   }
 
   public double getDistance() {
