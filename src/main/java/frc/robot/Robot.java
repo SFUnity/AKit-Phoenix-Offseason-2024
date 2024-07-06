@@ -13,7 +13,7 @@
 
 package frc.robot;
 
-import com.ctre.phoenix6.SignalLogger;
+// import com.ctre.phoenix6.SignalLogger;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -97,8 +97,8 @@ public class Robot extends LoggedRobot {
         Logger.addDataReceiver(new NT4Publisher());
         new PowerDistribution(0, ModuleType.kRev); // Enables power distribution logging
         Logger.registerURCL(URCL.startExternal()); // Enables REV CAN logging !!! not replayable !!!
-        SignalLogger.setPath("/U/logs");
-        SignalLogger.start();
+        // SignalLogger.setPath("/U/logs"); // Only use signal logger for sysId
+        // SignalLogger.start();
         break;
 
       case SIM:
@@ -118,7 +118,6 @@ public class Robot extends LoggedRobot {
     }
 
     // See http://bit.ly/3YIzFZ6 for more information on timestamps in AdvantageKit.
-    // Logger.disableDeterministicTimestamps()
 
     // Start AdvantageKit logger
     Logger.start();
