@@ -37,6 +37,7 @@ public class AprilTagVisionIOLimelight implements AprilTagVisionIO {
     inputs.hb = LimelightHelpers.getLimelightNTDouble(name, "hb");
 
     // Update disconnected alert
+    // This is not a perfect solution because NT updates are only atomic at the topic level
     double currentHB = inputs.hb;
     inputs.isNew = currentHB != lastHB;
     if (currentHB != lastHB) {
