@@ -15,20 +15,50 @@ package frc.robot.subsystems.pivot;
 
 import static edu.wpi.first.units.Units.*;
 
+import static frc.robot.subsystems.pivot.PivotConstants.*;
+
+import edu.wpi.first.networktables.GenericEntry;
+import edu.wpi.first.networktables.GenericEntry;
+import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants;
+import frc.robot.subsystems.apriltagvision.AprilTagVisionConstants;
+
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
+import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 
 public class Pivot extends SubsystemBase {
   private final PivotIO io;
   private final PivotIOInputsAutoLogged inputs = new PivotIOInputsAutoLogged();
   private final SimpleMotorFeedforward ffModel;
   private final SysIdRoutine sysId;
+  private ShuffleboardTab driversTab = Shuffleboard.getTab("Drivers");
+
+  private GenericEntry hegihtOfSpeakerEntry = 
+  driversTab.addPersistent("Speaker Height", AprilTagVisionConstants.heightOfSpeakerInches)
+                                                 .withPosition(9, 1)
+                                                 .withSize(1, 1)
+                                                 .getEntry();
+
+  private GenericEntry feedingAngleEntry = driversTab.addPersistent("Feeding Angle", PivotConstants.kFeedingAngleRevRotations)
+                                                       .withPosition(8, 0)
+                                                       .withSize(1, 1)
+                                                       .getEntry();      
+                                                 
+
+  private GenericEntry angleOffset = driversTab.addPersistent("Angle Offset", PivotConstants.kSpeakerAngleOffsetRevRotations)
+                                                 .withPosition(8, 1)
+                                                 .withSize(1, 1)
+                                                 .getEntry();
+                                                                                                      
+  private double desiredAngle = 0;
 
   /** Creates a new Flywheel. */
   public Pivot(PivotIO io) {
@@ -87,6 +117,8 @@ public class Pivot extends SubsystemBase {
     io.stop();
   }
 
+  
+
   /** Returns a command to run a quasistatic test in the specified direction. */
   public Command sysIdQuasistatic(SysIdRoutine.Direction direction) {
     return sysId.quasistatic(direction);
@@ -107,4 +139,30 @@ public class Pivot extends SubsystemBase {
   public double getCharacterizationVelocity() {
     return inputs.velocityRadPerSec;
   }
+
+ 
+
+  
+
+  public void readyShootSpeakerManual() {
+        
+    desiredAngle = PivotConstants.kSpeakerManualAngleRevRotations;
+  }
+
+  // public void readyShootSpeakerAutomatic() {
+        
+        
+  //   double heightOfTarget = hegihtOfSpeakerEntry.getDouble(LimelightConstants.kHeightOfSpeakerInches);
+  //   double angleRad = Math.atan(heightOfTarget / m_limelight.getDistance());
+  //   double angleDeg = Math.toDegrees(angleRad);
+  //   desiredAngle = angleDeg + angleOffset.getDouble(ShooterConstants.kSpeakerAngleOffsetRevRotations);
+  // }
+
+  public void readyShootAmp() {
+        desiredAngle = PivotConstants.kDesiredAmpAngleRevRotations;
+    }
+
+    public void readyShootFeed() {
+        desiredAngle = feedingAngleEntry.getDouble(PivotConstants.kFeedingAngleRevRotations);
+    }
 }

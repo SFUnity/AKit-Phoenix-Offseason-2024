@@ -15,9 +15,11 @@ package frc.robot.subsystems.pivot;
 
 import org.littletonrobotics.junction.AutoLog;
 
+import com.revrobotics.CANSparkBase.ControlType;
+
 public interface PivotIO {
   @AutoLog
-  public static class FlywheelIOInputs {
+  public static class PivotIOInputs {
     public double positionRad = 0.0;
     public double velocityRadPerSec = 0.0;
     public double appliedVolts = 0.0;
@@ -25,7 +27,7 @@ public interface PivotIO {
   }
 
   /** Updates the set of loggable inputs. */
-  public default void updateInputs(FlywheelIOInputs inputs) {}
+  public default void updateInputs(PivotIOInputs inputs) {}
 
   /** Run open loop at the specified voltage. */
   public default void setVoltage(double volts) {}
@@ -33,9 +35,14 @@ public interface PivotIO {
   /** Run closed loop at the specified velocity. */
   public default void setVelocity(double velocityRadPerSec, double ffVolts) {}
 
+  public default void atDesiredAngle(double desiredAngle) {}
+
+  public default void setAngleMotorSpeeds(double desiredAngle) {}
   /** Stop in open loop. */
   public default void stop() {}
 
   /** Set velocity PID constants. */
   public default void configurePID(double kP, double kI, double kD) {}
+
+
 }

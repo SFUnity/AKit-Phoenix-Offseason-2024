@@ -15,6 +15,9 @@ package frc.robot.subsystems.pivot;
 
 import com.revrobotics.CANSparkBase.ControlType;
 import com.revrobotics.CANSparkLowLevel.MotorType;
+
+import static frc.robot.subsystems.intake.IntakeConstants.angleMotorId;
+
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkPIDController;
@@ -28,40 +31,38 @@ import edu.wpi.first.math.util.Units;
 public class PivotIOSparkMax implements PivotIO {
   private static final double GEAR_RATIO = 1.5;
 
-  private final CANSparkMax leader = new CANSparkMax(9, MotorType.kBrushless);
-  private final CANSparkMax follower = new CANSparkMax(10, MotorType.kBrushless);
-  private final RelativeEncoder encoder = leader.getEncoder();
-  private final SparkPIDController pid = leader.getPIDController();
+  private final CANSparkMax angleMotor = new CANSparkMax(angleMotorId, MotorType.kBrushless);
+  private final RelativeEncoder encoder = angleMotor.getEncoder();
+  private final SparkPIDController pid = angleMotor.getPIDController();
 
   public PivotIOSparkMax() {
-    leader.restoreFactoryDefaults();
-    follower.restoreFactoryDefaults();
+    angleMotor.restoreFactoryDefaults();
+    
 
-    leader.setCANTimeout(250);
-    follower.setCANTimeout(250);
+    angleMotor.setCANTimeout(250);
 
-    leader.setInverted(false);
-    follower.follow(leader, false);
+    angleMotor.setInverted(false);
+    
 
-    leader.enableVoltageCompensation(12.0);
-    leader.setSmartCurrentLimit(30);
+    angleMotor.enableVoltageCompensation(12.0);
+    angleMotor.setSmartCurrentLimit(30);
 
-    leader.burnFlash();
-    follower.burnFlash();
+    angleMotor.burnFlash();
+    
   }
 
   @Override
-  public void updateInputs(FlywheelIOInputs inputs) {
+  public void updateInputs(PivotIOInputs inputs) {
     inputs.positionRad = Units.rotationsToRadians(encoder.getPosition() / GEAR_RATIO);
     inputs.velocityRadPerSec =
         Units.rotationsPerMinuteToRadiansPerSecond(encoder.getVelocity() / GEAR_RATIO);
-    inputs.appliedVolts = leader.getAppliedOutput() * leader.getBusVoltage();
-    inputs.currentAmps = new double[] {leader.getOutputCurrent(), follower.getOutputCurrent()};
+    inputs.appliedVolts = angleMotor.getAppliedOutput() * angleMotor.getBusVoltage();
+    inputs.currentAmps = new double[] {angleMotor.getOutputCurrent(), angleMotor.getOutputCurrent()};
   }
 
   @Override
   public void setVoltage(double volts) {
-    leader.setVoltage(volts);
+    angleMotor.setVoltage(volts);
   }
 
   @Override
@@ -76,8 +77,19 @@ public class PivotIOSparkMax implements PivotIO {
 
   @Override
   public void stop() {
-    leader.stopMotor();
+    angleMotor.stopMotor();
   }
+
+  @Override
+  public boolean atDesiredAngle(double desiredAngle) {
+    return encoder.getPosition() <= desiredAngle + 1 || encoder.getPosition() >= desiredAngle - 1;
+  } 
+
+  @Override
+
+  public void setAngleMotorSpeeds(double desiredAngle) {
+    pid.setReference(desiredAngle, ControlType.kPosition);
+}
 
   @Override
   public void configurePID(double kP, double kI, double kD) {

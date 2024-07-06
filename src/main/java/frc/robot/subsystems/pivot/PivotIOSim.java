@@ -27,7 +27,7 @@ public class PivotIOSim implements PivotIO {
   private double appliedVolts = 0.0;
 
   @Override
-  public void updateInputs(FlywheelIOInputs inputs) {
+  public void updateInputs(PivotIOInputs inputs) {
     if (closedLoop) {
       appliedVolts =
           MathUtil.clamp(pid.calculate(sim.getAngularVelocityRadPerSec()) + ffVolts, -12.0, 12.0);
