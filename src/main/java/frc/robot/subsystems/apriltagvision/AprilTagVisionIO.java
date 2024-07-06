@@ -21,7 +21,7 @@ public interface AprilTagVisionIO {
   }
 
   /** Updates the set of loggable inputs. */
-  public default void updateInputs(AprilTagVisionIOInputs inputs) {}
+  public default void updateInputs(AprilTagVisionIOInputs inputs, double robotYawInDegrees) {}
 
   /** Sets the pipeline number. */
   public default void setPipeline(int pipeline) {}
