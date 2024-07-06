@@ -3,7 +3,6 @@ package frc.robot.subsystems.apriltagvision;
 import edu.wpi.first.wpilibj.Timer;
 import frc.robot.util.Alert;
 import frc.robot.util.LimelightHelpers;
-import java.util.function.DoubleSupplier;
 
 public class AprilTagVisionIOLimelight implements AprilTagVisionIO {
   private String name;
@@ -12,11 +11,9 @@ public class AprilTagVisionIOLimelight implements AprilTagVisionIO {
   private final Alert disconnectedAlert;
   private final Timer disconnectedTimer = new Timer();
   private double lastHB = 0;
-  private DoubleSupplier robotYawInDegrees;
 
-  public AprilTagVisionIOLimelight(String camName, DoubleSupplier robotYawInDegrees) {
+  public AprilTagVisionIOLimelight(String camName) {
     name = camName;
-    this.robotYawInDegrees = robotYawInDegrees;
 
     LimelightHelpers.setLEDMode_PipelineControl(name);
     LimelightHelpers.setCameraMode_Processor(name);
@@ -26,9 +23,9 @@ public class AprilTagVisionIOLimelight implements AprilTagVisionIO {
   }
 
   @Override
-  public void updateInputs(AprilTagVisionIOInputs inputs) {
+  public void updateInputs(AprilTagVisionIOInputs inputs, double robotYawInDegrees) {
     LimelightHelpers.SetRobotOrientation(
-        "limelight", robotYawInDegrees.getAsDouble(), 0, 0, 0, 0, 0);
+        "limelight", robotYawInDegrees, 0, 0, 0, 0, 0);
     LimelightHelpers.PoseEstimate mt2 = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(name);
 
     inputs.estimatedPose = mt2.pose;

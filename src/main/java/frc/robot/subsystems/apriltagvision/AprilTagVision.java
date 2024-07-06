@@ -8,10 +8,13 @@ import frc.robot.subsystems.apriltagvision.AprilTagVisionConstants.Pipelines;
 import frc.robot.subsystems.leds.Leds;
 import frc.robot.util.VirtualSubsystem;
 import org.littletonrobotics.junction.Logger;
+import java.util.function.DoubleSupplier;
 
 public class AprilTagVision extends VirtualSubsystem {
   private final AprilTagVisionIO io;
   private final AprilTagVisionIOInputsAutoLogged inputs = new AprilTagVisionIOInputsAutoLogged();
+
+  private DoubleSupplier yawSupplier = () -> 0.0;
 
   public AprilTagVision(AprilTagVisionIO io) {
     this.io = io;
@@ -20,20 +23,15 @@ public class AprilTagVision extends VirtualSubsystem {
   }
 
   public void periodic() {
-    io.updateInputs(inputs);
+    io.updateInputs(inputs, yawSupplier.getAsDouble());
     Logger.processInputs("Vision", inputs);
 
     Leds.getInstance().tagsDetected = inputs.tagCount > 0;
     // TODO figure out new way to align with speaker
+  }
 
-    Pose2d robotPose = inputs.estimatedPose;
-    // Exit if robot pose is off the field
-    if (robotPose.getX() < -fieldBorderMargin
-        || robotPose.getX() > FieldConstants.fieldLength + fieldBorderMargin
-        || robotPose.getY() < -fieldBorderMargin
-        || robotPose.getY() > FieldConstants.fieldWidth + fieldBorderMargin) {
-      // Ignore tag
-    }
+  public void setYawSupplier(DoubleSupplier yawSupplier) {
+    this.yawSupplier = yawSupplier;
   }
 
   public double getDistance() {

@@ -83,48 +83,51 @@ public class RobotContainer {
     switch (Constants.currentMode) {
       case REAL:
         // Real robot, instantiate hardware IO implementations
+        aprilTagVision = new AprilTagVision(new AprilTagVisionIOLimelight("limelight"));
         drive =
             new Drive(
                 new GyroIOPigeon2(),
                 new ModuleIOMixed(0),
                 new ModuleIOMixed(1),
                 new ModuleIOMixed(2),
-                new ModuleIOMixed(3));
+                new ModuleIOMixed(3),
+                aprilTagVision);
         flywheel = new Flywheel(new FlywheelIOSparkMax());
         intake = new Intake(new IntakeIOSim());
-        aprilTagVision =
-            new AprilTagVision(
-                new AprilTagVisionIOLimelight("limelight", () -> drive.getRotation().getDegrees()));
         break;
 
       case SIM:
         // Sim robot, instantiate physics sim IO implementations
+        aprilTagVision = new AprilTagVision(new AprilTagVisionIO() {});
         drive =
             new Drive(
                 new GyroIO() {},
                 new ModuleIOSim(),
                 new ModuleIOSim(),
                 new ModuleIOSim(),
-                new ModuleIOSim());
+                new ModuleIOSim(),
+                aprilTagVision);
         flywheel = new Flywheel(new FlywheelIOSim());
         intake = new Intake(new IntakeIOSim());
-        aprilTagVision = new AprilTagVision(new AprilTagVisionIO() {});
         break;
 
       default:
         // Replayed robot, disable IO implementations
+        aprilTagVision = new AprilTagVision(new AprilTagVisionIO() {});
         drive =
             new Drive(
                 new GyroIO() {},
                 new ModuleIO() {},
                 new ModuleIO() {},
                 new ModuleIO() {},
-                new ModuleIO() {});
+                new ModuleIO() {},
+                aprilTagVision);
         flywheel = new Flywheel(new FlywheelIO() {});
         intake = new Intake(new IntakeIO() {});
-        aprilTagVision = new AprilTagVision(new AprilTagVisionIO() {});
         break;
     }
+
+    aprilTagVision.setYawSupplier(() -> drive.getRotation().getDegrees());
 
     // Set up auto routines
     NamedCommands.registerCommand(
