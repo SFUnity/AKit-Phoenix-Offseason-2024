@@ -52,8 +52,7 @@ public class AprilTagVision extends VirtualSubsystem {
               || robotPose.getX() > FieldConstants.fieldLength + fieldBorderMargin
               || robotPose.getY() < -fieldBorderMargin
               || robotPose.getY() > FieldConstants.fieldWidth + fieldBorderMargin;
-    }
-    if (!doRejectUpdate) {
+      // Add result because all checks passed
       result = new VisionResult(robotPose, inputs.timestamp, VecBuilder.fill(.7, .7, 9999999));
     }
   }
