@@ -4,6 +4,7 @@ import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import frc.robot.subsystems.apriltagvision.AprilTagVision;
 import frc.robot.subsystems.drive.DriveConstants;
@@ -41,17 +42,24 @@ public class PoseManager {
       doRejectUpdate = Math.abs(lastYawVelocity) < 720;
       // Ignore if the estimated pose is too far away from current pose
       double allowableDistance = tagCount * 3; // In meters
-      doRejectUpdate = getDistance(resultPose) > allowableDistance;
+      doRejectUpdate = getDistanceTo(resultPose) > allowableDistance;
       // Add result because all checks passed
       poseEstimator.addVisionMeasurement(
           visionResult.pose(), visionResult.timestamp(), visionResult.stdDevs());
     }
   }
 
-  public double getDistance(Pose2d pose) {
-    Translation2d inputTranslation = pose.getTranslation();
+  public double getDistanceTo(Pose2d pose) {
+    return getDistanceTo(pose.getTranslation());
+  }
+
+  public double getDistanceTo(Translation3d translation) {
+    return getDistanceTo(translation.toTranslation2d());
+  }
+
+  public double getDistanceTo(Translation2d translation) {
     Translation2d currentTranslation = getPose().getTranslation();
-    return currentTranslation.getDistance(inputTranslation);
+    return currentTranslation.getDistance(translation);
   }
 
   /** Returns the current odometry pose. */
