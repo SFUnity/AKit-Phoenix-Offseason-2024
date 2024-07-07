@@ -25,6 +25,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants;
+import frc.robot.subsystems.apriltagvision.AprilTagVision;
 import frc.robot.subsystems.apriltagvision.AprilTagVisionConstants;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -36,6 +37,7 @@ import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 
 public class Pivot extends SubsystemBase {
   private final PivotIO io;
+  private final AprilTagVision aprilTagVision;
   private final PivotIOInputsAutoLogged inputs = new PivotIOInputsAutoLogged();
   private final SimpleMotorFeedforward ffModel;
   private final SysIdRoutine sysId;
@@ -61,8 +63,10 @@ public class Pivot extends SubsystemBase {
   private double desiredAngle = 0;
 
   /** Creates a new Flywheel. */
-  public Pivot(PivotIO io) {
+  public Pivot(PivotIO io, AprilTagVision aprilTagVision) {
     this.io = io;
+
+    this.aprilTagVision = aprilTagVision;
 
     // Switch constants based on mode (the physics simulator is treated as a
     // separate robot with different tuning)
@@ -102,6 +106,10 @@ public class Pivot extends SubsystemBase {
   public void runVolts(double volts) {
     io.setVoltage(volts);
   }
+
+  public boolean atDesiredAngle(double desiredAngle) {
+    return inputs.positionRad <= desiredAngle + 1 || inputs.positionRad >= desiredAngle - 1;
+  } 
 
   /** Run closed loop at the specified velocity. */
   public void runVelocity(double velocityRPM) {
@@ -149,14 +157,14 @@ public class Pivot extends SubsystemBase {
     desiredAngle = PivotConstants.kSpeakerManualAngleRevRotations;
   }
 
-  // public void readyShootSpeakerAutomatic() {
+  public void readyShootSpeakerAutomatic() {
         
         
-  //   double heightOfTarget = hegihtOfSpeakerEntry.getDouble(LimelightConstants.kHeightOfSpeakerInches);
-  //   double angleRad = Math.atan(heightOfTarget / m_limelight.getDistance());
-  //   double angleDeg = Math.toDegrees(angleRad);
-  //   desiredAngle = angleDeg + angleOffset.getDouble(ShooterConstants.kSpeakerAngleOffsetRevRotations);
-  // }
+    double heightOfTarget = hegihtOfSpeakerEntry.getDouble(AprilTagVisionConstants.heightOfSpeakerInches);
+    double angleRad = Math.atan(heightOfTarget / aprilTagVision.getDistance());
+    double angleDeg = Math.toDegrees(angleRad);
+    desiredAngle = angleDeg + angleOffset.getDouble(PivotConstants.kSpeakerAngleOffsetRevRotations);
+  }
 
     public void readyShootAmp() {
         desiredAngle = PivotConstants.kDesiredAmpAngleRevRotations;
@@ -166,13 +174,28 @@ public class Pivot extends SubsystemBase {
         desiredAngle = feedingAngleEntry.getDouble(PivotConstants.kFeedingAngleRevRotations);
     }
 
-  public Command setShootAngleCommand(){
+  public Command setManualShootAngleCommand(){
     
       return run(() -> {
-          readyShootSpeakerManual();
-          io.setAngleMotorSpeeds(desiredAngle);
-          })
-          .withName("setShootAngle");
+        readyShootSpeakerManual();
+        io.setAngleMotorSpeeds(desiredAngle);
+      }).finallyDo(() -> {
+      readyShootAmp();
+      io.setAngleMotorSpeeds(desiredAngle);
+      
+      })
+          .withName("setManualShootAngle");
+  }
+  public Command setAutoShootAngleCommand(){
+    return run(() -> {
+      readyShootSpeakerAutomatic();
+      io.setAngleMotorSpeeds(desiredAngle);
+    }).finallyDo(() -> {
+      readyShootAmp();
+      io.setAngleMotorSpeeds(desiredAngle);
+      
+    })
+    .withName("setAutoShootAngle");
   }
 
   public Command setAmpAngleCommand(){
@@ -187,9 +210,14 @@ public class Pivot extends SubsystemBase {
     return run(() -> {
       readyShootFeed();
       io.setAngleMotorSpeeds(desiredAngle);
+    }).finallyDo(() -> {
+      readyShootAmp();
+      io.setAngleMotorSpeeds(desiredAngle);
+      
     })
     .withName("gotta be a team player");
   }
+  
 }
 
 

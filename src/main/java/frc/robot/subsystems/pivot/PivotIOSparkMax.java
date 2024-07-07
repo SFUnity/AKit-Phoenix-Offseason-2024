@@ -80,10 +80,7 @@ public class PivotIOSparkMax implements PivotIO {
     angleMotor.stopMotor();
   }
 
-  @Override
-  public boolean atDesiredAngle(double desiredAngle) {
-    return encoder.getPosition() <= desiredAngle + 1 || encoder.getPosition() >= desiredAngle - 1;
-  } 
+  
 
   @Override
 

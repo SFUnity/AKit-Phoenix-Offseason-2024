@@ -91,9 +91,9 @@ public class RobotContainer {
                 new ModuleIOMixed(2),
                 new ModuleIOMixed(3));
         flywheel = new Flywheel(new FlywheelIOSparkMax());
-        pivot = new Pivot(new PivotIOSparkMax());
         intake = new Intake(new IntakeIOSim());
         aprilTagVision = new AprilTagVision(new AprilTagVisionIOLimelight("limelight"));
+        pivot = new Pivot(new PivotIOSparkMax(), aprilTagVision);
         break;
 
       case SIM:
@@ -108,7 +108,7 @@ public class RobotContainer {
         flywheel = new Flywheel(new FlywheelIOSim());
         intake = new Intake(new IntakeIOSim());
         aprilTagVision = new AprilTagVision(new AprilTagVisionIO() {});
-        pivot = new Pivot(new PivotIOSim());
+        pivot = new Pivot(new PivotIOSim(), aprilTagVision);
         break;
 
       default:
@@ -121,9 +121,9 @@ public class RobotContainer {
                 new ModuleIO() {},
                 new ModuleIO() {});
         flywheel = new Flywheel(new FlywheelIO() {});
-        pivot = new Pivot(new PivotIO() {});
         intake = new Intake(new IntakeIO() {});
         aprilTagVision = new AprilTagVision(new AprilTagVisionIO() {});
+        pivot = new Pivot(new PivotIO() {}, aprilTagVision);
         break;
     }
 
