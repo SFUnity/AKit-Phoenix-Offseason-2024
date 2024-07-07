@@ -11,14 +11,11 @@ import frc.robot.FieldConstants;
 import frc.robot.subsystems.apriltagvision.AprilTagVisionConstants.Pipelines;
 import frc.robot.subsystems.leds.Leds;
 import frc.robot.util.VirtualSubsystem;
-import java.util.function.DoubleSupplier;
 import org.littletonrobotics.junction.Logger;
 
 public class AprilTagVision extends VirtualSubsystem {
   private final AprilTagVisionIO io;
   private final AprilTagVisionIOInputsAutoLogged inputs = new AprilTagVisionIOInputsAutoLogged();
-
-  private DoubleSupplier yawSupplier = () -> 0.0;
 
   private VisionResult result = null;
 
@@ -29,7 +26,7 @@ public class AprilTagVision extends VirtualSubsystem {
   }
 
   public void periodic() {
-    io.updateInputs(inputs, yawSupplier.getAsDouble());
+    io.updateInputs(inputs);
     Logger.processInputs("Vision", inputs);
 
     Leds.getInstance().tagsDetected = inputs.tagCount > 0;
@@ -42,6 +39,7 @@ public class AprilTagVision extends VirtualSubsystem {
     boolean doRejectUpdate = false;
 
     while (!doRejectUpdate) {
+      // TODO refactor to use if statements
       // Exit if old data
       doRejectUpdate = !inputs.isNew;
       // Exit if there are no tags
@@ -55,10 +53,6 @@ public class AprilTagVision extends VirtualSubsystem {
       // Add result because all checks passed
       result = new VisionResult(robotPose, inputs.timestamp, VecBuilder.fill(.7, .7, 9999999));
     }
-  }
-
-  public void setYawSupplier(DoubleSupplier yawSupplier) {
-    this.yawSupplier = yawSupplier;
   }
 
   /** Returns the last recorded pose */

@@ -87,7 +87,6 @@ public class RobotContainer {
     switch (Constants.currentMode) {
       case REAL:
         // Real robot, instantiate hardware IO implementations
-        aprilTagVision = new AprilTagVision(new AprilTagVisionIOLimelight("limelight"));
         drive =
             new Drive(
                 new GyroIOPigeon2(),
@@ -95,15 +94,16 @@ public class RobotContainer {
                 new ModuleIOMixed(1),
                 new ModuleIOMixed(2),
                 new ModuleIOMixed(3),
-                aprilTagVision,
                 poseManager);
+        aprilTagVision =
+            new AprilTagVision(
+                new AprilTagVisionIOLimelight("limelight", poseManager));
         flywheel = new Flywheel(new FlywheelIOSparkMax());
         intake = new Intake(new IntakeIOSim());
         break;
 
       case SIM:
         // Sim robot, instantiate physics sim IO implementations
-        aprilTagVision = new AprilTagVision(new AprilTagVisionIO() {});
         drive =
             new Drive(
                 new GyroIO() {},
@@ -111,15 +111,14 @@ public class RobotContainer {
                 new ModuleIOSim(),
                 new ModuleIOSim(),
                 new ModuleIOSim(),
-                aprilTagVision,
                 poseManager);
+        aprilTagVision = new AprilTagVision(new AprilTagVisionIO() {});
         flywheel = new Flywheel(new FlywheelIOSim());
         intake = new Intake(new IntakeIOSim());
         break;
 
       default:
         // Replayed robot, disable IO implementations
-        aprilTagVision = new AprilTagVision(new AprilTagVisionIO() {});
         drive =
             new Drive(
                 new GyroIO() {},
@@ -127,14 +126,12 @@ public class RobotContainer {
                 new ModuleIO() {},
                 new ModuleIO() {},
                 new ModuleIO() {},
-                aprilTagVision,
                 poseManager);
+        aprilTagVision = new AprilTagVision(new AprilTagVisionIO() {});
         flywheel = new Flywheel(new FlywheelIO() {});
         intake = new Intake(new IntakeIO() {});
         break;
     }
-
-    aprilTagVision.setYawSupplier(() -> drive.getRotation().getDegrees());
 
     // Set up auto routines
     NamedCommands.registerCommand(
@@ -192,7 +189,8 @@ public class RobotContainer {
             () -> -driver.getRightX(),
             () -> fastMode,
             slowDriveMultiplier,
-            slowTurnMultiplier));
+            slowTurnMultiplier,
+            poseManager));
     intake.setDefaultCommand(intake.raiseAndStopCmd());
 
     // Driver controls
@@ -202,8 +200,8 @@ public class RobotContainer {
         .onTrue(
             Commands.runOnce(
                     () ->
-                        drive.setPose(
-                            new Pose2d(drive.getPose().getTranslation(), new Rotation2d())),
+                        poseManager.setPose(
+                            new Pose2d(poseManager.getTranslation(), new Rotation2d())),
                     drive)
                 .ignoringDisable(true));
     driver.leftBumper().onTrue(Commands.runOnce(() -> fastMode = !fastMode, drive));

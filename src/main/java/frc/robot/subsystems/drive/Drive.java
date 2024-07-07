@@ -20,25 +20,19 @@ import com.pathplanner.lib.pathfinding.Pathfinding;
 import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
 import com.pathplanner.lib.util.PathPlannerLogging;
 import com.pathplanner.lib.util.ReplanningConfig;
-import edu.wpi.first.math.Matrix;
-import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Twist2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
-import edu.wpi.first.math.numbers.N1;
-import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
-import frc.robot.subsystems.apriltagvision.AprilTagVision;
 import frc.robot.util.Alert;
 import frc.robot.util.LocalADStarAK;
 import frc.robot.util.PoseManager;
@@ -50,7 +44,6 @@ public class Drive extends SubsystemBase {
   private final GyroIO gyroIO;
   private final GyroIOInputsAutoLogged gyroInputs = new GyroIOInputsAutoLogged();
   private final Module[] modules = new Module[4]; // FL, FR, BL, BR
-  private final AprilTagVision aprilTagVision;
   private final PoseManager poseManager;
   private final SysIdRoutine sysId;
 
@@ -63,8 +56,6 @@ public class Drive extends SubsystemBase {
         new SwerveModulePosition(),
         new SwerveModulePosition()
       };
-  private SwerveDrivePoseEstimator poseEstimator =
-      new SwerveDrivePoseEstimator(kinematics, rawGyroRotation, lastModulePositions, new Pose2d());
 
   private boolean brakeMode;
   private Timer brakeModeTimer = new Timer();
@@ -79,20 +70,18 @@ public class Drive extends SubsystemBase {
       ModuleIO frModuleIO,
       ModuleIO blModuleIO,
       ModuleIO brModuleIO,
-      AprilTagVision aprilTagVision,
       PoseManager poseManager) {
     this.gyroIO = gyroIO;
     modules[0] = new Module(flModuleIO, 0);
     modules[1] = new Module(frModuleIO, 1);
     modules[2] = new Module(blModuleIO, 2);
     modules[3] = new Module(brModuleIO, 3);
-    this.aprilTagVision = aprilTagVision;
     this.poseManager = poseManager;
 
     // Configure AutoBuilder for PathPlanner
     AutoBuilder.configureHolonomic(
-        this::getPose,
-        this::setPose,
+        poseManager::getPose,
+        poseManager::setPose,
         () -> kinematics.toChassisSpeeds(getModuleStates()),
         this::runVelocity,
         new HolonomicPathFollowerConfig(
@@ -180,25 +169,8 @@ public class Drive extends SubsystemBase {
     }
 
     // Apply odometry update
-    poseEstimator.update(rawGyroRotation, modulePositions);
-
-    // Apply vision update
-    if (aprilTagVision.getResult() != null) {
-      AprilTagVision.VisionResult visionResult = aprilTagVision.getResult();
-      boolean doRejectVisionResult = false;
-      while (!doRejectVisionResult) {
-        // Ignore vision updates if angular velocity > 720 deg/s
-        doRejectVisionResult = Math.abs(gyroInputs.yawVelocityRadPerSec) < 720;
-        // Ignore vision updates if too far away from current pose
-        double allowableDistance = aprilTagVision.getTagCount() * 3; // In meters
-        Translation2d visionTranslation = visionResult.pose().getTranslation();
-        Translation2d poseTranslation = poseEstimator.getEstimatedPosition().getTranslation();
-        doRejectVisionResult = visionTranslation.getDistance(poseTranslation) > allowableDistance;
-        // Add result once all checks have passed
-        poseEstimator.addVisionMeasurement(
-            visionResult.pose(), visionResult.timestamp(), visionResult.stdDevs());
-      }
-    }
+    poseManager.addOdometryMeasurement(
+        rawGyroRotation, modulePositions, gyroInputs.yawVelocityRadPerSec);
   }
 
   /**
@@ -269,45 +241,6 @@ public class Drive extends SubsystemBase {
       states[i] = modules[i].getPosition();
     }
     return states;
-  }
-
-  /** Returns the current odometry pose. */
-  @AutoLogOutput(key = "Odometry/Robot")
-  public Pose2d getPose() {
-    return poseEstimator.getEstimatedPosition();
-  }
-
-  /** Returns the current odometry rotation. */
-  public Rotation2d getRotation() {
-    return getPose().getRotation();
-  }
-
-  /** Resets the current odometry pose. */
-  public void setPose(Pose2d pose) {
-    poseEstimator.resetPosition(rawGyroRotation, getModulePositions(), pose);
-  }
-
-  /**
-   * Adds a vision measurement to the pose estimator.
-   *
-   * @param visionPose The pose of the robot as measured by the vision camera.
-   * @param timestamp The timestamp of the vision measurement in seconds.
-   */
-  public void addVisionMeasurement(Pose2d visionPose, double timestamp) {
-    poseEstimator.addVisionMeasurement(visionPose, timestamp);
-  }
-
-  /**
-   * Adds a vision measurement to the pose estimator.
-   *
-   * @param visionPose The pose of the robot as measured by the vision camera.
-   * @param timestamp The timestamp of the vision measurement in seconds.
-   * @param stdDevs Standard deviations of the vision pose measurement (x position in meters, y
-   *     position in meters, and heading in radians). Increase these numbers to trust the vision
-   *     pose measurement less.
-   */
-  public void addVisionMeasurement(Pose2d visionPose, double timestamp, Matrix<N3, N1> stdDevs) {
-    poseEstimator.addVisionMeasurement(visionPose, timestamp, stdDevs);
   }
 
   /**

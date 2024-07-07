@@ -25,6 +25,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.DriveConstants;
+import frc.robot.util.PoseManager;
 import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 import org.littletonrobotics.junction.networktables.LoggedDashboardNumber;
@@ -44,7 +45,8 @@ public class DriveCommands {
       DoubleSupplier omegaSupplier,
       BooleanSupplier fastMode,
       LoggedDashboardNumber slowDriveMultiplier,
-      LoggedDashboardNumber slowTurnMultiplier) {
+      LoggedDashboardNumber slowTurnMultiplier,
+      PoseManager poseManager) {
     return Commands.run(
         () -> {
           // Convert to doubles
@@ -85,8 +87,8 @@ public class DriveCommands {
                   linearVelocity.getY() * DriveConstants.MAX_LINEAR_SPEED,
                   omega * DriveConstants.MAX_ANGULAR_SPEED,
                   isFlipped
-                      ? drive.getRotation().plus(new Rotation2d(Math.PI))
-                      : drive.getRotation()));
+                      ? poseManager.getRotation().plus(new Rotation2d(Math.PI))
+                      : poseManager.getRotation()));
         },
         drive);
   }
