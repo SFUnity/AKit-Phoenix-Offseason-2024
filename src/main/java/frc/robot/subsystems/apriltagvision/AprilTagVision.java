@@ -64,14 +64,5 @@ public class AprilTagVision extends VirtualSubsystem {
     return inputs.tagCount;
   }
 
-  public double getDistance() {
-    // ! now returns a fake value
-    double angleToGoalDegrees = limelightMountAngleDegrees; // + inputs.targetYOffset;
-    double angleToGoalRadians = Math.toRadians(angleToGoalDegrees);
-    // TODO find out new way to do this using pose
-    // calculate distance
-    return (heightOfTagInches - limelightLensHeightInches) / Math.tan(angleToGoalRadians);
-  }
-
   public record VisionResult(Pose2d pose, double timestamp, Matrix<N3, N1> stdDevs) {}
 }
