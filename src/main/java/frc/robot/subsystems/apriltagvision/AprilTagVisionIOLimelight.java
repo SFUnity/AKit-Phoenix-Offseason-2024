@@ -12,7 +12,6 @@ public class AprilTagVisionIOLimelight implements AprilTagVisionIO {
   private static final double disconnectedTimeout = 0.5;
   private final Alert disconnectedAlert;
   private final Timer disconnectedTimer = new Timer();
-  private double lastHB = 0;
 
   public AprilTagVisionIOLimelight(String camName, PoseManager poseManager) {
     name = camName;
@@ -41,11 +40,9 @@ public class AprilTagVisionIOLimelight implements AprilTagVisionIO {
     inputs.hb = LimelightHelpers.getLimelightNTDouble(name, "hb");
 
     // Update disconnected alert
-    // This is not a perfect solution because NT updates are only atomic at the topic level
-    double currentHB = inputs.hb;
-    inputs.isNew = currentHB != lastHB;
-    if (currentHB != lastHB) {
-      lastHB = currentHB;
+    var queue = LimelightHelpers.getLimelightNTTableEntry(name, "botpose_orb_wpiblue").readQueue();
+    inputs.isNew = queue.length > 0;
+    if (inputs.isNew) {
       disconnectedTimer.reset();
     }
     disconnectedAlert.set(disconnectedTimer.hasElapsed(disconnectedTimeout));
