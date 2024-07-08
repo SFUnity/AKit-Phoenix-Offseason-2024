@@ -13,11 +13,10 @@
 
 package frc.robot.subsystems.pivot;
 
-import com.revrobotics.CANSparkBase.ControlType;
-import com.revrobotics.CANSparkLowLevel.MotorType;
-
 import static frc.robot.subsystems.intake.IntakeConstants.angleMotorId;
 
+import com.revrobotics.CANSparkBase.ControlType;
+import com.revrobotics.CANSparkLowLevel.MotorType;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkPIDController;
@@ -37,18 +36,15 @@ public class PivotIOSparkMax implements PivotIO {
 
   public PivotIOSparkMax() {
     angleMotor.restoreFactoryDefaults();
-    
 
     angleMotor.setCANTimeout(250);
 
     angleMotor.setInverted(false);
-    
 
     angleMotor.enableVoltageCompensation(12.0);
     angleMotor.setSmartCurrentLimit(30);
 
     angleMotor.burnFlash();
-    
   }
 
   @Override
@@ -57,7 +53,8 @@ public class PivotIOSparkMax implements PivotIO {
     inputs.velocityRadPerSec =
         Units.rotationsPerMinuteToRadiansPerSecond(encoder.getVelocity() / GEAR_RATIO);
     inputs.appliedVolts = angleMotor.getAppliedOutput() * angleMotor.getBusVoltage();
-    inputs.currentAmps = new double[] {angleMotor.getOutputCurrent(), angleMotor.getOutputCurrent()};
+    inputs.currentAmps =
+        new double[] {angleMotor.getOutputCurrent(), angleMotor.getOutputCurrent()};
   }
 
   @Override
@@ -80,13 +77,10 @@ public class PivotIOSparkMax implements PivotIO {
     angleMotor.stopMotor();
   }
 
-  
-
   @Override
-
   public void setAngleMotorSpeeds(double desiredAngle) {
     pid.setReference(desiredAngle, ControlType.kPosition);
-}
+  }
 
   @Override
   public void configurePID(double kP, double kI, double kD) {

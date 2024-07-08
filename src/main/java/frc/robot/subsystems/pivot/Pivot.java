@@ -14,26 +14,21 @@
 package frc.robot.subsystems.pivot;
 
 import static edu.wpi.first.units.Units.*;
-
 import static frc.robot.subsystems.pivot.PivotConstants.*;
 
-import edu.wpi.first.networktables.GenericEntry;
-import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.networktables.GenericEntry;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants;
 import frc.robot.subsystems.apriltagvision.AprilTagVision;
 import frc.robot.subsystems.apriltagvision.AprilTagVisionConstants;
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
-import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
-import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
-import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 
 public class Pivot extends SubsystemBase {
   private final PivotIO io;
@@ -43,23 +38,27 @@ public class Pivot extends SubsystemBase {
   private final SysIdRoutine sysId;
   private ShuffleboardTab driversTab = Shuffleboard.getTab("Drivers");
 
-  private GenericEntry hegihtOfSpeakerEntry = 
-  driversTab.addPersistent("Speaker Height", AprilTagVisionConstants.heightOfSpeakerInches)
-                                                 .withPosition(9, 1)
-                                                 .withSize(1, 1)
-                                                 .getEntry();
+  private GenericEntry hegihtOfSpeakerEntry =
+      driversTab
+          .addPersistent("Speaker Height", AprilTagVisionConstants.heightOfSpeakerInches)
+          .withPosition(9, 1)
+          .withSize(1, 1)
+          .getEntry();
 
-  private GenericEntry feedingAngleEntry = driversTab.addPersistent("Feeding Angle", PivotConstants.kFeedingAngleRevRotations)
-                                                       .withPosition(8, 0)
-                                                       .withSize(1, 1)
-                                                       .getEntry();      
-                                                 
+  private GenericEntry feedingAngleEntry =
+      driversTab
+          .addPersistent("Feeding Angle", PivotConstants.kFeedingAngleRevRotations)
+          .withPosition(8, 0)
+          .withSize(1, 1)
+          .getEntry();
 
-  private GenericEntry angleOffset = driversTab.addPersistent("Angle Offset", PivotConstants.kSpeakerAngleOffsetRevRotations)
-                                                 .withPosition(8, 1)
-                                                 .withSize(1, 1)
-                                                 .getEntry();
-                                                                                                      
+  private GenericEntry angleOffset =
+      driversTab
+          .addPersistent("Angle Offset", PivotConstants.kSpeakerAngleOffsetRevRotations)
+          .withPosition(8, 1)
+          .withSize(1, 1)
+          .getEntry();
+
   private double desiredAngle = 0;
 
   /** Creates a new Flywheel. */
@@ -109,7 +108,7 @@ public class Pivot extends SubsystemBase {
 
   public boolean atDesiredAngle(double desiredAngle) {
     return inputs.positionRad <= desiredAngle + 1 || inputs.positionRad >= desiredAngle - 1;
-  } 
+  }
 
   /** Run closed loop at the specified velocity. */
   public void runVelocity(double velocityRPM) {
@@ -124,8 +123,6 @@ public class Pivot extends SubsystemBase {
   public void stop() {
     io.stop();
   }
-
-  
 
   /** Returns a command to run a quasistatic test in the specified direction. */
   public Command sysIdQuasistatic(SysIdRoutine.Direction direction) {
@@ -148,76 +145,73 @@ public class Pivot extends SubsystemBase {
     return inputs.velocityRadPerSec;
   }
 
- 
-
-  
-
   public void readyShootSpeakerManual() {
-        
+
     desiredAngle = PivotConstants.kSpeakerManualAngleRevRotations;
   }
 
   public void readyShootSpeakerAutomatic() {
-        
-        
-    double heightOfTarget = hegihtOfSpeakerEntry.getDouble(AprilTagVisionConstants.heightOfSpeakerInches);
+
+    double heightOfTarget =
+        hegihtOfSpeakerEntry.getDouble(AprilTagVisionConstants.heightOfSpeakerInches);
     double angleRad = Math.atan(heightOfTarget / aprilTagVision.getDistance());
     double angleDeg = Math.toDegrees(angleRad);
     desiredAngle = angleDeg + angleOffset.getDouble(PivotConstants.kSpeakerAngleOffsetRevRotations);
   }
 
-    public void readyShootAmp() {
-        desiredAngle = PivotConstants.kDesiredAmpAngleRevRotations;
-    }
-
-    public void readyShootFeed() {
-        desiredAngle = feedingAngleEntry.getDouble(PivotConstants.kFeedingAngleRevRotations);
-    }
-
-  public Command setManualShootAngleCommand(){
-    
-      return run(() -> {
-        readyShootSpeakerManual();
-        io.setAngleMotorSpeeds(desiredAngle);
-      }).finallyDo(() -> {
-      readyShootAmp();
-      io.setAngleMotorSpeeds(desiredAngle);
-      
-      })
-          .withName("setManualShootAngle");
+  public void readyShootAmp() {
+    desiredAngle = PivotConstants.kDesiredAmpAngleRevRotations;
   }
-  public Command setAutoShootAngleCommand(){
+
+  public void readyShootFeed() {
+    desiredAngle = feedingAngleEntry.getDouble(PivotConstants.kFeedingAngleRevRotations);
+  }
+
+  public Command setManualShootAngleCommand() {
+
     return run(() -> {
-      readyShootSpeakerAutomatic();
-      io.setAngleMotorSpeeds(desiredAngle);
-    }).finallyDo(() -> {
-      readyShootAmp();
-      io.setAngleMotorSpeeds(desiredAngle);
-      
-    })
-    .withName("setAutoShootAngle");
+          readyShootSpeakerManual();
+          io.setAngleMotorSpeeds(desiredAngle);
+        })
+        .finallyDo(
+            () -> {
+              readyShootAmp();
+              io.setAngleMotorSpeeds(desiredAngle);
+            })
+        .withName("setManualShootAngle");
   }
 
-  public Command setAmpAngleCommand(){
+  public Command setAutoShootAngleCommand() {
     return run(() -> {
-      readyShootAmp();
-      io.setAngleMotorSpeeds(desiredAngle);
-    })
-    .withName("setAmpAngle");
+          readyShootSpeakerAutomatic();
+          io.setAngleMotorSpeeds(desiredAngle);
+        })
+        .finallyDo(
+            () -> {
+              readyShootAmp();
+              io.setAngleMotorSpeeds(desiredAngle);
+            })
+        .withName("setAutoShootAngle");
   }
 
-  public Command setFeedAngleCommand(){
+  public Command setAmpAngleCommand() {
     return run(() -> {
-      readyShootFeed();
-      io.setAngleMotorSpeeds(desiredAngle);
-    }).finallyDo(() -> {
-      readyShootAmp();
-      io.setAngleMotorSpeeds(desiredAngle);
-      
-    })
-    .withName("gotta be a team player");
+          readyShootAmp();
+          io.setAngleMotorSpeeds(desiredAngle);
+        })
+        .withName("setAmpAngle");
   }
-  
+
+  public Command setFeedAngleCommand() {
+    return run(() -> {
+          readyShootFeed();
+          io.setAngleMotorSpeeds(desiredAngle);
+        })
+        .finallyDo(
+            () -> {
+              readyShootAmp();
+              io.setAngleMotorSpeeds(desiredAngle);
+            })
+        .withName("gotta be a team player");
+  }
 }
-
-

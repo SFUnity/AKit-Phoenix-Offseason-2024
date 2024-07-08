@@ -15,8 +15,6 @@ package frc.robot.subsystems.pivot;
 
 import org.littletonrobotics.junction.AutoLog;
 
-import com.revrobotics.CANSparkBase.ControlType;
-
 public interface PivotIO {
   @AutoLog
   public static class PivotIOInputs {
@@ -43,6 +41,4 @@ public interface PivotIO {
 
   /** Set velocity PID constants. */
   public default void configurePID(double kP, double kI, double kD) {}
-
-
 }
