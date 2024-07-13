@@ -1,4 +1,4 @@
-// LimelightHelpers v1.6 (April 9, 2024)
+// LimelightHelpers v1.6 (April 9, 2024) modified by Team 9038
 
 package frc.robot.util;
 
@@ -24,7 +24,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.concurrent.CompletableFuture;
 
-public class LimelightHelpers {
+public class LimelightHelpers9038 {
 
   public static class LimelightTarget_Retro {
 
@@ -514,7 +514,7 @@ public class LimelightHelpers {
   }
 
   private static PoseEstimate getBotPoseEstimate(String limelightName, String entryName) {
-    var poseEntry = LimelightHelpers.getLimelightNTTableEntry(limelightName, entryName);
+    var poseEntry = LimelightHelpers9038.getLimelightNTTableEntry(limelightName, entryName);
     var poseArray = poseEntry.getDoubleArray(new double[0]);
     var pose = toPose2D(poseArray);
     double latency = extractArrayEntry(poseArray, 6);
@@ -550,7 +550,7 @@ public class LimelightHelpers {
   }
 
   public static RawDetection[] getRawDetections(String limelightName) {
-    var entry = LimelightHelpers.getLimelightNTTableEntry(limelightName, "rawdetections");
+    var entry = LimelightHelpers9038.getLimelightNTTableEntry(limelightName, "rawdetections");
     var rawDetectionArray = entry.getDoubleArray(new double[0]);
     int valsPerEntry = 11;
     if (rawDetectionArray.length % valsPerEntry != 0) {
@@ -1028,7 +1028,7 @@ public class LimelightHelpers {
   public static LimelightResults getLatestResults(String limelightName) {
 
     long start = System.nanoTime();
-    LimelightHelpers.LimelightResults results = new LimelightHelpers.LimelightResults();
+    LimelightHelpers9038.LimelightResults results = new LimelightHelpers9038.LimelightResults();
     if (mapper == null) {
       mapper =
           new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
