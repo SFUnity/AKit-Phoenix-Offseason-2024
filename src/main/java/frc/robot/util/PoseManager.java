@@ -35,18 +35,19 @@ public class PoseManager {
   }
 
   public void addVisionMeasurement(AprilTagVision.VisionResult visionResult, int tagCount) {
-    Pose2d resultPose = visionResult.pose();
-    boolean doRejectUpdate = false;
-    while (!doRejectUpdate) {
-      // Keep vision updates only if angular velocity < 720 deg/s
-      doRejectUpdate = Math.abs(lastYawVelocity) < 720;
-      // Ignore if the estimated pose is too far away from current pose
-      double allowableDistance = tagCount * 3; // In meters
-      doRejectUpdate = getDistanceTo(resultPose) > allowableDistance;
-      // Add result because all checks passed
-      poseEstimator.addVisionMeasurement(
-          visionResult.pose(), visionResult.timestamp(), visionResult.stdDevs());
+    // Exit if the robot's angular velocity is too high
+    if (Math.abs(lastYawVelocity) > 720) {
+      return;
     }
+    // Exit if the estimated pose is too far away from current pose
+    double allowableDistance = tagCount * 3; // In meters
+    Pose2d resultPose = visionResult.pose();
+    if (getDistanceTo(resultPose) > allowableDistance) {
+      return;
+    }
+    // Add result because all checks passed
+    poseEstimator.addVisionMeasurement(
+        visionResult.pose(), visionResult.timestamp(), visionResult.stdDevs());
   }
 
   public double getDistanceTo(Pose2d pose) {

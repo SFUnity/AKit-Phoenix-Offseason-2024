@@ -36,23 +36,19 @@ public class AprilTagVision extends VirtualSubsystem {
     result = null;
 
     Pose2d robotPose = inputs.estimatedPose;
-    boolean doRejectUpdate = false;
-
-    while (!doRejectUpdate) {
-      // TODO refactor to use if statements
-      // Exit if old data
-      doRejectUpdate = !inputs.isNew;
-      // Exit if there are no tags
-      doRejectUpdate = inputs.tagCount == 0;
-      // Exit if robot pose is off the field
-      doRejectUpdate =
-          robotPose.getX() < -fieldBorderMargin
-              || robotPose.getX() > FieldConstants.fieldLength + fieldBorderMargin
-              || robotPose.getY() < -fieldBorderMargin
-              || robotPose.getY() > FieldConstants.fieldWidth + fieldBorderMargin;
-      // Add result because all checks passed
-      result = new VisionResult(robotPose, inputs.timestamp, VecBuilder.fill(.7, .7, 9999999));
+    // Exit if data is old or there are no tags in sight
+    if (!inputs.isNew || inputs.tagCount == 0) {
+      return;
     }
+    // Exit if the estimated pose is off the field
+    if (robotPose.getX() < -fieldBorderMargin
+        || robotPose.getX() > FieldConstants.fieldLength + fieldBorderMargin
+        || robotPose.getY() < -fieldBorderMargin
+        || robotPose.getY() > FieldConstants.fieldWidth + fieldBorderMargin) {
+      return;
+    }
+    // Add result because all checks passed
+    result = new VisionResult(robotPose, inputs.timestamp, VecBuilder.fill(.7, .7, 9999999));
   }
 
   /** Returns the last recorded pose */
