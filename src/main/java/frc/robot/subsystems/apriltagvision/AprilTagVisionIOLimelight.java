@@ -37,7 +37,6 @@ public class AprilTagVisionIOLimelight implements AprilTagVisionIO {
     inputs.pipeline = LimelightHelpers9038.getCurrentPipelineIndex(name);
     inputs.ledMode = LimelightHelpers9038.getLimelightNTDouble(name, "ledMode");
     inputs.camMode = LimelightHelpers9038.getLimelightNTDouble(name, "camMode");
-    inputs.hb = LimelightHelpers9038.getLimelightNTDouble(name, "hb");
 
     // Update disconnected alert
     var queue = LimelightHelpers9038.getLimelightNTTableEntry(name, "botpose_orb_wpiblue").readQueue();

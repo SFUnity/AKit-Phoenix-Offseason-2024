@@ -16,8 +16,6 @@ public interface AprilTagVisionIO {
     public double ledMode = 0;
     /** 0 = processor, 1 = driver */
     public double camMode = 0;
-    /** heartbeat value. Increases once per frame, resets at 2 billion */
-    public double hb = 0;
   }
 
   /** Updates the set of loggable inputs. */
