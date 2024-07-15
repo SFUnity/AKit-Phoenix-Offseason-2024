@@ -48,7 +48,7 @@ public class AprilTagVisionIOLimelight implements AprilTagVisionIO {
   }
 
   @Override
-  public void setPipeline(int p) {
-    LimelightHelpers9038.setPipelineIndex(name, p);
+  public void setPipeline(int pipelineIndex) {
+    LimelightHelpers9038.setPipelineIndex(name, pipelineIndex);
   }
 }
