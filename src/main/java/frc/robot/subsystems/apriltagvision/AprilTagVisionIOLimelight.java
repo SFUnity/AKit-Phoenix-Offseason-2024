@@ -1,11 +1,5 @@
 package frc.robot.subsystems.apriltagvision;
 
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.util.Units;
-import edu.wpi.first.networktables.DoubleArraySubscriber;
-import edu.wpi.first.networktables.PubSubOption;
-import edu.wpi.first.networktables.TimestampedDoubleArray;
 import edu.wpi.first.wpilibj.Timer;
 import frc.robot.util.Alert;
 import frc.robot.util.LimelightHelpers;
@@ -23,13 +17,6 @@ public class AprilTagVisionIOLimelight implements AprilTagVisionIO {
     this.poseManager = poseManager;
 
     LimelightHelpers.setLEDMode_PipelineControl(name);
-
-    var topic =
-        LimelightHelpers.getLimelightNTTable("limelight")
-            .getDoubleArrayTopic("botpose_orb_wpiblue");
-    observationSubscriber =
-        topic.subscribe(
-            new double[] {}, PubSubOption.keepDuplicates(true), PubSubOption.sendAll(true));
 
     disconnectedAlert = new Alert("No data from: " + name, Alert.AlertType.ERROR);
   }
