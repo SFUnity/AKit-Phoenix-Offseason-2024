@@ -8,14 +8,12 @@ import edu.wpi.first.networktables.PubSubOption;
 import edu.wpi.first.networktables.TimestampedDoubleArray;
 import edu.wpi.first.wpilibj.Timer;
 import frc.robot.util.Alert;
-import frc.robot.util.LimelightHelpers9038;
+import frc.robot.util.LimelightHelpers;
 import frc.robot.util.PoseManager;
 
 public class AprilTagVisionIOLimelight implements AprilTagVisionIO {
   private String name;
   private final PoseManager poseManager;
-
-  private final DoubleArraySubscriber observationSubscriber;
 
   private static final double disconnectedTimeout = 0.5;
   private final Alert disconnectedAlert;
@@ -24,11 +22,10 @@ public class AprilTagVisionIOLimelight implements AprilTagVisionIO {
     name = camName;
     this.poseManager = poseManager;
 
-    LimelightHelpers9038.setLEDMode_PipelineControl(name);
-    LimelightHelpers9038.setCameraMode_Processor(name);
+    LimelightHelpers.setLEDMode_PipelineControl(name);
 
     var topic =
-        LimelightHelpers9038.getLimelightNTTable("limelight")
+        LimelightHelpers.getLimelightNTTable("limelight")
             .getDoubleArrayTopic("botpose_orb_wpiblue");
     observationSubscriber =
         topic.subscribe(
@@ -39,38 +36,26 @@ public class AprilTagVisionIOLimelight implements AprilTagVisionIO {
 
   @Override
   public void updateInputs(AprilTagVisionIOInputs inputs) {
-    LimelightHelpers9038.SetRobotOrientation(
+    LimelightHelpers.SetRobotOrientation(
         "limelight", poseManager.getRotation().getDegrees(), 0, 0, 0, 0, 0);
-    TimestampedDoubleArray timestampedArray = observationSubscriber.getAtomic();
-    double[] poseArray = timestampedArray.value;
-    long observationTimestamp = timestampedArray.timestamp;
+    LimelightHelpers.PoseEstimate observation = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2("limelight");
 
-    inputs.estimatedPose = toPose2d(poseArray);
-    inputs.isNew = observationTimestamp != 0;
+    inputs.estimatedPose = observation.pose;
+    inputs.isNew = observation.timestampSeconds != 0;
     if (inputs.isNew) {
-      inputs.timestamp = observationTimestamp / 1000000.0; // Convert from microseconds to seconds
+      inputs.timestamp = observation.timestampSeconds;
     }
-    inputs.tagCount = (int) poseArray[7];
+    inputs.tagCount = observation.tagCount;
 
-    inputs.pipeline = LimelightHelpers9038.getCurrentPipelineIndex(name);
-    inputs.ledMode = LimelightHelpers9038.getLimelightNTDouble(name, "ledMode");
-    inputs.camMode = LimelightHelpers9038.getLimelightNTDouble(name, "camMode");
+    inputs.pipeline = LimelightHelpers.getCurrentPipelineIndex(name);
+    inputs.ledMode = LimelightHelpers.getLimelightNTDouble(name, "ledMode");
 
     // Update disconnected alert
-    disconnectedAlert.set(Timer.getFPGATimestamp() - observationTimestamp < disconnectedTimeout);
+    disconnectedAlert.set(Timer.getFPGATimestamp() - observation.timestampSeconds < disconnectedTimeout);
   }
 
   @Override
   public void setPipeline(int pipelineIndex) {
-    LimelightHelpers9038.setPipelineIndex(name, pipelineIndex);
-  }
-
-  private Pose2d toPose2d(double[] poseArray) {
-    if (poseArray.length < 6) {
-      System.err.println("Bad LL 2D Pose Data!");
-      return new Pose2d();
-    }
-    Rotation2d rotation2d = new Rotation2d(Units.degreesToRadians(poseArray[5]));
-    return new Pose2d(poseArray[0], poseArray[1], rotation2d);
+    LimelightHelpers.setPipelineIndex(name, pipelineIndex);
   }
 }

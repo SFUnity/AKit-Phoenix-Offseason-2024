@@ -14,8 +14,6 @@ public interface AprilTagVisionIO {
     public double pipeline = 0; // TODO store the pipelines where the code can see them
     /** 0 = pipeline control, 1 = force off, 2 = force blink, 3 = force on */
     public double ledMode = 0;
-    /** 0 = processor, 1 = driver */
-    public double camMode = 0;
   }
 
   /** Updates the set of loggable inputs. */
