@@ -1,5 +1,7 @@
 package frc.robot.util;
 
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import org.littletonrobotics.junction.Logger;
 
@@ -14,5 +16,10 @@ public abstract class GeneralUtil {
     Logger.recordOutput(
         sName + "command",
         s.getCurrentCommand() != null ? s.getCurrentCommand().getName() : "none");
+  }
+
+  public static boolean isFlipped() {
+    return DriverStation.getAlliance().isPresent()
+        && DriverStation.getAlliance().get() == Alliance.Red;
   }
 }
