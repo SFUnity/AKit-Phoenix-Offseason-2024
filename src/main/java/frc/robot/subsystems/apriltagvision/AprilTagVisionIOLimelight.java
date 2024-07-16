@@ -25,7 +25,8 @@ public class AprilTagVisionIOLimelight implements AprilTagVisionIO {
   public void updateInputs(AprilTagVisionIOInputs inputs) {
     LimelightHelpers.SetRobotOrientation(
         "limelight", poseManager.getRotation().getDegrees(), 0, 0, 0, 0, 0);
-    LimelightHelpers.PoseEstimate observation = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2("limelight");
+    LimelightHelpers.PoseEstimate observation =
+        LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2("limelight");
 
     inputs.estimatedPose = observation.pose;
     inputs.isNew = observation.timestampSeconds != 0;
@@ -38,7 +39,8 @@ public class AprilTagVisionIOLimelight implements AprilTagVisionIO {
     inputs.ledMode = LimelightHelpers.getLimelightNTDouble(name, "ledMode");
 
     // Update disconnected alert
-    disconnectedAlert.set(Timer.getFPGATimestamp() - observation.timestampSeconds < disconnectedTimeout);
+    disconnectedAlert.set(
+        Timer.getFPGATimestamp() - observation.timestampSeconds < disconnectedTimeout);
   }
 
   @Override
