@@ -24,7 +24,7 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.DriveConstants;
-import frc.robot.util.GeneralUtil;
+import frc.robot.util.AllianceFlipUtil;
 import frc.robot.util.PoseManager;
 import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
@@ -89,7 +89,7 @@ public class DriveCommands {
                   linearVelocity.getX() * DriveConstants.MAX_LINEAR_SPEED,
                   linearVelocity.getY() * DriveConstants.MAX_LINEAR_SPEED,
                   omega * DriveConstants.MAX_ANGULAR_SPEED,
-                  GeneralUtil.isFlipped()
+                  AllianceFlipUtil.shouldFlip()
                       ? poseManager.getRotation().plus(new Rotation2d(Math.PI))
                       : poseManager.getRotation()));
         },
