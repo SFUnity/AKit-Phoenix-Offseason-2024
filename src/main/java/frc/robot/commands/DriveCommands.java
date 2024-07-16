@@ -23,6 +23,7 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.DriveConstants;
 import frc.robot.util.PoseManager;
@@ -46,6 +47,7 @@ public class DriveCommands {
       BooleanSupplier fastMode,
       LoggedDashboardNumber slowDriveMultiplier,
       LoggedDashboardNumber slowTurnMultiplier,
+      Trigger aimAtSpeakerTrigger,
       PoseManager poseManager) {
     return Commands.run(
         () -> {
@@ -66,6 +68,11 @@ public class DriveCommands {
           double linearMagnitude = MathUtil.applyDeadband(Math.hypot(x, y), DEADBAND);
           Rotation2d linearDirection = new Rotation2d(x, y);
           double omega = MathUtil.applyDeadband(o, DEADBAND);
+
+          // Check for aim at speaker
+          if (aimAtSpeakerTrigger.getAsBoolean()) {
+            omega = getSpeakerAimAngle();
+          }
 
           // Square values
           linearMagnitude = linearMagnitude * linearMagnitude;
@@ -91,5 +98,9 @@ public class DriveCommands {
                       : poseManager.getRotation()));
         },
         drive);
+  }
+
+  private static double getSpeakerAimAngle() {
+    return 0; // TODO make getSpeakerAimAngle work
   }
 }

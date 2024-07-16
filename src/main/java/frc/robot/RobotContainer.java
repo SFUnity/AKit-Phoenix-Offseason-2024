@@ -189,6 +189,7 @@ public class RobotContainer {
             () -> fastMode,
             slowDriveMultiplier,
             slowTurnMultiplier,
+            driver.a(),
             poseManager));
     intake.setDefaultCommand(intake.raiseAndStopCmd());
 
