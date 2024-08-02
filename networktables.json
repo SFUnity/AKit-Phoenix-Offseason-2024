@@ -1,1 +1,26 @@
-[]
+[
+  {
+    "name": "/Shuffleboard/Drivers/Speaker Height",
+    "type": "double",
+    "value": 80.0,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Shuffleboard/Drivers/Feeding Angle",
+    "type": "double",
+    "value": -5.0,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Shuffleboard/Drivers/Angle Offset",
+    "type": "double",
+    "value": -74.0,
+    "properties": {
+      "persistent": true
+    }
+  }
+]
