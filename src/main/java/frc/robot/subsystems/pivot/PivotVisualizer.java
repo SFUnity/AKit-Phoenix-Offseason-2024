@@ -23,13 +23,13 @@ import org.littletonrobotics.junction.Logger;
 public class PivotVisualizer {
   private final Mechanism2d mechanism;
   private final MechanismLigament2d pivot;
-  private final String key = "";
+  private final String key;
 
   private static final double angleOffset = 1.63;
 
   private static final double gearReduction = 73;
 
-  public pivotVisualizer(String key, Color color) {
+  public PivotVisualizer(String key, Color color) {
     this.key = key;
     mechanism = new Mechanism2d(3.0, 3.0, new Color8Bit(Color.kBlack));
     MechanismRoot2d root = mechanism.getRoot("pivot", 1.5, 2.0);
