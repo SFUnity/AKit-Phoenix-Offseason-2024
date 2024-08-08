@@ -86,9 +86,9 @@ public class Leds extends VirtualSubsystem {
       alliance = DriverStation.getAlliance();
       allianceColor =
           alliance
-              .map(alliance -> alliance == Alliance.Blue ? Color.kBlue : Color.kRed)
-              .orElse(Color.kOrange);
-      secondaryDisabledColor = alliance.isPresent() ? Color.kBlack : Color.kDarkBlue;
+              .map(alliance -> alliance == Alliance.Blue ? Color.kDarkBlue : Color.kOrangeRed)
+              .orElse(Color.kOrangeRed);
+      secondaryDisabledColor = alliance.isPresent() ? Color.kWhite : Color.kDarkBlue;
     }
 
     // Update auto state
