@@ -87,8 +87,8 @@ public class Leds extends VirtualSubsystem {
       allianceColor =
           alliance
               .map(alliance -> alliance == Alliance.Blue ? Color.kDarkBlue : Color.kOrangeRed)
-              .orElse(Color.kOrangeRed);
-      secondaryDisabledColor = alliance.isPresent() ? Color.kWhite : Color.kDarkBlue;
+              .orElse(Color.kRed);
+      secondaryDisabledColor = alliance.isPresent() ? Color.kWhite : Color.kBlue;
     }
 
     // Update auto state
@@ -147,7 +147,7 @@ public class Leds extends VirtualSubsystem {
         wave(allianceColor, secondaryDisabledColor, waveAllianceCycleLength, waveAllianceDuration);
       }
     } else if (DriverStation.isAutonomous()) {
-      wave(Color.kOrange, Color.kDarkBlue, waveFastCycleLength, waveFastDuration);
+      wave(Color.kOrangeRed, Color.kDarkBlue, waveFastCycleLength, waveFastDuration);
       if (autoFinished) {
         double fullTime = (double) length / waveFastCycleLength * waveFastDuration;
         solid((Timer.getFPGATimestamp() - autoFinishedTime) / fullTime, Color.kGreen);
