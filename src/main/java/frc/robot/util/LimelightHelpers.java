@@ -294,9 +294,6 @@ public class LimelightHelpers {
     @JsonProperty("botpose")
     public double[] botpose;
 
-    @JsonProperty("botpose_wpired")
-    public double[] botpose_wpired;
-
     @JsonProperty("botpose_wpiblue")
     public double[] botpose_wpiblue;
 
@@ -319,20 +316,12 @@ public class LimelightHelpers {
       return toPose3D(botpose);
     }
 
-    public Pose3d getBotPose3d_wpiRed() {
-      return toPose3D(botpose_wpired);
-    }
-
     public Pose3d getBotPose3d_wpiBlue() {
       return toPose3D(botpose_wpiblue);
     }
 
     public Pose2d getBotPose2d() {
       return toPose2D(botpose);
-    }
-
-    public Pose2d getBotPose2d_wpiRed() {
-      return toPose2D(botpose_wpired);
     }
 
     public Pose2d getBotPose2d_wpiBlue() {
@@ -356,7 +345,6 @@ public class LimelightHelpers {
 
     public LimelightResults() {
       botpose = new double[6];
-      botpose_wpired = new double[6];
       botpose_wpiblue = new double[6];
       camerapose_robotspace = new double[6];
       targets_Retro = new LimelightTarget_Retro[0];
@@ -812,17 +800,6 @@ public class LimelightHelpers {
   }
 
   /**
-   * Switch to getBotPose_wpiRed
-   *
-   * @param limelightName
-   * @return
-   */
-  @Deprecated
-  public static double[] getBotpose_wpiRed(String limelightName) {
-    return getLimelightNTDoubleArray(limelightName, "botpose_wpired");
-  }
-
-  /**
    * Switch to getBotPose_wpiBlue
    *
    * @param limelightName
@@ -835,10 +812,6 @@ public class LimelightHelpers {
 
   public static double[] getBotPose(String limelightName) {
     return getLimelightNTDoubleArray(limelightName, "botpose");
-  }
-
-  public static double[] getBotPose_wpiRed(String limelightName) {
-    return getLimelightNTDoubleArray(limelightName, "botpose_wpired");
   }
 
   public static double[] getBotPose_wpiBlue(String limelightName) {
@@ -882,11 +855,6 @@ public class LimelightHelpers {
 
   public static Pose3d getBotPose3d(String limelightName) {
     double[] poseArray = getLimelightNTDoubleArray(limelightName, "botpose");
-    return toPose3D(poseArray);
-  }
-
-  public static Pose3d getBotPose3d_wpiRed(String limelightName) {
-    double[] poseArray = getLimelightNTDoubleArray(limelightName, "botpose_wpired");
     return toPose3D(poseArray);
   }
 
@@ -952,40 +920,6 @@ public class LimelightHelpers {
    */
   public static PoseEstimate getBotPoseEstimate_wpiBlue_MegaTag2(String limelightName) {
     return getBotPoseEstimate(limelightName, "botpose_orb_wpiblue");
-  }
-
-  /**
-   * Gets the Pose2d for easy use with Odometry vision pose estimator (addVisionMeasurement)
-   *
-   * @param limelightName
-   * @return
-   */
-  public static Pose2d getBotPose2d_wpiRed(String limelightName) {
-
-    double[] result = getBotPose_wpiRed(limelightName);
-    return toPose2D(result);
-  }
-
-  /**
-   * Gets the Pose2d and timestamp for use with WPILib pose estimator (addVisionMeasurement) when
-   * you are on the RED alliance
-   *
-   * @param limelightName
-   * @return
-   */
-  public static PoseEstimate getBotPoseEstimate_wpiRed(String limelightName) {
-    return getBotPoseEstimate(limelightName, "botpose_wpired");
-  }
-
-  /**
-   * Gets the Pose2d and timestamp for use with WPILib pose estimator (addVisionMeasurement) when
-   * you are on the RED alliance
-   *
-   * @param limelightName
-   * @return
-   */
-  public static PoseEstimate getBotPoseEstimate_wpiRed_MegaTag2(String limelightName) {
-    return getBotPoseEstimate(limelightName, "botpose_orb_wpired");
   }
 
   /**
