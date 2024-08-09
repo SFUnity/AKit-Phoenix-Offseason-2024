@@ -31,13 +31,16 @@ import org.littletonrobotics.junction.networktables.LoggedDashboardNumber;
 
 public class DriveCommands {
   private static final double DEADBAND = 0.05;
+  private static Drive drive;
+  private static DoubleSupplier xSupplier;
+  private static DoubleSupplier ySupplier;
+  private static DoubleSupplier omegaSupplier;
+  private static BooleanSupplier fastMode;
+  private static LoggedDashboardNumber slowDriveMultiplier;
+  private static LoggedDashboardNumber slowTurnMultiplier;
+  private static PoseManager poseManager;
 
-  private DriveCommands() {}
-
-  /**
-   * Field relative drive command using two joysticks (controlling linear and angular velocities).
-   */
-  public static Command joystickDrive(
+  public DriveCommands(
       Drive drive,
       DoubleSupplier xSupplier,
       DoubleSupplier ySupplier,
@@ -46,6 +49,20 @@ public class DriveCommands {
       LoggedDashboardNumber slowDriveMultiplier,
       LoggedDashboardNumber slowTurnMultiplier,
       PoseManager poseManager) {
+    DriveCommands.drive = drive;
+    DriveCommands.xSupplier = xSupplier;
+    DriveCommands.ySupplier = ySupplier;
+    DriveCommands.omegaSupplier = omegaSupplier;
+    DriveCommands.fastMode = fastMode;
+    DriveCommands.slowDriveMultiplier = slowDriveMultiplier;
+    DriveCommands.slowTurnMultiplier = slowTurnMultiplier;
+    DriveCommands.poseManager = poseManager;
+  }
+
+  /**
+   * Field relative drive command using two joysticks (controlling linear and angular velocities).
+   */
+  public static Command joystickDrive() {
     return Commands.run(
         () -> {
           // Convert to doubles
@@ -63,9 +80,7 @@ public class DriveCommands {
           omega = Math.copySign(omega * omega, omega);
 
           // Get linear velocity
-          Translation2d linearVelocity =
-              getGoalLinearVelocityFromJoysticks(
-                  xSupplier, ySupplier, fastMode, slowDriveMultiplier);
+          Translation2d linearVelocity = getGoalLinearVelocityFromJoysticks();
 
           // Convert to field relative speeds & send command
           drive.runVelocity(
@@ -84,23 +99,14 @@ public class DriveCommands {
    * Field relative drive command using one joystick (controlling linear velocity) with a
    * ProfiledPID for angular velocity.
    */
-  public static Command headingDrive(
-      Drive drive,
-      DoubleSupplier xSupplier,
-      DoubleSupplier ySupplier,
-      BooleanSupplier fastMode,
-      LoggedDashboardNumber slowDriveMultiplier,
-      DoubleSupplier desiredAngle,
-      PoseManager poseManager) {
+  public static Command headingDrive(DoubleSupplier desiredAngle) {
     return Commands.run(
         () -> {
           // Get angular velocity
           double omega = getGoalAngularVelocityFromProfiledPID();
 
           // Get linear velocity
-          Translation2d linearVelocity =
-              getGoalLinearVelocityFromJoysticks(
-                  xSupplier, ySupplier, fastMode, slowDriveMultiplier);
+          Translation2d linearVelocity = getGoalLinearVelocityFromJoysticks();
 
           // Convert to field relative speeds & send command
           drive.runVelocity(
@@ -115,11 +121,7 @@ public class DriveCommands {
         drive);
   }
 
-  private static Translation2d getGoalLinearVelocityFromJoysticks(
-      DoubleSupplier xSupplier,
-      DoubleSupplier ySupplier,
-      BooleanSupplier fastMode,
-      LoggedDashboardNumber slowDriveMultiplier) {
+  private static Translation2d getGoalLinearVelocityFromJoysticks() {
     // Convert to doubles
     double x = xSupplier.getAsDouble();
     double y = ySupplier.getAsDouble();

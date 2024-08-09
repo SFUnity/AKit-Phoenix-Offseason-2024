@@ -132,6 +132,16 @@ public class RobotContainer {
         break;
     }
 
+    new DriveCommands(
+        drive,
+        () -> -driver.getLeftY(),
+        () -> -driver.getLeftX(),
+        () -> -driver.getRightX(),
+        () -> fastMode,
+        slowDriveMultiplier,
+        slowTurnMultiplier,
+        poseManager);
+
     // Set up auto routines
     NamedCommands.registerCommand(
         "Run Flywheel", // also does stuff w/ the intake
@@ -180,16 +190,7 @@ public class RobotContainer {
   /** Use this method to define your button->command mappings. */
   private void configureButtonBindings() {
     // Default cmds
-    drive.setDefaultCommand(
-        DriveCommands.joystickDrive(
-            drive,
-            () -> -driver.getLeftY(),
-            () -> -driver.getLeftX(),
-            () -> -driver.getRightX(),
-            () -> fastMode,
-            slowDriveMultiplier,
-            slowTurnMultiplier,
-            poseManager));
+    drive.setDefaultCommand(DriveCommands.joystickDrive());
     intake.setDefaultCommand(intake.raiseAndStopCmd());
 
     // Driver controls
@@ -204,13 +205,11 @@ public class RobotContainer {
                     drive)
                 .ignoringDisable(true));
     driver.leftBumper().onTrue(Commands.runOnce(() -> fastMode = !fastMode, drive));
-    driver.b().whileTrue(DriveCommands.headingDrive(drive,
-    () -> -driver.getLeftY(),
-    () -> -driver.getLeftX(),
-    () -> fastMode,
-    slowDriveMultiplier,
-    () -> 0, // TODO change to get the angle to the speaker from the PoseManager
-    poseManager));
+    driver
+        .b()
+        .whileTrue(
+            DriveCommands.headingDrive(
+                () -> 0)); // TODO change to get the angle to the speaker from the PoseManager
 
     // Operator controls for intake
     operator.triangle().whileTrue(intake.poopCmd());
