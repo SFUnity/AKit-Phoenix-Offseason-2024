@@ -189,7 +189,6 @@ public class RobotContainer {
             () -> fastMode,
             slowDriveMultiplier,
             slowTurnMultiplier,
-            driver.a(),
             poseManager));
     intake.setDefaultCommand(intake.raiseAndStopCmd());
 
@@ -205,6 +204,13 @@ public class RobotContainer {
                     drive)
                 .ignoringDisable(true));
     driver.leftBumper().onTrue(Commands.runOnce(() -> fastMode = !fastMode, drive));
+    driver.b().whileTrue(DriveCommands.headingDrive(drive,
+    () -> -driver.getLeftY(),
+    () -> -driver.getLeftX(),
+    () -> fastMode,
+    slowDriveMultiplier,
+    () -> 0, // TODO change to get the angle to the speaker from the PoseManager
+    poseManager));
 
     // Operator controls for intake
     operator.triangle().whileTrue(intake.poopCmd());

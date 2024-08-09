@@ -21,7 +21,6 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.DriveConstants;
 import frc.robot.util.AllianceFlipUtil;
@@ -46,42 +45,27 @@ public class DriveCommands {
       BooleanSupplier fastMode,
       LoggedDashboardNumber slowDriveMultiplier,
       LoggedDashboardNumber slowTurnMultiplier,
-      Trigger aimAtSpeakerTrigger,
       PoseManager poseManager) {
     return Commands.run(
         () -> {
           // Convert to doubles
-          double x = xSupplier.getAsDouble();
-          double y = ySupplier.getAsDouble();
           double o = omegaSupplier.getAsDouble();
 
           // Check for slow mode
           if (fastMode.getAsBoolean()) {
-            double multiplier = slowDriveMultiplier.get();
-            x *= multiplier;
-            y *= multiplier;
             o *= slowTurnMultiplier.get();
           }
 
           // Apply deadband
-          double linearMagnitude = MathUtil.applyDeadband(Math.hypot(x, y), DEADBAND);
-          Rotation2d linearDirection = new Rotation2d(x, y);
           double omega = MathUtil.applyDeadband(o, DEADBAND);
 
-          // Check for aim at speaker
-          if (aimAtSpeakerTrigger.getAsBoolean()) {
-            omega = getSpeakerAimAngle();
-          }
-
           // Square values
-          linearMagnitude = linearMagnitude * linearMagnitude;
           omega = Math.copySign(omega * omega, omega);
 
-          // Calcaulate new linear velocity
+          // Get linear velocity
           Translation2d linearVelocity =
-              new Pose2d(new Translation2d(), linearDirection)
-                  .transformBy(new Transform2d(linearMagnitude, 0.0, new Rotation2d()))
-                  .getTranslation();
+              getGoalLinearVelocityFromJoysticks(
+                  xSupplier, ySupplier, fastMode, slowDriveMultiplier);
 
           // Convert to field relative speeds & send command
           drive.runVelocity(
@@ -96,7 +80,74 @@ public class DriveCommands {
         drive);
   }
 
-  private static double getSpeakerAimAngle() {
-    return 0; // TODO make getSpeakerAimAngle work
+  /**
+   * Field relative drive command using one joystick (controlling linear velocity) with a
+   * ProfiledPID for angular velocity.
+   */
+  public static Command headingDrive(
+      Drive drive,
+      DoubleSupplier xSupplier,
+      DoubleSupplier ySupplier,
+      BooleanSupplier fastMode,
+      LoggedDashboardNumber slowDriveMultiplier,
+      DoubleSupplier desiredAngle,
+      PoseManager poseManager) {
+    return Commands.run(
+        () -> {
+          // Get angular velocity
+          double omega = getGoalAngularVelocityFromProfiledPID();
+
+          // Get linear velocity
+          Translation2d linearVelocity =
+              getGoalLinearVelocityFromJoysticks(
+                  xSupplier, ySupplier, fastMode, slowDriveMultiplier);
+
+          // Convert to field relative speeds & send command
+          drive.runVelocity(
+              ChassisSpeeds.fromFieldRelativeSpeeds(
+                  linearVelocity.getX() * DriveConstants.MAX_LINEAR_SPEED,
+                  linearVelocity.getY() * DriveConstants.MAX_LINEAR_SPEED,
+                  omega * DriveConstants.MAX_ANGULAR_SPEED,
+                  AllianceFlipUtil.shouldFlip()
+                      ? poseManager.getRotation().plus(new Rotation2d(Math.PI))
+                      : poseManager.getRotation()));
+        },
+        drive);
+  }
+
+  private static Translation2d getGoalLinearVelocityFromJoysticks(
+      DoubleSupplier xSupplier,
+      DoubleSupplier ySupplier,
+      BooleanSupplier fastMode,
+      LoggedDashboardNumber slowDriveMultiplier) {
+    // Convert to doubles
+    double x = xSupplier.getAsDouble();
+    double y = ySupplier.getAsDouble();
+
+    // Check for slow mode
+    if (fastMode.getAsBoolean()) {
+      double multiplier = slowDriveMultiplier.get();
+      x *= multiplier;
+      y *= multiplier;
+    }
+
+    // Apply deadband
+    double linearMagnitude = MathUtil.applyDeadband(Math.hypot(x, y), DEADBAND);
+    Rotation2d linearDirection = new Rotation2d(x, y);
+
+    // Square values
+    linearMagnitude = linearMagnitude * linearMagnitude;
+
+    // Calcaulate new linear velocity
+    Translation2d linearVelocity =
+        new Pose2d(new Translation2d(), linearDirection)
+            .transformBy(new Transform2d(linearMagnitude, 0.0, new Rotation2d()))
+            .getTranslation();
+
+    return linearVelocity;
+  }
+
+  private static double getGoalAngularVelocityFromProfiledPID() {
+    return 0; // TODO make getGoalAngularVelocity work
   }
 }
