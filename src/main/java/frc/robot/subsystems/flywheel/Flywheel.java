@@ -102,9 +102,4 @@ public class Flywheel extends SubsystemBase {
   public double getVelocityRPM() {
     return Units.radiansPerSecondToRotationsPerMinute(inputs.velocityRadPerSec);
   }
-
-  /** Returns the current velocity in radians per second. */
-  public double getCharacterizationVelocity() {
-    return inputs.velocityRadPerSec;
-  }
 }
