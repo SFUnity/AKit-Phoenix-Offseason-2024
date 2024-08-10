@@ -77,6 +77,13 @@ public class PoseManager {
     return theta;
   }
 
+  public double getVerticalAngleTo(Translation3d translation) {
+    double horizontalDiff = getDistanceTo(translation);
+    double zDiff = translation.getZ();
+    double theta = Math.toDegrees(Math.atan2(zDiff, horizontalDiff));
+    return theta;
+  }
+
   /** Returns the current odometry pose. */
   @AutoLogOutput(key = "Odometry/Robot")
   public Pose2d getPose() {
