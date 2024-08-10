@@ -60,6 +60,7 @@ public class RobotContainer {
   private final Flywheel flywheel;
   private final Intake intake;
   private final AprilTagVision aprilTagVision;
+  private final DriveCommands driveCommands;
 
   //   Pose Manager
   private final PoseManager poseManager = new PoseManager();
@@ -132,7 +133,7 @@ public class RobotContainer {
         break;
     }
 
-    new DriveCommands(
+    driveCommands =new DriveCommands(
         drive,
         () -> -driver.getLeftY(),
         () -> -driver.getLeftX(),
@@ -194,7 +195,7 @@ public class RobotContainer {
   /** Use this method to define your button->command mappings. */
   private void configureButtonBindings() {
     // Default cmds
-    drive.setDefaultCommand(DriveCommands.joystickDrive());
+    drive.setDefaultCommand(driveCommands.joystickDrive());
     intake.setDefaultCommand(intake.raiseAndStopCmd());
 
     // Driver controls
@@ -212,7 +213,7 @@ public class RobotContainer {
     driver
         .b()
         .whileTrue(
-            DriveCommands.headingDrive(
+            driveCommands.headingDrive(
                 () -> 0)); // TODO change to get the angle to the speaker from the PoseManager
 
     // Operator controls for intake

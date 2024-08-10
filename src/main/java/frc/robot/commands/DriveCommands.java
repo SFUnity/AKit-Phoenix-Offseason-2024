@@ -32,18 +32,18 @@ import org.littletonrobotics.junction.networktables.LoggedDashboardNumber;
 
 public class DriveCommands {
   private static final double DEADBAND = 0.05;
-  private static Drive drive;
-  private static DoubleSupplier xSupplier;
-  private static DoubleSupplier ySupplier;
-  private static DoubleSupplier omegaSupplier;
-  private static BooleanSupplier fastMode;
-  private static LoggedDashboardNumber slowDriveMultiplier;
-  private static LoggedDashboardNumber slowTurnMultiplier;
-  private static Trigger povUp;
-  private static Trigger povDown;
-  private static Trigger povLeft;
-  private static Trigger povRight;
-  private static PoseManager poseManager;
+  private Drive drive;
+  private DoubleSupplier xSupplier;
+  private DoubleSupplier ySupplier;
+  private DoubleSupplier omegaSupplier;
+  private BooleanSupplier fastMode;
+  private LoggedDashboardNumber slowDriveMultiplier;
+  private LoggedDashboardNumber slowTurnMultiplier;
+  private Trigger povUp;
+  private Trigger povDown;
+  private Trigger povLeft;
+  private Trigger povRight;
+  private PoseManager poseManager;
 
   public DriveCommands(
       Drive drive,
@@ -58,24 +58,24 @@ public class DriveCommands {
       Trigger povLeft,
       Trigger povRight,
       PoseManager poseManager) {
-    DriveCommands.drive = drive;
-    DriveCommands.xSupplier = xSupplier;
-    DriveCommands.ySupplier = ySupplier;
-    DriveCommands.omegaSupplier = omegaSupplier;
-    DriveCommands.fastMode = fastMode;
-    DriveCommands.slowDriveMultiplier = slowDriveMultiplier;
-    DriveCommands.slowTurnMultiplier = slowTurnMultiplier;
-    DriveCommands.povUp = povUp;
-    DriveCommands.povDown = povDown;
-    DriveCommands.povLeft = povLeft;
-    DriveCommands.povRight = povRight;
-    DriveCommands.poseManager = poseManager;
+    this.drive = drive;
+    this.xSupplier = xSupplier;
+    this.ySupplier = ySupplier;
+    this.omegaSupplier = omegaSupplier;
+    this.fastMode = fastMode;
+    this.slowDriveMultiplier = slowDriveMultiplier;
+    this.slowTurnMultiplier = slowTurnMultiplier;
+    this.povUp = povUp;
+    this.povDown = povDown;
+    this.povLeft = povLeft;
+    this.povRight = povRight;
+    this.poseManager = poseManager;
   }
 
   /**
    * Field relative drive command using two joysticks (controlling linear and angular velocities).
    */
-  public static Command joystickDrive() {
+  public Command joystickDrive() {
     return Commands.run(
         () -> {
           // Convert to doubles
@@ -112,7 +112,7 @@ public class DriveCommands {
    * Field relative drive command using one joystick (controlling linear velocity) with a
    * ProfiledPID for angular velocity.
    */
-  public static Command headingDrive(DoubleSupplier desiredAngle) {
+  public Command headingDrive(DoubleSupplier desiredAngle) {
     return Commands.run(
         () -> {
           // Get angular velocity
@@ -134,7 +134,7 @@ public class DriveCommands {
         drive);
   }
 
-  private static Translation2d getGoalLinearVelocityFromJoysticks() {
+  private Translation2d getGoalLinearVelocityFromJoysticks() {
     // Convert to doubles
     double x = xSupplier.getAsDouble();
     double y = ySupplier.getAsDouble();
@@ -174,7 +174,7 @@ public class DriveCommands {
     return linearVelocity;
   }
 
-  private static double getGoalAngularVelocityFromProfiledPID() {
+  private double getGoalAngularVelocityFromProfiledPID() {
     return 0; // TODO make getGoalAngularVelocity work
   }
 }
