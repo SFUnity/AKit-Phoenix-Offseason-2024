@@ -93,7 +93,7 @@ public class DriveCommands {
           omega = Math.copySign(omega * omega, omega);
 
           // Get linear velocity
-          Translation2d linearVelocity = getGoalLinearVelocityFromJoysticks();
+          Translation2d linearVelocity = getLinearVelocityFromJoysticks();
 
           // Convert to field relative speeds & send command
           drive.runVelocity(
@@ -116,10 +116,10 @@ public class DriveCommands {
     return Commands.run(
         () -> {
           // Get angular velocity
-          double omega = getGoalAngularVelocityFromProfiledPID();
+          double omega = getAngularVelocityFromProfiledPID();
 
           // Get linear velocity
-          Translation2d linearVelocity = getGoalLinearVelocityFromJoysticks();
+          Translation2d linearVelocity = getLinearVelocityFromJoysticks();
 
           // Convert to field relative speeds & send command
           drive.runVelocity(
@@ -134,7 +134,7 @@ public class DriveCommands {
         drive);
   }
 
-  private Translation2d getGoalLinearVelocityFromJoysticks() {
+  private Translation2d getLinearVelocityFromJoysticks() {
     // Convert to doubles
     double x = xSupplier.getAsDouble();
     double y = ySupplier.getAsDouble();
@@ -174,7 +174,7 @@ public class DriveCommands {
     return linearVelocity;
   }
 
-  private double getGoalAngularVelocityFromProfiledPID() {
+  private double getAngularVelocityFromProfiledPID() {
     return 0; // TODO make getGoalAngularVelocity work
   }
 }
