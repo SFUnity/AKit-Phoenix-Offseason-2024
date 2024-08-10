@@ -140,6 +140,10 @@ public class RobotContainer {
         () -> fastMode,
         slowDriveMultiplier,
         slowTurnMultiplier,
+        driver.povUp(),
+        driver.povDown(),
+        driver.povLeft(),
+        driver.povRight(),
         poseManager);
 
     // Set up auto routines

@@ -21,6 +21,7 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.DriveConstants;
 import frc.robot.util.AllianceFlipUtil;
@@ -38,6 +39,10 @@ public class DriveCommands {
   private static BooleanSupplier fastMode;
   private static LoggedDashboardNumber slowDriveMultiplier;
   private static LoggedDashboardNumber slowTurnMultiplier;
+  private static Trigger povUp;
+  private static Trigger povDown;
+  private static Trigger povLeft;
+  private static Trigger povRight;
   private static PoseManager poseManager;
 
   public DriveCommands(
@@ -48,6 +53,10 @@ public class DriveCommands {
       BooleanSupplier fastMode,
       LoggedDashboardNumber slowDriveMultiplier,
       LoggedDashboardNumber slowTurnMultiplier,
+      Trigger povUp,
+      Trigger povDown,
+      Trigger povLeft,
+      Trigger povRight,
       PoseManager poseManager) {
     DriveCommands.drive = drive;
     DriveCommands.xSupplier = xSupplier;
@@ -56,6 +65,10 @@ public class DriveCommands {
     DriveCommands.fastMode = fastMode;
     DriveCommands.slowDriveMultiplier = slowDriveMultiplier;
     DriveCommands.slowTurnMultiplier = slowTurnMultiplier;
+    DriveCommands.povUp = povUp;
+    DriveCommands.povDown = povDown;
+    DriveCommands.povLeft = povLeft;
+    DriveCommands.povRight = povRight;
     DriveCommands.poseManager = poseManager;
   }
 
@@ -125,6 +138,18 @@ public class DriveCommands {
     // Convert to doubles
     double x = xSupplier.getAsDouble();
     double y = ySupplier.getAsDouble();
+
+    // The speed value here might need to change
+    double povMovementSpeed = 0.5;
+    if (povDown.getAsBoolean()) {
+      x = -povMovementSpeed;
+    } else if (povUp.getAsBoolean()) {
+      x = povMovementSpeed;
+    } else if (povLeft.getAsBoolean()) {
+      y = povMovementSpeed;
+    } else if (povRight.getAsBoolean()) {
+      y = -povMovementSpeed;
+    }
 
     // Check for slow mode
     if (fastMode.getAsBoolean()) {
