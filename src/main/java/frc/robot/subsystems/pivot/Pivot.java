@@ -36,7 +36,7 @@ public class Pivot extends SubsystemBase {
   private final PivotIOInputsAutoLogged inputs = new PivotIOInputsAutoLogged();
   private final SimpleMotorFeedforward ffModel;
   private final SysIdRoutine sysId;
-  private ShuffleboardTab driversTab = Shuffleboard.getTab("Drivers");
+  private ShuffleboardTab driversTab = Shuffleboard.getTab("Drivers"); // TODO change these to LoggedDashboardNumbers
 
   private GenericEntry hegihtOfSpeakerEntry =
       driversTab
@@ -106,10 +106,12 @@ public class Pivot extends SubsystemBase {
     io.setVoltage(volts);
   }
 
+  // TODO Is this used anywhere? Also think about units of desiredAngle vs positionRad
   public boolean atDesiredAngle(double desiredAngle) {
     return inputs.positionRad <= desiredAngle + 1 || inputs.positionRad >= desiredAngle - 1;
   }
 
+  // TODO Do we need a function to control the pivot using velocity control?
   /** Run closed loop at the specified velocity. */
   public void runVelocity(double velocityRPM) {
     var velocityRadPerSec = Units.rotationsPerMinuteToRadiansPerSecond(velocityRPM);
@@ -134,24 +136,24 @@ public class Pivot extends SubsystemBase {
     return sysId.dynamic(direction);
   }
 
+  // TODO Does your code need this conversion? If not AScope can do it for you, so I would suggest removing
   /** Returns the current velocity in RPM. */
   @AutoLogOutput
   public double getVelocityRPM() {
     return Units.radiansPerSecondToRotationsPerMinute(inputs.velocityRadPerSec);
   }
 
+  // TODO After a bit of research I don't think this is necessary and will be removed everywhere (left it here for you to delete bc this is your subsystem)
   /** Returns the current velocity in radians per second. */
   public double getCharacterizationVelocity() {
     return inputs.velocityRadPerSec;
   }
 
   public void readyShootSpeakerManual() {
-
     desiredAngle = PivotConstants.kSpeakerManualAngleRevRotations;
   }
 
   public void readyShootSpeakerAutomatic() {
-
     double heightOfTarget =
         hegihtOfSpeakerEntry.getDouble(AprilTagVisionConstants.heightOfSpeakerInches);
     double angleRad = Math.atan(heightOfTarget / aprilTagVision.getDistance());
@@ -168,7 +170,6 @@ public class Pivot extends SubsystemBase {
   }
 
   public Command setManualShootAngleCommand() {
-
     return run(() -> {
           readyShootSpeakerManual();
           io.setAngleMotorSpeeds(desiredAngle);
@@ -212,6 +213,6 @@ public class Pivot extends SubsystemBase {
               readyShootAmp();
               io.setAngleMotorSpeeds(desiredAngle);
             })
-        .withName("gotta be a team player");
+        .withName("gotta be a team player"); // TODO lol :D (please delete me after reading)
   }
 }

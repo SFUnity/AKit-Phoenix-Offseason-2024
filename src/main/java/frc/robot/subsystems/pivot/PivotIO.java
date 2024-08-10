@@ -30,11 +30,13 @@ public interface PivotIO {
   /** Run open loop at the specified voltage. */
   public default void setVoltage(double volts) {}
 
+  // TODO Do we need a function to control the pivot using velocity control?
   /** Run closed loop at the specified velocity. */
   public default void setVelocity(double velocityRadPerSec, double ffVolts) {}
 
   public default void atDesiredAngle(double desiredAngle) {}
 
+  // TODO When reading this function's name it sounds like you're setting a motor speed to an angle
   public default void setAngleMotorSpeeds(double desiredAngle) {}
   /** Stop in open loop. */
   public default void stop() {}
