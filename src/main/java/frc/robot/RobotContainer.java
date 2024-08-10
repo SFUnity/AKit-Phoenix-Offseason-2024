@@ -133,19 +133,20 @@ public class RobotContainer {
         break;
     }
 
-    driveCommands =new DriveCommands(
-        drive,
-        () -> -driver.getLeftY(),
-        () -> -driver.getLeftX(),
-        () -> -driver.getRightX(),
-        () -> fastMode,
-        slowDriveMultiplier,
-        slowTurnMultiplier,
-        driver.povUp(),
-        driver.povDown(),
-        driver.povLeft(),
-        driver.povRight(),
-        poseManager);
+    driveCommands =
+        new DriveCommands(
+            drive,
+            () -> -driver.getLeftY(),
+            () -> -driver.getLeftX(),
+            () -> -driver.getRightX(),
+            () -> fastMode,
+            slowDriveMultiplier,
+            slowTurnMultiplier,
+            driver.povUp(),
+            driver.povDown(),
+            driver.povLeft(),
+            driver.povRight(),
+            poseManager);
 
     // Set up auto routines
     NamedCommands.registerCommand(
