@@ -30,7 +30,6 @@ public class AprilTagVision extends VirtualSubsystem {
     Logger.processInputs("AprilTagVision", inputs);
 
     Leds.getInstance().tagsDetected = inputs.tagCount > 0;
-    // TODO figure out new way to align with speaker
 
     // Clear previous result
     result = null;

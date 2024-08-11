@@ -30,6 +30,7 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.DriveConstants;
+import frc.robot.subsystems.leds.Leds;
 import frc.robot.util.AllianceFlipUtil;
 import frc.robot.util.EqualsUtil;
 import frc.robot.util.LoggedTunableNumber;
@@ -165,6 +166,8 @@ public class DriveCommands {
                       AllianceFlipUtil.shouldFlip()
                           ? poseManager.getRotation().plus(new Rotation2d(Math.PI))
                           : poseManager.getRotation()));
+
+              Leds.getInstance().alignedWithTarget = atGoal();
             },
             drive)
         .beforeStarting(
@@ -175,7 +178,8 @@ public class DriveCommands {
               controller.reset(
                   poseManager.getPose().getRotation().getRadians(),
                   poseManager.fieldVelocity().dtheta);
-            });
+            })
+        .finallyDo(() -> Leds.getInstance().alignedWithTarget = false);
   }
 
   private Translation2d getLinearVelocityFromJoysticks() {
