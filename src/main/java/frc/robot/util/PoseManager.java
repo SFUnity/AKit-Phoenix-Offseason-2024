@@ -5,6 +5,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
+import edu.wpi.first.math.geometry.Twist2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import frc.robot.subsystems.apriltagvision.AprilTagVision;
 import frc.robot.subsystems.drive.DriveConstants;
@@ -19,10 +20,12 @@ public class PoseManager {
         new SwerveModulePosition()
       };
   private Rotation2d lastGyroAngle = new Rotation2d();
+  private Twist2d robotVelocity = new Twist2d();
+  private double lastYawVelocity = 0.0;
+
   private SwerveDrivePoseEstimator poseEstimator =
       new SwerveDrivePoseEstimator(
           DriveConstants.kinematics, lastGyroAngle, lastModulePositions, new Pose2d());
-  private double lastYawVelocity = 0.0;
 
   public PoseManager() {}
 
@@ -50,6 +53,10 @@ public class PoseManager {
         visionResult.pose(), visionResult.timestamp(), visionResult.stdDevs());
   }
 
+  public void addVelocityData(Twist2d robotVelocity) {
+    this.robotVelocity = robotVelocity;
+  }
+
   public double getDistanceTo(Pose2d pose) {
     return getDistanceTo(pose.getTranslation());
   }
@@ -63,24 +70,24 @@ public class PoseManager {
     return currentTranslation.getDistance(translation);
   }
 
-  public double getHorizontalAngleTo(Pose2d pose) {
+  public Rotation2d getHorizontalAngleTo(Pose2d pose) {
     return getHorizontalAngleTo(pose.getTranslation());
   }
 
-  public double getHorizontalAngleTo(Translation3d translation) {
+  public Rotation2d getHorizontalAngleTo(Translation3d translation) {
     return getHorizontalAngleTo(translation.toTranslation2d());
   }
 
-  public double getHorizontalAngleTo(Translation2d translation) {
+  public Rotation2d getHorizontalAngleTo(Translation2d translation) {
     Translation2d currentTranslation = getPose().getTranslation();
-    double theta = currentTranslation.minus(translation).getAngle().getDegrees();
+    Rotation2d theta = currentTranslation.minus(translation).getAngle();
     return theta;
   }
 
-  public double getVerticalAngleTo(Translation3d translation) {
+  public Rotation2d getVerticalAngleTo(Translation3d translation) {
     double horizontalDiff = getDistanceTo(translation);
     double zDiff = translation.getZ();
-    double theta = Math.toDegrees(Math.atan2(zDiff, horizontalDiff));
+    Rotation2d theta = new Rotation2d(Math.atan2(zDiff, horizontalDiff));
     return theta;
   }
 
@@ -103,5 +110,13 @@ public class PoseManager {
   /** Resets the current odometry pose. */
   public void setPose(Pose2d pose) {
     poseEstimator.resetPosition(lastGyroAngle, lastModulePositions, pose);
+  }
+
+  @AutoLogOutput(key = "RobotState/FieldVelocity")
+  public Twist2d fieldVelocity() {
+    Translation2d linearFieldVelocity =
+        new Translation2d(robotVelocity.dx, robotVelocity.dy).rotateBy(getPose().getRotation());
+    return new Twist2d(
+        linearFieldVelocity.getX(), linearFieldVelocity.getY(), robotVelocity.dtheta);
   }
 }
