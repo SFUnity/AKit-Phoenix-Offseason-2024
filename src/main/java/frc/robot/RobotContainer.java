@@ -215,7 +215,8 @@ public class RobotContainer {
         .b()
         .whileTrue(
             driveCommands.headingDrive(
-                () -> 0)); // TODO change to get the angle to the speaker from the PoseManager
+                () ->
+                    poseManager.getHorizontalAngleTo(FieldConstants.Speaker.centerSpeakerOpening)));
 
     // Operator controls for intake
     operator.triangle().whileTrue(intake.poopCmd());

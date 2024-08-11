@@ -3,6 +3,7 @@ package frc.robot.subsystems.drive;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.util.Units;
+import frc.robot.Constants;
 
 /** All Constants Measured in Meters and Radians (m/s, m/s^2, rad/s, rad/s^2) */
 public final class DriveConstants {
@@ -28,4 +29,13 @@ public final class DriveConstants {
 
   public static final SwerveDriveKinematics kinematics =
       new SwerveDriveKinematics(moduleTranslations);
+
+  // Swerve Heading Control
+  public static final HeadingControllerConstants headingControllerConstants =
+      switch (Constants.currentMode) {
+        default -> new HeadingControllerConstants(5.0, 0.0, 8.0, 20.0);
+      };
+
+  public record HeadingControllerConstants(
+      double kP, double kD, double maxVelocity, double maxAcceleration) {}
 }

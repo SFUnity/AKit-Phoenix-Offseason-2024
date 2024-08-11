@@ -13,21 +13,32 @@
 
 package frc.robot.commands;
 
+import static frc.robot.subsystems.drive.DriveConstants.headingControllerConstants;
+
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.math.trajectory.TrapezoidProfile;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.robot.Constants;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.DriveConstants;
 import frc.robot.util.AllianceFlipUtil;
+import frc.robot.util.EqualsUtil;
+import frc.robot.util.LoggedTunableNumber;
 import frc.robot.util.PoseManager;
 import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
+import java.util.function.Supplier;
+import org.littletonrobotics.junction.AutoLogOutput;
+import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.LoggedDashboardNumber;
 
 public class DriveCommands {
@@ -44,6 +55,20 @@ public class DriveCommands {
   private Trigger povLeft;
   private Trigger povRight;
   private PoseManager poseManager;
+
+  private static final LoggedTunableNumber kP =
+      new LoggedTunableNumber("HeadingController/kP", headingControllerConstants.kP());
+  private static final LoggedTunableNumber kD =
+      new LoggedTunableNumber("HeadingController/kD", headingControllerConstants.kD());
+  private static final LoggedTunableNumber maxVelocityMultipler =
+      new LoggedTunableNumber("HeadingController/MaxVelocityMultipler", 0.8);
+  private static final LoggedTunableNumber maxAccelerationMultipler =
+      new LoggedTunableNumber("HeadingController/MaxAccelerationMultipler", 0.8);
+  private static final LoggedTunableNumber toleranceDegrees =
+      new LoggedTunableNumber("HeadingController/ToleranceDegrees", 1.0);
+
+  private final ProfiledPIDController controller;
+  private Supplier<Rotation2d> goalHeadingSupplier;
 
   public DriveCommands(
       Drive drive,
@@ -70,6 +95,19 @@ public class DriveCommands {
     this.povLeft = povLeft;
     this.povRight = povRight;
     this.poseManager = poseManager;
+
+    controller =
+        new ProfiledPIDController(
+            kP.get(),
+            0,
+            kD.get(),
+            new TrapezoidProfile.Constraints(0.0, 0.0),
+            Constants.loopPeriodSecs);
+    controller.enableContinuousInput(-Math.PI, Math.PI);
+    controller.setTolerance(Units.degreesToRadians(toleranceDegrees.get()));
+
+    controller.reset(
+        poseManager.getPose().getRotation().getRadians(), poseManager.fieldVelocity().dtheta);
   }
 
   /**
@@ -112,26 +150,32 @@ public class DriveCommands {
    * Field relative drive command using one joystick (controlling linear velocity) with a
    * ProfiledPID for angular velocity.
    */
-  public Command headingDrive(DoubleSupplier desiredAngle) {
+  public Command headingDrive(Supplier<Rotation2d> goalHeadingSupplier) {
     return Commands.run(
-        () -> {
-          // Get angular velocity
-          double omega = getAngularVelocityFromProfiledPID();
+            () -> {
+              // Get linear velocity
+              Translation2d linearVelocity = getLinearVelocityFromJoysticks();
 
-          // Get linear velocity
-          Translation2d linearVelocity = getLinearVelocityFromJoysticks();
+              // Convert to field relative speeds & send command
+              drive.runVelocity(
+                  ChassisSpeeds.fromFieldRelativeSpeeds(
+                      linearVelocity.getX() * DriveConstants.MAX_LINEAR_SPEED,
+                      linearVelocity.getY() * DriveConstants.MAX_LINEAR_SPEED,
+                      getAngularVelocityFromProfiledPID(),
+                      AllianceFlipUtil.shouldFlip()
+                          ? poseManager.getRotation().plus(new Rotation2d(Math.PI))
+                          : poseManager.getRotation()));
+            },
+            drive)
+        .beforeStarting(
+            () -> {
+              controller.setTolerance(Units.degreesToRadians(toleranceDegrees.get()));
+              this.goalHeadingSupplier = goalHeadingSupplier;
 
-          // Convert to field relative speeds & send command
-          drive.runVelocity(
-              ChassisSpeeds.fromFieldRelativeSpeeds(
-                  linearVelocity.getX() * DriveConstants.MAX_LINEAR_SPEED,
-                  linearVelocity.getY() * DriveConstants.MAX_LINEAR_SPEED,
-                  omega * DriveConstants.MAX_ANGULAR_SPEED,
-                  AllianceFlipUtil.shouldFlip()
-                      ? poseManager.getRotation().plus(new Rotation2d(Math.PI))
-                      : poseManager.getRotation()));
-        },
-        drive);
+              controller.reset(
+                  poseManager.getPose().getRotation().getRadians(),
+                  poseManager.fieldVelocity().dtheta);
+            });
   }
 
   private Translation2d getLinearVelocityFromJoysticks() {
@@ -175,6 +219,31 @@ public class DriveCommands {
   }
 
   private double getAngularVelocityFromProfiledPID() {
-    return 0; // TODO make getGoalAngularVelocity work
+    // Update controller
+    controller.setPID(kP.get(), 0, kD.get());
+    controller.setTolerance(Units.degreesToRadians(toleranceDegrees.get()));
+
+    double maxAngularAcceleration =
+        DriveConstants.MAX_ANGULAR_ACCELERATION * maxAccelerationMultipler.get();
+    double maxAngularVelocity = DriveConstants.MAX_ANGULAR_SPEED * maxVelocityMultipler.get();
+    controller.setConstraints(
+        new TrapezoidProfile.Constraints(maxAngularVelocity, maxAngularAcceleration));
+
+    double output =
+        controller.calculate(
+            poseManager.getPose().getRotation().getRadians(),
+            goalHeadingSupplier.get().getRadians());
+
+    Logger.recordOutput("Drive/HeadingController/HeadingError", controller.getPositionError());
+    return output;
+  }
+
+  /** Returns true if within tolerance of aiming at goal */
+  @AutoLogOutput(key = "Drive/HeadingController/AtGoal")
+  public boolean atGoal() {
+    return EqualsUtil.equalsWithTolerance(
+        controller.getSetpoint().position,
+        controller.getGoal().position,
+        Units.degreesToRadians(toleranceDegrees.get()));
   }
 }
