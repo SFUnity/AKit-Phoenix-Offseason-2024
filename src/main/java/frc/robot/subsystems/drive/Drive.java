@@ -34,6 +34,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.util.Alert;
 import frc.robot.util.AllianceFlipUtil;
+import frc.robot.util.GeomUtil;
 import frc.robot.util.LocalADStarAK;
 import frc.robot.util.PoseManager;
 import org.littletonrobotics.junction.AutoLogOutput;
@@ -126,9 +127,6 @@ public class Drive extends SubsystemBase {
       module.periodic();
     }
 
-    // update the brake mode based on the robot's velocity and state (enabled/disabled)
-    updateBrakeMode();
-
     // Set alerts
     gyroDisconnected.set(!gyroInputs.connected);
 
@@ -169,6 +167,17 @@ public class Drive extends SubsystemBase {
     // Apply odometry update
     poseManager.addOdometryMeasurement(
         rawGyroRotation, modulePositions, gyroInputs.yawVelocityRadPerSec);
+
+    // Update current velocities use gyro when possible
+    ChassisSpeeds robotRelativeVelocity = getSpeeds();
+    robotRelativeVelocity.omegaRadiansPerSecond =
+        gyroInputs.connected
+            ? gyroInputs.yawVelocityRadPerSec
+            : robotRelativeVelocity.omegaRadiansPerSecond;
+    poseManager.addVelocityData(GeomUtil.toTwist2d(robotRelativeVelocity));
+
+    // update the brake mode based on the robot's velocity and state (enabled/disabled)
+    updateBrakeMode();
   }
 
   /**
@@ -271,5 +280,11 @@ public class Drive extends SubsystemBase {
     for (var module : modules) {
       module.setBrakeMode(enable);
     }
+  }
+
+  /** Returns the measured speeds of the robot in the robot's frame of reference. */
+  @AutoLogOutput(key = "Drive/MeasuredSpeeds")
+  private ChassisSpeeds getSpeeds() {
+    return DriveConstants.kinematics.toChassisSpeeds(getModuleStates());
   }
 }
