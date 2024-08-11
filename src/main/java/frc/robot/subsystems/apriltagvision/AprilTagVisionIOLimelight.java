@@ -28,12 +28,12 @@ public class AprilTagVisionIOLimelight implements AprilTagVisionIO {
     LimelightHelpers.PoseEstimate observation =
         LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2("limelight");
 
-    inputs.estimatedPose = observation.pose;
     inputs.isNew = observation.timestampSeconds != 0;
-    if (inputs.isNew) {
+    if (inputs.isNew) { // If there is new data don't bother updating the inputs
+      inputs.estimatedPose = observation.pose;
       inputs.timestamp = observation.timestampSeconds;
+      inputs.tagCount = observation.tagCount;
     }
-    inputs.tagCount = observation.tagCount;
 
     inputs.pipeline = LimelightHelpers.getCurrentPipelineIndex(name);
     inputs.ledMode = LimelightHelpers.getLimelightNTDouble(name, "ledMode");
