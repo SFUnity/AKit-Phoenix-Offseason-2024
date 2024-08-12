@@ -75,13 +75,13 @@ public class AprilTagVisionIOLimelight implements AprilTagVisionIO {
     double maxY = 0;
 
     // Iterate over all tag corners
-    for (int i = 0; i < tcornxy.length / 2; i+=2) {
-        minX = Math.min(minX, tcornxy[i]);
-        maxX = Math.max(maxX, tcornxy[i]);
+    for (int i = 0; i < tcornxy.length / 2; i += 2) {
+      minX = Math.min(minX, tcornxy[i]);
+      maxX = Math.max(maxX, tcornxy[i]);
     }
-    for (int i = 1; i < tcornxy.length / 2; i+=2) {
-        minY = Math.min(minY, tcornxy[i]);
-        maxY = Math.max(maxY, tcornxy[i]);
+    for (int i = 1; i < tcornxy.length / 2; i += 2) {
+      minY = Math.min(minY, tcornxy[i]);
+      maxY = Math.max(maxY, tcornxy[i]);
     }
 
     // Apply crop buffer and clamp to default crop size

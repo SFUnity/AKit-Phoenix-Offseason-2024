@@ -40,18 +40,18 @@ public class PoseManager {
   }
 
   public void addVisionMeasurement(
-      Pose2d pose, double timestamp, Matrix<N3, N1> stdDevs, int tagCount) {
+      Pose2d estimatedPose, double timestamp, Matrix<N3, N1> stdDevs, int tagCount) {
     // Exit if the robot's angular velocity is too high
     if (Math.abs(lastYawVelocity) > 720) {
       return;
     }
     // Exit if the estimated pose is too far away from current pose
     double allowableDistance = tagCount * 3; // In meters
-    if (getDistanceTo(pose) > allowableDistance) {
+    if (getDistanceTo(estimatedPose) > allowableDistance) {
       return;
     }
     // Add result because all checks passed
-    poseEstimator.addVisionMeasurement(pose, timestamp, stdDevs);
+    poseEstimator.addVisionMeasurement(estimatedPose, timestamp, stdDevs);
   }
 
   public void addVelocityData(Twist2d robotVelocity) {
