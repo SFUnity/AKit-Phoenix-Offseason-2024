@@ -47,8 +47,7 @@ public class PoseManager {
     }
     // Exit if the estimated pose is too far away from current pose
     double allowableDistance = tagCount * 3; // In meters
-    Pose2d resultPose = pose;
-    if (getDistanceTo(resultPose) > allowableDistance) {
+    if (getDistanceTo(pose) > allowableDistance) {
       return;
     }
     // Add result because all checks passed
