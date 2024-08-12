@@ -35,8 +35,8 @@ public class AprilTagVision extends VirtualSubsystem {
     result = null;
 
     Pose2d robotPose = inputs.estimatedPose;
-    // Exit if data is old or there are no tags in sight
-    if (!inputs.isNew || inputs.tagCount == 0) {
+    // Exit if there are no tags in sight (also exits if there is no data and a default is in use)
+    if (inputs.tagCount == 0) {
       return;
     }
     // Exit if the estimated pose is off the field

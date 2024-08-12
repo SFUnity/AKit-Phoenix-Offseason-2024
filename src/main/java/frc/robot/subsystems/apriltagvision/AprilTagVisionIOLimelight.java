@@ -11,6 +11,7 @@ public class AprilTagVisionIOLimelight implements AprilTagVisionIO {
 
   private static final double disconnectedTimeout = 0.5;
   private final Alert disconnectedAlert;
+  private double lastTimestamp = 0;
 
   public AprilTagVisionIOLimelight(String camName, PoseManager poseManager) {
     name = camName;
@@ -28,19 +29,18 @@ public class AprilTagVisionIOLimelight implements AprilTagVisionIO {
     LimelightHelpers.PoseEstimate observation =
         LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2("limelight");
 
-    inputs.isNew = observation.timestampSeconds != 0;
-    if (inputs.isNew) { // If there is new data don't bother updating the inputs
-      inputs.estimatedPose = observation.pose;
-      inputs.timestamp = observation.timestampSeconds;
-      inputs.tagCount = observation.tagCount;
-    }
+    inputs.estimatedPose = observation.pose;
+    inputs.timestamp = observation.timestampSeconds;
+    inputs.tagCount = observation.tagCount;
 
     inputs.pipeline = LimelightHelpers.getCurrentPipelineIndex(name);
     inputs.ledMode = LimelightHelpers.getLimelightNTDouble(name, "ledMode");
 
     // Update disconnected alert
-    disconnectedAlert.set(
-        Timer.getFPGATimestamp() - observation.timestampSeconds < disconnectedTimeout);
+    if (observation.timestampSeconds != 0) {
+      lastTimestamp = observation.timestampSeconds;
+    }
+    disconnectedAlert.set(Timer.getFPGATimestamp() - lastTimestamp < disconnectedTimeout);
   }
 
   @Override
