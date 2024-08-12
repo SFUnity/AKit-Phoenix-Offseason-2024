@@ -10,17 +10,18 @@ import edu.wpi.first.math.numbers.N3;
 import frc.robot.FieldConstants;
 import frc.robot.subsystems.apriltagvision.AprilTagVisionConstants.Pipelines;
 import frc.robot.subsystems.leds.Leds;
+import frc.robot.util.PoseManager;
 import frc.robot.util.VirtualSubsystem;
 import org.littletonrobotics.junction.Logger;
 
 public class AprilTagVision extends VirtualSubsystem {
   private final AprilTagVisionIO io;
   private final AprilTagVisionIOInputsAutoLogged inputs = new AprilTagVisionIOInputsAutoLogged();
+  private final PoseManager poseManager;
 
-  private VisionResult result = null;
-
-  public AprilTagVision(AprilTagVisionIO io) {
+  public AprilTagVision(AprilTagVisionIO io, PoseManager poseManager) {
     this.io = io;
+    this.poseManager = poseManager;
 
     io.setPipeline(Pipelines.BLUE_SPEAKER.get());
   }
@@ -30,9 +31,6 @@ public class AprilTagVision extends VirtualSubsystem {
     Logger.processInputs("AprilTagVision", inputs);
 
     Leds.getInstance().tagsDetected = inputs.tagCount > 0;
-
-    // Clear previous result
-    result = null;
 
     Pose2d robotPose = inputs.estimatedPose;
     // Exit if there are no tags in sight (also exits if there is no data and a default is in use)
@@ -47,17 +45,7 @@ public class AprilTagVision extends VirtualSubsystem {
       return;
     }
     // Add result because all checks passed
-    result = new VisionResult(robotPose, inputs.timestamp, VecBuilder.fill(.7, .7, 9999999));
+    Matrix<N3, N1> stdDevs = VecBuilder.fill(.7, .7, 9999999);
+    poseManager.addVisionMeasurement(robotPose, inputs.timestamp, stdDevs, inputs.tagCount);
   }
-
-  /** Returns the last recorded pose */
-  public VisionResult getResult() {
-    return result;
-  }
-
-  public double getTagCount() {
-    return inputs.tagCount;
-  }
-
-  public record VisionResult(Pose2d pose, double timestamp, Matrix<N3, N1> stdDevs) {}
 }

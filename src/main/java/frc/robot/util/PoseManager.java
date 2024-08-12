@@ -1,5 +1,6 @@
 package frc.robot.util;
 
+import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -7,7 +8,8 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.geometry.Twist2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
-import frc.robot.subsystems.apriltagvision.AprilTagVision;
+import edu.wpi.first.math.numbers.N1;
+import edu.wpi.first.math.numbers.N3;
 import frc.robot.subsystems.drive.DriveConstants;
 import org.littletonrobotics.junction.AutoLogOutput;
 
@@ -37,20 +39,19 @@ public class PoseManager {
     lastYawVelocity = yawVelocity;
   }
 
-  public void addVisionMeasurement(AprilTagVision.VisionResult visionResult, int tagCount) {
+  public void addVisionMeasurement(Pose2d pose, double timestamp, Matrix<N3, N1> stdDevs, int tagCount) {
     // Exit if the robot's angular velocity is too high
     if (Math.abs(lastYawVelocity) > 720) {
       return;
     }
     // Exit if the estimated pose is too far away from current pose
     double allowableDistance = tagCount * 3; // In meters
-    Pose2d resultPose = visionResult.pose();
+    Pose2d resultPose = pose;
     if (getDistanceTo(resultPose) > allowableDistance) {
       return;
     }
     // Add result because all checks passed
-    poseEstimator.addVisionMeasurement(
-        visionResult.pose(), visionResult.timestamp(), visionResult.stdDevs());
+    poseEstimator.addVisionMeasurement(pose, timestamp, stdDevs);
   }
 
   public void addVelocityData(Twist2d robotVelocity) {

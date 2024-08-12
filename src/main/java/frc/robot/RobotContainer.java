@@ -97,7 +97,7 @@ public class RobotContainer {
                 new ModuleIOMixed(3),
                 poseManager);
         aprilTagVision =
-            new AprilTagVision(new AprilTagVisionIOLimelight("limelight", poseManager));
+            new AprilTagVision(new AprilTagVisionIOLimelight("limelight", poseManager), poseManager);
         flywheel = new Flywheel(new FlywheelIOSparkMax());
         intake = new Intake(new IntakeIOSim());
         break;
@@ -112,7 +112,7 @@ public class RobotContainer {
                 new ModuleIOSim(),
                 new ModuleIOSim(),
                 poseManager);
-        aprilTagVision = new AprilTagVision(new AprilTagVisionIO() {});
+        aprilTagVision = new AprilTagVision(new AprilTagVisionIO() {}, poseManager);
         flywheel = new Flywheel(new FlywheelIOSim());
         intake = new Intake(new IntakeIOSim());
         break;
@@ -127,7 +127,7 @@ public class RobotContainer {
                 new ModuleIO() {},
                 new ModuleIO() {},
                 poseManager);
-        aprilTagVision = new AprilTagVision(new AprilTagVisionIO() {});
+        aprilTagVision = new AprilTagVision(new AprilTagVisionIO() {}, poseManager);
         flywheel = new Flywheel(new FlywheelIO() {});
         intake = new Intake(new IntakeIO() {});
         break;
