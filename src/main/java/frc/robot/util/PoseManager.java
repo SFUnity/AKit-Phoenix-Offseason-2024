@@ -39,7 +39,8 @@ public class PoseManager {
     lastYawVelocity = yawVelocity;
   }
 
-  public void addVisionMeasurement(Pose2d pose, double timestamp, Matrix<N3, N1> stdDevs, int tagCount) {
+  public void addVisionMeasurement(
+      Pose2d pose, double timestamp, Matrix<N3, N1> stdDevs, int tagCount) {
     // Exit if the robot's angular velocity is too high
     if (Math.abs(lastYawVelocity) > 720) {
       return;

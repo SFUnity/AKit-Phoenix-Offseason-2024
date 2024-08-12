@@ -97,7 +97,8 @@ public class RobotContainer {
                 new ModuleIOMixed(3),
                 poseManager);
         aprilTagVision =
-            new AprilTagVision(new AprilTagVisionIOLimelight("limelight", poseManager), poseManager);
+            new AprilTagVision(
+                new AprilTagVisionIOLimelight("limelight", poseManager), poseManager);
         flywheel = new Flywheel(new FlywheelIOSparkMax());
         intake = new Intake(new IntakeIOSim());
         break;

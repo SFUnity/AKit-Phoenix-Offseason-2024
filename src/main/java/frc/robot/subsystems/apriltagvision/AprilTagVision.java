@@ -23,7 +23,7 @@ public class AprilTagVision extends VirtualSubsystem {
     this.io = io;
     this.poseManager = poseManager;
 
-    io.setPipeline(Pipelines.BLUE_SPEAKER.get());
+    io.setPipeline(Pipelines.BLUE_SPEAKER);
   }
 
   public void periodic() {

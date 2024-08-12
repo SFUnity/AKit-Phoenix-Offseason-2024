@@ -1,6 +1,7 @@
 package frc.robot.subsystems.apriltagvision;
 
 import edu.wpi.first.wpilibj.Timer;
+import frc.robot.subsystems.apriltagvision.AprilTagVisionConstants.*;
 import frc.robot.util.Alert;
 import frc.robot.util.LimelightHelpers;
 import frc.robot.util.PoseManager;
@@ -46,5 +47,10 @@ public class AprilTagVisionIOLimelight implements AprilTagVisionIO {
   @Override
   public void setPipeline(int pipelineIndex) {
     LimelightHelpers.setPipelineIndex(name, pipelineIndex);
+  }
+
+  @Override
+  public void setPipeline(Pipelines pipelineEnum) {
+    LimelightHelpers.setPipelineIndex(name, Pipelines.getIndexFor(pipelineEnum));
   }
 }

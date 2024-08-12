@@ -14,13 +14,21 @@ public class AprilTagVisionConstants {
   public static final double heightOfSpeakerInches = 80;
 
   public static enum Pipelines {
-    // blue speaker = 0, red speaker = 1, source = 2
     BLUE_SPEAKER,
     RED_SPEAKER,
     SOURCE;
 
-    public int get() {
-      return ordinal();
+    public static int getIndexFor(Pipelines pipeline) {
+      switch (pipeline) {
+        case BLUE_SPEAKER:
+          return 0;
+        case RED_SPEAKER:
+          return 1;
+        case SOURCE:
+          return 2;
+        default:
+          return 0;
+      }
     }
   }
 }

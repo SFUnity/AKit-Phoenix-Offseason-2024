@@ -18,6 +18,9 @@ public interface AprilTagVisionIO {
   /** Updates the set of loggable inputs. */
   public default void updateInputs(AprilTagVisionIOInputs inputs) {}
 
-  /** Sets the pipeline number. */
+  /** Sets the pipeline index. */
   public default void setPipeline(int pipeline) {}
+
+  /** Sets the pipeline through enum. */
+  public default void setPipeline(AprilTagVisionConstants.Pipelines pipeline) {}
 }
