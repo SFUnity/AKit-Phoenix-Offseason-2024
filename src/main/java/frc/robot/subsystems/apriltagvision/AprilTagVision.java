@@ -33,8 +33,8 @@ public class AprilTagVision extends VirtualSubsystem {
     Leds.getInstance().tagsDetected = inputs.tagCount > 0;
 
     Pose2d robotPose = inputs.estimatedPose;
-    // Exit if there are no tags in sight (also exits if there is no data and a default is in use)
-    if (inputs.tagCount == 0) {
+    // Exit if there are no tags in sight or the pose is blank
+    if (inputs.tagCount == 0 || robotPose.equals(new Pose2d())) {
       return;
     }
     // Exit if the estimated pose is off the field
