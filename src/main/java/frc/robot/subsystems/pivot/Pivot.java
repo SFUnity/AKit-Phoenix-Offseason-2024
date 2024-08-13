@@ -14,19 +14,20 @@
 package frc.robot.subsystems.pivot;
 
 import static edu.wpi.first.units.Units.*;
-import static frc.robot.subsystems.pivot.PivotConstants.*;
 
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
+import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants;
 import frc.robot.subsystems.apriltagvision.AprilTagVision;
 import frc.robot.subsystems.apriltagvision.AprilTagVisionConstants;
+import frc.robot.util.GeneralUtil;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
@@ -36,7 +37,10 @@ public class Pivot extends SubsystemBase {
   private final PivotIOInputsAutoLogged inputs = new PivotIOInputsAutoLogged();
   private final SimpleMotorFeedforward ffModel;
   private final SysIdRoutine sysId;
-  private ShuffleboardTab driversTab = Shuffleboard.getTab("Drivers"); // TODO change these to LoggedDashboardNumbers
+  private final PivotVisualizer measuredVisualizer;
+  private final PivotVisualizer setpointVisualizer;
+  private ShuffleboardTab driversTab =
+      Shuffleboard.getTab("Drivers"); // TODO change these to LoggedTunableNumbers
 
   private GenericEntry hegihtOfSpeakerEntry =
       driversTab
@@ -93,12 +97,20 @@ public class Pivot extends SubsystemBase {
                 null,
                 (state) -> Logger.recordOutput("Pivot/SysIdState", state.toString())),
             new SysIdRoutine.Mechanism((voltage) -> runVolts(voltage.in(Volts)), null, this));
+
+    measuredVisualizer = new PivotVisualizer("Measured", Color.kRed);
+    setpointVisualizer = new PivotVisualizer("Setpoint", Color.kBlue);
   }
 
   @Override
   public void periodic() {
     io.updateInputs(inputs);
     Logger.processInputs("Pivot", inputs);
+
+    measuredVisualizer.update(inputs.positionRots);
+    setpointVisualizer.update(desiredAngle);
+    Logger.recordOutput("Pivot/positionSetpointRots", desiredAngle);
+    GeneralUtil.logSubsystem(this, "Pivot");
   }
 
   /** Run open loop at the specified voltage. */
@@ -136,14 +148,16 @@ public class Pivot extends SubsystemBase {
     return sysId.dynamic(direction);
   }
 
-  // TODO Does your code need this conversion? If not AScope can do it for you, so I would suggest removing
+  // TODO Does your code need this conversion? If not AScope can do it for you, so I would suggest
+  // removing
   /** Returns the current velocity in RPM. */
   @AutoLogOutput
   public double getVelocityRPM() {
     return Units.radiansPerSecondToRotationsPerMinute(inputs.velocityRotsPerSec);
   }
 
-  // TODO After a bit of research I don't think this is necessary and will be removed everywhere (left it here for you to delete bc this is your subsystem)
+  // TODO After a bit of research I don't think this is necessary and will be removed everywhere
+  // (left it here for you to delete bc this is your subsystem)
   /** Returns the current velocity in radians per second. */
   public double getCharacterizationVelocity() {
     return inputs.velocityRotsPerSec;

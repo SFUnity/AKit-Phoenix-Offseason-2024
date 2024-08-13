@@ -196,6 +196,9 @@ public class RobotContainer {
     operator.triangle().whileTrue(intake.poopCmd());
     operator.square().whileTrue(intake.intakeCmd(operator.cross()));
     operator.circle().whileTrue(intake.intakeCmd(new Trigger(() -> false)));
+
+    // Operator controls for pivot
+    operator.circle().whileTrue(pivot.setManualShootAngleCommand());
   }
 
   /** Updates the alerts for disconnected controllers. */
