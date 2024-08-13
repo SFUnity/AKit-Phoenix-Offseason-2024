@@ -19,6 +19,7 @@ import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.wpilibj.simulation.FlywheelSim;
 
 public class PivotIOSim implements PivotIO {
+  // TODO use an arm sim
   private FlywheelSim sim = new FlywheelSim(DCMotor.getNEO(1), 1.5, 0.004);
   private PIDController pid = new PIDController(0.0, 0.0, 0.0);
 
@@ -36,8 +37,8 @@ public class PivotIOSim implements PivotIO {
 
     sim.update(0.02);
 
-    inputs.positionRad = 0.0;
-    inputs.velocityRadPerSec = sim.getAngularVelocityRadPerSec();
+    inputs.positionRots = 0.0;
+    inputs.velocityRotsPerSec = sim.getAngularVelocityRadPerSec();
     inputs.appliedVolts = appliedVolts;
     inputs.currentAmps = new double[] {sim.getCurrentDrawAmps()};
   }

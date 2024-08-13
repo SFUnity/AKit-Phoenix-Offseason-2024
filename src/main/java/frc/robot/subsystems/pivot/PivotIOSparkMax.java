@@ -49,9 +49,8 @@ public class PivotIOSparkMax implements PivotIO {
 
   @Override
   public void updateInputs(PivotIOInputs inputs) {
-    inputs.positionRad = Units.rotationsToRadians(encoder.getPosition() / GEAR_RATIO);
-    inputs.velocityRadPerSec =
-        Units.rotationsPerMinuteToRadiansPerSecond(encoder.getVelocity() / GEAR_RATIO);
+    inputs.positionRots = encoder.getPosition();
+    inputs.velocityRotsPerSec = encoder.getVelocity();
     inputs.appliedVolts = angleMotor.getAppliedOutput() * angleMotor.getBusVoltage();
     inputs.currentAmps =
         new double[] {angleMotor.getOutputCurrent(), angleMotor.getOutputCurrent()};

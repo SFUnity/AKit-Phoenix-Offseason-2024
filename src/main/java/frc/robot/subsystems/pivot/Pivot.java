@@ -108,7 +108,7 @@ public class Pivot extends SubsystemBase {
 
   // TODO Is this used anywhere? Also think about units of desiredAngle vs positionRad
   public boolean atDesiredAngle(double desiredAngle) {
-    return inputs.positionRad <= desiredAngle + 1 || inputs.positionRad >= desiredAngle - 1;
+    return inputs.positionRots <= desiredAngle + 1 || inputs.positionRots >= desiredAngle - 1;
   }
 
   // TODO Do we need a function to control the pivot using velocity control?
@@ -140,13 +140,13 @@ public class Pivot extends SubsystemBase {
   /** Returns the current velocity in RPM. */
   @AutoLogOutput
   public double getVelocityRPM() {
-    return Units.radiansPerSecondToRotationsPerMinute(inputs.velocityRadPerSec);
+    return Units.radiansPerSecondToRotationsPerMinute(inputs.velocityRotsPerSec);
   }
 
   // TODO After a bit of research I don't think this is necessary and will be removed everywhere (left it here for you to delete bc this is your subsystem)
   /** Returns the current velocity in radians per second. */
   public double getCharacterizationVelocity() {
-    return inputs.velocityRadPerSec;
+    return inputs.velocityRotsPerSec;
   }
 
   public void readyShootSpeakerManual() {
