@@ -13,14 +13,26 @@
 
 package frc.robot.subsystems.pivot;
 
+import static frc.robot.subsystems.pivot.PivotConstants.pivotLength;
+
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.system.plant.DCMotor;
-import edu.wpi.first.wpilibj.simulation.FlywheelSim;
+import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.simulation.SingleJointedArmSim;
 
 public class PivotIOSim implements PivotIO {
   // TODO use an arm sim
-  private FlywheelSim sim = new FlywheelSim(DCMotor.getNEO(1), 1.5, 0.004);
+  private final SingleJointedArmSim sim =
+      new SingleJointedArmSim(
+          DCMotor.getNEO(1),
+          100,
+          1.06328,
+          pivotLength,
+          Math.toRadians(0.0),
+          Math.toRadians(125.0),
+          false,
+          Units.degreesToRadians(0.0));
   private PIDController pid = new PIDController(0.0, 0.0, 0.0);
 
   private boolean closedLoop = false;
@@ -30,15 +42,13 @@ public class PivotIOSim implements PivotIO {
   @Override
   public void updateInputs(PivotIOInputs inputs) {
     if (closedLoop) {
-      appliedVolts =
-          MathUtil.clamp(pid.calculate(sim.getAngularVelocityRadPerSec()) + ffVolts, -12.0, 12.0);
-      sim.setInputVoltage(appliedVolts);
+      inputs.appliedVolts = appliedVolts;
     }
 
     sim.update(0.02);
 
     inputs.positionRots = 0.0;
-    inputs.velocityRotsPerSec = sim.getAngularVelocityRadPerSec();
+    inputs.velocityRotsPerSec = Units.radiansToRotations(sim.getVelocityRadPerSec());
     inputs.appliedVolts = appliedVolts;
     inputs.currentAmps = new double[] {sim.getCurrentDrawAmps()};
   }

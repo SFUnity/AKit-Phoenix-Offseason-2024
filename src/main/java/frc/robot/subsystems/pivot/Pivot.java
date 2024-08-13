@@ -16,7 +16,6 @@ package frc.robot.subsystems.pivot;
 import static edu.wpi.first.units.Units.*;
 
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
-import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
@@ -28,7 +27,6 @@ import frc.robot.Constants;
 import frc.robot.subsystems.apriltagvision.AprilTagVision;
 import frc.robot.subsystems.apriltagvision.AprilTagVisionConstants;
 import frc.robot.util.GeneralUtil;
-import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
 public class Pivot extends SubsystemBase {
@@ -39,8 +37,7 @@ public class Pivot extends SubsystemBase {
   private final SysIdRoutine sysId;
   private final PivotVisualizer measuredVisualizer;
   private final PivotVisualizer setpointVisualizer;
-  private ShuffleboardTab driversTab =
-      Shuffleboard.getTab("Drivers"); // TODO change these to LoggedTunableNumbers
+  private ShuffleboardTab driversTab = Shuffleboard.getTab("Drivers");
 
   private GenericEntry hegihtOfSpeakerEntry =
       driversTab
@@ -118,21 +115,6 @@ public class Pivot extends SubsystemBase {
     io.setVoltage(volts);
   }
 
-  // TODO Is this used anywhere? Also think about units of desiredAngle vs positionRad
-  public boolean atDesiredAngle(double desiredAngle) {
-    return inputs.positionRots <= desiredAngle + 1 || inputs.positionRots >= desiredAngle - 1;
-  }
-
-  // TODO Do we need a function to control the pivot using velocity control?
-  /** Run closed loop at the specified velocity. */
-  public void runVelocity(double velocityRPM) {
-    var velocityRadPerSec = Units.rotationsPerMinuteToRadiansPerSecond(velocityRPM);
-    io.setVelocity(velocityRadPerSec, ffModel.calculate(velocityRadPerSec));
-
-    // Log flywheel setpoint
-    Logger.recordOutput("Pivot/SetpointRPM", velocityRPM);
-  }
-
   /** Stops the flywheel. */
   public void stop() {
     io.stop();
@@ -146,21 +128,6 @@ public class Pivot extends SubsystemBase {
   /** Returns a command to run a dynamic test in the specified direction. */
   public Command sysIdDynamic(SysIdRoutine.Direction direction) {
     return sysId.dynamic(direction);
-  }
-
-  // TODO Does your code need this conversion? If not AScope can do it for you, so I would suggest
-  // removing
-  /** Returns the current velocity in RPM. */
-  @AutoLogOutput
-  public double getVelocityRPM() {
-    return Units.radiansPerSecondToRotationsPerMinute(inputs.velocityRotsPerSec);
-  }
-
-  // TODO After a bit of research I don't think this is necessary and will be removed everywhere
-  // (left it here for you to delete bc this is your subsystem)
-  /** Returns the current velocity in radians per second. */
-  public double getCharacterizationVelocity() {
-    return inputs.velocityRotsPerSec;
   }
 
   public void readyShootSpeakerManual() {
@@ -227,6 +194,6 @@ public class Pivot extends SubsystemBase {
               readyShootAmp();
               io.setAngleMotorSpeeds(desiredAngle);
             })
-        .withName("gotta be a team player"); // TODO lol :D (please delete me after reading)
+        .withName("gotta be a team player");
   }
 }
