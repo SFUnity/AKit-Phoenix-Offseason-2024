@@ -62,7 +62,7 @@ public class Pivot extends SubsystemBase {
 
   private double desiredAngle = 0;
 
-  /** Creates a new Flywheel. */
+  /** Creates a new Pivot. */
   public Pivot(PivotIO io, AprilTagVision aprilTagVision) {
     this.io = io;
 
