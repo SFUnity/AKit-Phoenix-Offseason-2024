@@ -44,8 +44,16 @@ public class AprilTagVision extends VirtualSubsystem {
         || robotPose.getY() > FieldConstants.fieldWidth + fieldBorderMargin) {
       return;
     }
-    // Add result because all checks passed
+    // Exit if the estimated pose is too far away from current pose
+    double allowableDistance = inputs.tagCount; // In meters
+    if (poseManager.getDistanceTo(robotPose) > allowableDistance) {
+      return;
+    }
+
+    // Create stdDevs
     Matrix<N3, N1> stdDevs = VecBuilder.fill(.7, .7, 9999999);
+
+    // Add result because all checks passed
     poseManager.addVisionMeasurement(robotPose, inputs.timestamp, stdDevs, inputs.tagCount);
   }
 }

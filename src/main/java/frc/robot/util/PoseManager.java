@@ -45,11 +45,6 @@ public class PoseManager {
     if (Math.abs(lastYawVelocity) > 720) {
       return;
     }
-    // Exit if the estimated pose is too far away from current pose
-    double allowableDistance = tagCount; // In meters
-    if (getDistanceTo(estimatedPose) > allowableDistance) {
-      return;
-    }
     // Add result because all checks passed
     poseEstimator.addVisionMeasurement(estimatedPose, timestamp, stdDevs);
   }
