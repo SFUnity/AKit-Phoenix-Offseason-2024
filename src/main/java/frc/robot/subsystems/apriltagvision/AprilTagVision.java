@@ -10,6 +10,7 @@ import edu.wpi.first.math.numbers.N3;
 import frc.robot.FieldConstants;
 import frc.robot.subsystems.apriltagvision.AprilTagVisionConstants.Pipelines;
 import frc.robot.subsystems.leds.Leds;
+import frc.robot.util.LoggedTunableNumber;
 import frc.robot.util.PoseManager;
 import frc.robot.util.VirtualSubsystem;
 import org.littletonrobotics.junction.Logger;
@@ -18,6 +19,9 @@ public class AprilTagVision extends VirtualSubsystem {
   private final AprilTagVisionIO io;
   private final AprilTagVisionIOInputsAutoLogged inputs = new AprilTagVisionIOInputsAutoLogged();
   private final PoseManager poseManager;
+
+  private final LoggedTunableNumber stdDevMultiTagFactor =
+      new LoggedTunableNumber("Vision/stdDevMultiTagFactor", 0.2);
 
   public AprilTagVision(AprilTagVisionIO io, PoseManager poseManager) {
     this.io = io;
@@ -51,7 +55,9 @@ public class AprilTagVision extends VirtualSubsystem {
     }
 
     // Create stdDevs
-    Matrix<N3, N1> stdDevs = VecBuilder.fill(.7, .7, 9999999);
+    Matrix<N3, N1> stdDevs = VecBuilder.fill(.7, .7, 100);
+    // Decrease std devs if multiple targets are visible
+    if (inputs.tagCount > 1) stdDevs = stdDevs.times(stdDevMultiTagFactor.get());
 
     // Add result because all checks passed
     poseManager.addVisionMeasurement(robotPose, inputs.timestamp, stdDevs, inputs.tagCount);
