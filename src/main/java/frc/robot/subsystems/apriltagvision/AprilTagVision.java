@@ -22,6 +22,10 @@ public class AprilTagVision extends VirtualSubsystem {
 
   private final LoggedTunableNumber stdDevMultiTagFactor =
       new LoggedTunableNumber("Vision/stdDevMultiTagFactor", 0.2);
+  private final LoggedTunableNumber stdDevSlopeDistance =
+      new LoggedTunableNumber("Vision/stdDevSlopeDistance", 0.10);
+  private final LoggedTunableNumber stdDevPowerDistance =
+      new LoggedTunableNumber("Vision/stdDevPowerDistance", 2.0);
 
   public AprilTagVision(AprilTagVisionIO io, PoseManager poseManager) {
     this.io = io;
@@ -56,8 +60,15 @@ public class AprilTagVision extends VirtualSubsystem {
 
     // Create stdDevs
     Matrix<N3, N1> stdDevs = VecBuilder.fill(.7, .7, 100);
-    // Decrease std devs if multiple targets are visible
-    if (inputs.tagCount > 1) stdDevs = stdDevs.times(stdDevMultiTagFactor.get());
+    if (inputs.tagCount == 1) {
+      // Change std devs based on distance to the tag
+      stdDevs =
+          stdDevs.times(
+              stdDevSlopeDistance.get() * (Math.pow(inputs.avgTagDist, stdDevPowerDistance.get())));
+    } else {
+      // Decrease std devs if multiple targets are visible
+      stdDevs = stdDevs.times(stdDevMultiTagFactor.get());
+    }
 
     // Add result because all checks passed
     poseManager.addVisionMeasurement(robotPose, inputs.timestamp, stdDevs, inputs.tagCount);
