@@ -11,9 +11,9 @@
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU General Public License for more details.
 
-package frc.robot.subsystems.pivot;
+package frc.robot.subsystems.shooter.pivot;
 
-import static frc.robot.subsystems.pivot.PivotConstants.pivotLength;
+import static frc.robot.subsystems.shooter.pivot.PivotConstants.pivotLength;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.system.plant.DCMotor;
