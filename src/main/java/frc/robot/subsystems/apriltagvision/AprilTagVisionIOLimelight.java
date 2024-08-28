@@ -40,6 +40,7 @@ public class AprilTagVisionIOLimelight implements AprilTagVisionIO {
     inputs.timestamp = observation.timestampSeconds;
     inputs.tagCount = observation.tagCount;
     inputs.avgTagDist = observation.avgTagDist;
+    inputs.avgTagArea = observation.avgTagArea;
 
     inputs.pipeline = LimelightHelpers.getCurrentPipelineIndex(name);
     inputs.ledMode = LimelightHelpers.getLimelightNTDouble(name, "ledMode");

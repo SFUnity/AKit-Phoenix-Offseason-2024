@@ -10,6 +10,8 @@ public interface AprilTagVisionIO {
     public double timestamp;
     public int tagCount;
     public double avgTagDist;
+    /** percentage of image */
+    public double avgTagArea;
 
     public double pipeline = 0; // TODO store the pipelines where the code can see them
     /** 0 = pipeline control, 1 = force off, 2 = force blink, 3 = force on */

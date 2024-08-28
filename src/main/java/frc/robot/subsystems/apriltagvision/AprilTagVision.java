@@ -26,6 +26,7 @@ public class AprilTagVision extends VirtualSubsystem {
       new LoggedTunableNumber("Vision/stdDevSlopeDistance", 0.10);
   private final LoggedTunableNumber stdDevPowerDistance =
       new LoggedTunableNumber("Vision/stdDevPowerDistance", 2.0);
+  private final LoggedTunableNumber minTagArea = new LoggedTunableNumber("Vision/minTagAreaPercentOfImage", 3.0);
 
   public AprilTagVision(AprilTagVisionIO io, PoseManager poseManager) {
     this.io = io;
@@ -40,23 +41,22 @@ public class AprilTagVision extends VirtualSubsystem {
 
     Leds.getInstance().tagsDetected = inputs.tagCount > 0;
 
-    Pose2d robotPose = inputs.estimatedPose;
+    Pose2d estimatedPose = inputs.estimatedPose;
     // Exit if there are no tags in sight or the pose is blank
-    if (inputs.tagCount == 0 || robotPose.equals(new Pose2d())) {
-      return;
-    }
+    if (inputs.tagCount == 0 || estimatedPose.equals(new Pose2d())) return;
+
     // Exit if the estimated pose is off the field
-    if (robotPose.getX() < -fieldBorderMargin
-        || robotPose.getX() > FieldConstants.fieldLength + fieldBorderMargin
-        || robotPose.getY() < -fieldBorderMargin
-        || robotPose.getY() > FieldConstants.fieldWidth + fieldBorderMargin) {
-      return;
-    }
+    if (estimatedPose.getX() < -fieldBorderMargin
+        || estimatedPose.getX() > FieldConstants.fieldLength + fieldBorderMargin
+        || estimatedPose.getY() < -fieldBorderMargin
+        || estimatedPose.getY() > FieldConstants.fieldWidth + fieldBorderMargin) return;
+
     // Exit if the estimated pose is too far away from current pose
     double allowableDistance = inputs.tagCount; // In meters
-    if (poseManager.getDistanceTo(robotPose) > allowableDistance) {
-      return;
-    }
+    if (poseManager.getDistanceTo(estimatedPose) > allowableDistance) return;
+
+    // Exit if the tags are too small
+    if (inputs.avgTagArea < minTagArea.get()) return;
 
     // Create stdDevs
     Matrix<N3, N1> stdDevs = VecBuilder.fill(.7, .7, 100);
@@ -71,6 +71,6 @@ public class AprilTagVision extends VirtualSubsystem {
     }
 
     // Add result because all checks passed
-    poseManager.addVisionMeasurement(robotPose, inputs.timestamp, stdDevs, inputs.tagCount);
+    poseManager.addVisionMeasurement(estimatedPose, inputs.timestamp, stdDevs, inputs.tagCount);
   }
 }
