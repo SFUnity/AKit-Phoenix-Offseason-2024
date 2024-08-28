@@ -88,11 +88,11 @@ public class RobotContainer {
                 new ModuleIOMixed(2),
                 new ModuleIOMixed(3));
         intake = new Intake(new IntakeIOSim());
+        aprilTagVision = new AprilTagVision(new AprilTagVisionIOLimelight("limelight"));
         shooter =
             new Shooter(
                 new Flywheel(new FlywheelIOSparkMax()),
                 new Pivot(new PivotIOSparkMax(), aprilTagVision));
-        aprilTagVision = new AprilTagVision(new AprilTagVisionIOLimelight("limelight"));
         break;
 
       case SIM:
@@ -105,10 +105,10 @@ public class RobotContainer {
                 new ModuleIOSim(),
                 new ModuleIOSim());
         intake = new Intake(new IntakeIOSim());
+        aprilTagVision = new AprilTagVision(new AprilTagVisionIO() {});
         shooter =
             new Shooter(
                 new Flywheel(new FlywheelIOSim()), new Pivot(new PivotIOSim(), aprilTagVision));
-        aprilTagVision = new AprilTagVision(new AprilTagVisionIO() {});
         break;
 
       default:
@@ -121,10 +121,10 @@ public class RobotContainer {
                 new ModuleIO() {},
                 new ModuleIO() {});
         intake = new Intake(new IntakeIO() {});
+        aprilTagVision = new AprilTagVision(new AprilTagVisionIO() {});
         shooter =
             new Shooter(
                 new Flywheel(new FlywheelIO() {}), new Pivot(new PivotIO() {}, aprilTagVision));
-        aprilTagVision = new AprilTagVision(new AprilTagVisionIO() {});
         break;
     }
 
@@ -145,14 +145,16 @@ public class RobotContainer {
         "Drive SysId (Dynamic Reverse)", drive.sysIdDynamic(SysIdRoutine.Direction.kReverse));
     autoChooser.addOption(
         "Flywheel SysId (Quasistatic Forward)",
-        flywheel.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
+        shooter.flywheelSysIdQuasistatic(SysIdRoutine.Direction.kForward));
     autoChooser.addOption(
         "Flywheel SysId (Quasistatic Reverse)",
-        flywheel.sysIdQuasistatic(SysIdRoutine.Direction.kReverse));
+        shooter.flywheelSysIdQuasistatic(SysIdRoutine.Direction.kReverse));
     autoChooser.addOption(
-        "Flywheel SysId (Dynamic Forward)", flywheel.sysIdDynamic(SysIdRoutine.Direction.kForward));
+        "Flywheel SysId (Dynamic Forward)",
+        shooter.flywheelSysIdDynamic(SysIdRoutine.Direction.kForward));
     autoChooser.addOption(
-        "Flywheel SysId (Dynamic Reverse)", flywheel.sysIdDynamic(SysIdRoutine.Direction.kReverse));
+        "Flywheel SysId (Dynamic Reverse)",
+        shooter.flywheelSysIdDynamic(SysIdRoutine.Direction.kReverse));
 
     // Configure the button bindings
     configureButtonBindings();
@@ -195,7 +197,7 @@ public class RobotContainer {
     operator.circle().whileTrue(intake.intakeCmd(new Trigger(() -> false)));
 
     // Operator controls for pivot
-    operator.circle().whileTrue(pivot.setManualShootAngleCommand());
+    operator.circle().whileTrue(shooter.setManualShootAngleCommand());
   }
 
   /** Updates the alerts for disconnected controllers. */

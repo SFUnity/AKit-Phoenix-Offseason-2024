@@ -2,6 +2,7 @@ package frc.robot.subsystems.shooter;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.subsystems.shooter.flywheel.Flywheel;
 import frc.robot.subsystems.shooter.pivot.Pivot;
 import org.littletonrobotics.junction.networktables.LoggedDashboardNumber;
@@ -22,5 +23,17 @@ public class Shooter {
     return Commands.startEnd(
             () -> flywheel.runVelocity(flywheelSpeedInput.get()), flywheel::stop, flywheel)
         .withName("Run Flywheel");
+  }
+
+  public Command flywheelSysIdQuasistatic(SysIdRoutine.Direction direction) {
+    return flywheel.sysIdQuasistatic(direction);
+  }
+
+  public Command flywheelSysIdDynamic(SysIdRoutine.Direction direction) {
+    return flywheel.sysIdDynamic(direction);
+  }
+
+  public Command setManualShootAngleCommand() {
+    return pivot.setManualShootAngleCommand();
   }
 }
