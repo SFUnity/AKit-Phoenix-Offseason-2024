@@ -134,7 +134,7 @@ public class Pivot extends SubsystemBase {
     desiredAngle = PivotConstants.kSpeakerManualAngleRevRotations;
   }
 
-  public void readyShootSpeakerAutomatic() {
+  public void readyShootSpeakerAutomatic() { // TODO change when moved to advanced-vision-and-swerve
     double heightOfTarget =
         hegihtOfSpeakerEntry.getDouble(AprilTagVisionConstants.heightOfSpeakerInches);
     double angleRad = Math.atan(heightOfTarget / aprilTagVision.getDistance());

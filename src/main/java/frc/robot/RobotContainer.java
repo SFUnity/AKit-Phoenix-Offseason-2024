@@ -38,6 +38,7 @@ import frc.robot.subsystems.drive.ModuleIOSim;
 import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.intake.IntakeIO;
 import frc.robot.subsystems.intake.IntakeIOSim;
+import frc.robot.subsystems.shooter.Shooter;
 import frc.robot.subsystems.shooter.flywheel.Flywheel;
 import frc.robot.subsystems.shooter.flywheel.FlywheelIO;
 import frc.robot.subsystems.shooter.flywheel.FlywheelIOSim;
@@ -60,10 +61,9 @@ import org.littletonrobotics.junction.networktables.LoggedDashboardNumber;
 public class RobotContainer {
   // Subsystems
   private final Drive drive;
-  private final Flywheel flywheel;
   private final Intake intake;
-  private final Pivot pivot;
   private final AprilTagVision aprilTagVision;
+  private final Shooter shooter;
 
   // Controller
   private final CommandXboxController driver = new CommandXboxController(0);
@@ -90,10 +90,9 @@ public class RobotContainer {
                 new ModuleIOMixed(1),
                 new ModuleIOMixed(2),
                 new ModuleIOMixed(3));
-        flywheel = new Flywheel(new FlywheelIOSparkMax());
         intake = new Intake(new IntakeIOSim());
+        shooter = new Shooter(new Flywheel(new FlywheelIOSparkMax()), new Pivot(new PivotIOSparkMax(), aprilTagVision));
         aprilTagVision = new AprilTagVision(new AprilTagVisionIOLimelight("limelight"));
-        pivot = new Pivot(new PivotIOSparkMax(), aprilTagVision);
         break;
 
       case SIM:
@@ -105,10 +104,9 @@ public class RobotContainer {
                 new ModuleIOSim(),
                 new ModuleIOSim(),
                 new ModuleIOSim());
-        flywheel = new Flywheel(new FlywheelIOSim());
         intake = new Intake(new IntakeIOSim());
+        shooter = new Shooter(new Flywheel(new FlywheelIOSim()), new Pivot(new PivotIOSim(), aprilTagVision));
         aprilTagVision = new AprilTagVision(new AprilTagVisionIO() {});
-        pivot = new Pivot(new PivotIOSim(), aprilTagVision);
         break;
 
       default:
@@ -120,10 +118,9 @@ public class RobotContainer {
                 new ModuleIO() {},
                 new ModuleIO() {},
                 new ModuleIO() {});
-        flywheel = new Flywheel(new FlywheelIO() {});
         intake = new Intake(new IntakeIO() {});
+        shooter = new Shooter(new Flywheel(new FlywheelIO() {}), new Pivot(new PivotIO() {}, aprilTagVision));
         aprilTagVision = new AprilTagVision(new AprilTagVisionIO() {});
-        pivot = new Pivot(new PivotIO() {}, aprilTagVision);
         break;
     }
 
