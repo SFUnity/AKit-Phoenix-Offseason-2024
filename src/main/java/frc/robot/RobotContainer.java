@@ -50,7 +50,6 @@ import frc.robot.subsystems.shooter.pivot.PivotIOSparkMax;
 import frc.robot.util.Alert;
 import frc.robot.util.Alert.AlertType;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
-import org.littletonrobotics.junction.networktables.LoggedDashboardNumber;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -75,8 +74,6 @@ public class RobotContainer {
 
   // Dashboard inputs
   private final LoggedDashboardChooser<Command> autoChooser;
-  private final LoggedDashboardNumber flywheelSpeedInput =
-      new LoggedDashboardNumber("Flywheel Speed", 1500.0);
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
@@ -91,7 +88,10 @@ public class RobotContainer {
                 new ModuleIOMixed(2),
                 new ModuleIOMixed(3));
         intake = new Intake(new IntakeIOSim());
-        shooter = new Shooter(new Flywheel(new FlywheelIOSparkMax()), new Pivot(new PivotIOSparkMax(), aprilTagVision));
+        shooter =
+            new Shooter(
+                new Flywheel(new FlywheelIOSparkMax()),
+                new Pivot(new PivotIOSparkMax(), aprilTagVision));
         aprilTagVision = new AprilTagVision(new AprilTagVisionIOLimelight("limelight"));
         break;
 
@@ -105,7 +105,9 @@ public class RobotContainer {
                 new ModuleIOSim(),
                 new ModuleIOSim());
         intake = new Intake(new IntakeIOSim());
-        shooter = new Shooter(new Flywheel(new FlywheelIOSim()), new Pivot(new PivotIOSim(), aprilTagVision));
+        shooter =
+            new Shooter(
+                new Flywheel(new FlywheelIOSim()), new Pivot(new PivotIOSim(), aprilTagVision));
         aprilTagVision = new AprilTagVision(new AprilTagVisionIO() {});
         break;
 
@@ -119,17 +121,15 @@ public class RobotContainer {
                 new ModuleIO() {},
                 new ModuleIO() {});
         intake = new Intake(new IntakeIO() {});
-        shooter = new Shooter(new Flywheel(new FlywheelIO() {}), new Pivot(new PivotIO() {}, aprilTagVision));
+        shooter =
+            new Shooter(
+                new Flywheel(new FlywheelIO() {}), new Pivot(new PivotIO() {}, aprilTagVision));
         aprilTagVision = new AprilTagVision(new AprilTagVisionIO() {});
         break;
     }
 
     // Set up auto routines
-    NamedCommands.registerCommand(
-        "Run Flywheel", // also does stuff w/ the intake
-        Commands.startEnd(
-                () -> flywheel.runVelocity(flywheelSpeedInput.get()), flywheel::stop, flywheel)
-            .withTimeout(5.0));
+    NamedCommands.registerCommand("Run Flywheel", shooter.runFlywheelCmd().withTimeout(5.0));
     autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
 
     // Set up SysId routines
