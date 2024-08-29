@@ -25,7 +25,7 @@ import edu.wpi.first.math.util.Units;
  * NOTE: To use the Spark Flex / NEO Vortex, replace all instances of "CANSparkMax" with
  * "CANSparkFlex".
  */
-public class FlywheelIOSparkMax implements FlywheelsIO {
+public class FlywheelsIOSparkMax implements FlywheelsIO {
   private static final double GEAR_RATIO = 1.5;
 
   private final CANSparkMax leader = new CANSparkMax(9, MotorType.kBrushless);
@@ -33,7 +33,7 @@ public class FlywheelIOSparkMax implements FlywheelsIO {
   private final RelativeEncoder encoder = leader.getEncoder();
   private final SparkPIDController pid = leader.getPIDController();
 
-  public FlywheelIOSparkMax() {
+  public FlywheelsIOSparkMax() {
     leader.restoreFactoryDefaults();
     follower.restoreFactoryDefaults();
 

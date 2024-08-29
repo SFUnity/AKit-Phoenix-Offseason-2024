@@ -24,7 +24,7 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.math.util.Units;
 
-public class FlywheelIOTalonFX implements FlywheelsIO {
+public class FlywheelsIOTalonFX implements FlywheelsIO {
   private static final double GEAR_RATIO = 1.5;
 
   private final TalonFX leader = new TalonFX(0);
@@ -36,7 +36,7 @@ public class FlywheelIOTalonFX implements FlywheelsIO {
   private final StatusSignal<Double> leaderCurrent = leader.getSupplyCurrent();
   private final StatusSignal<Double> followerCurrent = follower.getSupplyCurrent();
 
-  public FlywheelIOTalonFX() {
+  public FlywheelsIOTalonFX() {
     var config = new TalonFXConfiguration();
     config.CurrentLimits.SupplyCurrentLimit = 30.0;
     config.CurrentLimits.SupplyCurrentLimitEnable = true;
