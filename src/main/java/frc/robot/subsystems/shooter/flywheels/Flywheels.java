@@ -1,13 +1,9 @@
 package frc.robot.subsystems.shooter.flywheels;
 
-// import static edu.wpi.first.units.Units.*;
-
-// import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants;
 import frc.robot.util.GeneralUtil;
 import org.littletonrobotics.junction.AutoLogOutput;
@@ -16,10 +12,6 @@ import org.littletonrobotics.junction.Logger;
 public class Flywheels extends SubsystemBase {
   private final FlywheelsIO io;
   private final FlywheelsIOInputsAutoLogged inputs = new FlywheelsIOInputsAutoLogged();
-  // private final SimpleMotorFeedforward ffModelTop;
-  // private final SimpleMotorFeedforward ffModelBottom;
-  // private final SysIdRoutine sysIdTop;
-  // private final SysIdRoutine sysIdBottom;
 
   private final double kFlywheelIntakeSpeedVoltage = -2;
   private final double kAmpShootingSpeedBottomVoltage = 3.5;
@@ -45,40 +37,14 @@ public class Flywheels extends SubsystemBase {
     switch (Constants.currentMode) {
       case REAL:
       case REPLAY:
-        // ffModelTop = new SimpleMotorFeedforward(0.1, 0.05);
-        // ffModelBottom = new SimpleMotorFeedforward(0.1, 0.05);
         io.configurePID(1.0, 0.0, 0.0);
         break;
       case SIM:
-        // ffModelTop = new SimpleMotorFeedforward(0.0, 0.03);
-        // ffModelBottom = new SimpleMotorFeedforward(0.0, 0.03);
         io.configurePID(0.5, 0.0, 0.0);
         break;
       default:
-        // ffModelTop = new SimpleMotorFeedforward(0.0, 0.0);
-        // ffModelBottom = new SimpleMotorFeedforward(0.0, 0.0);
         break;
     }
-
-    // Configure SysId
-    // sysIdTop =
-    //     new SysIdRoutine(
-    //         new SysIdRoutine.Config(
-    //             null,
-    //             null,
-    //             null,
-    //             (state) -> Logger.recordOutput("Flywheels/Top/SysIdState", state.toString())),
-    //         new SysIdRoutine.Mechanism((voltage) -> runVoltsTop(voltage.in(Volts)), null, this));
-
-    // sysIdBottom =
-    //     new SysIdRoutine(
-    //         new SysIdRoutine.Config(
-    //             null,
-    //             null,
-    //             null,
-    //             (state) -> Logger.recordOutput("Flywheels/Bottom/SysIdState", state.toString())),
-    //         new SysIdRoutine.Mechanism((voltage) -> runVoltsBottom(voltage.in(Volts)), null,
-    // this));
   }
 
   @Override
@@ -104,24 +70,6 @@ public class Flywheels extends SubsystemBase {
     runVoltsTop(volts);
     runVoltsBottom(volts);
   }
-
-  // /** Run closed loop at the specified velocity. */
-  // private void runVelocityTop(double velocityRPM) {
-  //   var velocityRadPerSec = Units.rotationsPerMinuteToRadiansPerSecond(velocityRPM);
-  //   io.setVelocityTop(velocityRadPerSec, ffModelTop.calculate(velocityRadPerSec));
-
-  //   // Log flywheels setpoint
-  //   Logger.recordOutput("Flywheel/Top/SetpointRPM", velocityRPM);
-  // }
-
-  // /** Run closed loop at the specified velocity. */
-  // private void runVelocityBottom(double velocityRPM) {
-  //   var velocityRadPerSec = Units.rotationsPerMinuteToRadiansPerSecond(velocityRPM);
-  //   io.setVelocityBottom(velocityRadPerSec, ffModelBottom.calculate(velocityRadPerSec));
-
-  //   // Log flywheels setpoint
-  //   Logger.recordOutput("Flywheel/Bottom/SetpointRPM", velocityRPM);
-  // }
 
   private void stopBoth() {
     io.stopBoth();
@@ -194,30 +142,6 @@ public class Flywheels extends SubsystemBase {
 
   // TODO make a default cmd that stops if on opponents side of field when this merges with the
   // advanced branch
-
-  /** Returns a command to run a quasistatic test in the specified direction. */
-  public Command sysIdQuasistaticTop(SysIdRoutine.Direction direction) {
-    // return sysIdTop.quasistatic(direction);
-    return Commands.none().withName("This is a BS cmd");
-  }
-
-  /** Returns a command to run a dynamic test in the specified direction. */
-  public Command sysIdDynamicTop(SysIdRoutine.Direction direction) {
-    // return sysIdTop.dynamic(direction);
-    return Commands.none().withName("This is a BS cmd");
-  }
-
-  /** Returns a command to run a quasistatic test in the specified direction. */
-  public Command sysIdQuasistaticBottom(SysIdRoutine.Direction direction) {
-    // return sysIdBottom.quasistatic(direction);
-    return Commands.none().withName("This is a BS cmd");
-  }
-
-  /** Returns a command to run a dynamic test in the specified direction. */
-  public Command sysIdDynamicBottom(SysIdRoutine.Direction direction) {
-    // return sysIdBottom.dynamic(direction);
-    return Commands.none().withName("This is a BS cmd");
-  }
 
   /** Returns the current velocity in RPM. */
   @AutoLogOutput

@@ -150,32 +150,6 @@ public class RobotContainer {
     autoChooser.addOption(
         "Drive SysId (Dynamic Reverse)", drive.sysIdDynamic(SysIdRoutine.Direction.kReverse));
 
-    autoChooser.addOption(
-        "Top Flywheel SysId (Quasistatic Forward)",
-        shooter.topFlywheelSysIdQuasistatic(SysIdRoutine.Direction.kForward));
-    autoChooser.addOption(
-        "Top Flywheel SysId (Quasistatic Reverse)",
-        shooter.topFlywheelSysIdQuasistatic(SysIdRoutine.Direction.kReverse));
-    autoChooser.addOption(
-        "Top Flywheel SysId (Dynamic Forward)",
-        shooter.topFlywheelSysIdDynamic(SysIdRoutine.Direction.kForward));
-    autoChooser.addOption(
-        "Top Flywheel SysId (Dynamic Reverse)",
-        shooter.topFlywheelSysIdDynamic(SysIdRoutine.Direction.kReverse));
-
-    autoChooser.addOption(
-        "Bottom Flywheel SysId (Quasistatic Forward)",
-        shooter.bottomFlywheelSysIdQuasistatic(SysIdRoutine.Direction.kForward));
-    autoChooser.addOption(
-        "Bottom Flywheel SysId (Quasistatic Reverse)",
-        shooter.bottomFlywheelSysIdQuasistatic(SysIdRoutine.Direction.kReverse));
-    autoChooser.addOption(
-        "Bottom Flywheel SysId (Dynamic Forward)",
-        shooter.bottomFlywheelSysIdDynamic(SysIdRoutine.Direction.kForward));
-    autoChooser.addOption(
-        "Bottom Flywheel SysId (Dynamic Reverse)",
-        shooter.bottomFlywheelSysIdDynamic(SysIdRoutine.Direction.kReverse));
-
     // Configure the button bindings
     configureButtonBindings();
 

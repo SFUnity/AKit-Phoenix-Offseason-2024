@@ -1,7 +1,6 @@
 package frc.robot.subsystems.shooter;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.subsystems.leds.Leds;
 import frc.robot.subsystems.shooter.flywheels.Flywheels;
 import frc.robot.subsystems.shooter.pivot.Pivot;
@@ -46,23 +45,6 @@ public class Shooter extends VirtualSubsystem {
 
   public boolean distanceSensorWorking() {
     return beamBreakInputs.isRangeValid && beamBreakWorkingEntry.get();
-  }
-
-  // Flywheel Commands
-  public Command topFlywheelSysIdQuasistatic(SysIdRoutine.Direction direction) {
-    return flywheels.sysIdQuasistaticTop(direction);
-  }
-
-  public Command topFlywheelSysIdDynamic(SysIdRoutine.Direction direction) {
-    return flywheels.sysIdDynamicTop(direction);
-  }
-
-  public Command bottomFlywheelSysIdQuasistatic(SysIdRoutine.Direction direction) {
-    return flywheels.sysIdQuasistaticBottom(direction);
-  }
-
-  public Command bottomFlywheelSysIdDynamic(SysIdRoutine.Direction direction) {
-    return flywheels.sysIdDynamicBottom(direction);
   }
 
   // Pivot Commands
