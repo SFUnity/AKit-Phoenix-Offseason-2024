@@ -197,4 +197,6 @@ public class Pivot extends SubsystemBase {
             })
         .withName("gotta be a team player");
   }
+
+  // TODO add intake command
 }
