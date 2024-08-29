@@ -112,7 +112,9 @@ public class RobotContainer {
         aprilTagVision = new AprilTagVision(new AprilTagVisionIO() {});
         shooter =
             new Shooter(
-                new Flywheel(new FlywheelIOSim()), new Pivot(new PivotIOSim(), aprilTagVision), new BeamBreakIOSim());
+                new Flywheel(new FlywheelIOSim()),
+                new Pivot(new PivotIOSim(), aprilTagVision),
+                new BeamBreakIOSim());
         break;
 
       default:
@@ -128,7 +130,9 @@ public class RobotContainer {
         aprilTagVision = new AprilTagVision(new AprilTagVisionIO() {});
         shooter =
             new Shooter(
-                new Flywheel(new FlywheelIO() {}), new Pivot(new PivotIO() {}, aprilTagVision), new BeamBreakIO() {});
+                new Flywheel(new FlywheelIO() {}),
+                new Pivot(new PivotIO() {}, aprilTagVision),
+                new BeamBreakIO() {});
         break;
     }
 
