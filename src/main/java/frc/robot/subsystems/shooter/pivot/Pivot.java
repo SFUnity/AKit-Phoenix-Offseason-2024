@@ -92,7 +92,7 @@ public class Pivot extends SubsystemBase {
                 null,
                 null,
                 null,
-                (state) -> Logger.recordOutput("Pivot/SysIdState", state.toString())),
+                (state) -> Logger.recordOutput("Shooter/Pivot/SysIdState", state.toString())),
             new SysIdRoutine.Mechanism((voltage) -> runVolts(voltage.in(Volts)), null, this));
 
     measuredVisualizer = new PivotVisualizer("Measured", Color.kRed);
@@ -106,7 +106,7 @@ public class Pivot extends SubsystemBase {
 
     measuredVisualizer.update(inputs.positionRots);
     setpointVisualizer.update(desiredAngle);
-    Logger.recordOutput("Pivot/positionSetpointRots", desiredAngle);
+    Logger.recordOutput("Shooter/Pivot/positionSetpointRots", desiredAngle);
     GeneralUtil.logSubsystem(this, "Shooter/Pivot");
   }
 

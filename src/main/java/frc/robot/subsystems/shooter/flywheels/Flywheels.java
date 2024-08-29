@@ -144,13 +144,13 @@ public class Flywheels extends SubsystemBase {
   // advanced branch
 
   /** Returns the current velocity in RPM. */
-  @AutoLogOutput
+  @AutoLogOutput(key = "Shooter/Flywheels/VelocityRPMTop")
   public double getVelocityRPMTop() {
     return Units.radiansPerSecondToRotationsPerMinute(inputs.velocityRadPerSecTop);
   }
 
   /** Returns the current velocity in RPM. */
-  @AutoLogOutput
+  @AutoLogOutput(key = "Shooter/Flywheels/VelocityRPMBottom")
   public double getVelocityRPMBottom() {
     return Units.radiansPerSecondToRotationsPerMinute(inputs.velocityRadPerSecBottom);
   }

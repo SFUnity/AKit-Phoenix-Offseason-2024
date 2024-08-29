@@ -25,10 +25,10 @@ public class PivotVisualizer {
   private final String key;
 
   private static final LoggedTunableNumber angleOffset =
-      new LoggedTunableNumber("Pivot/AngleOffset", 1.63);
+      new LoggedTunableNumber("Shooter/Pivot/AngleOffset", 1.63);
 
   private static final LoggedTunableNumber gearReduction =
-      new LoggedTunableNumber("Pivot/GearReduction", 73);
+      new LoggedTunableNumber("Shooter/Pivot/GearReduction", 73);
 
   public PivotVisualizer(String key, Color color) {
     this.key = key;
@@ -45,7 +45,7 @@ public class PivotVisualizer {
     double angleRads =
         (Units.rotationsToRadians(-angleRots)) / gearReduction.get() + angleOffset.get();
     pivot.setAngle(Rotation2d.fromRadians(angleRads));
-    Logger.recordOutput("Pivot/Mechanism2d/" + key, mechanism);
+    Logger.recordOutput("Shooter/Pivot/Mechanism2d/" + key, mechanism);
 
     // Log 3D poses
     Pose3d pivot =
@@ -54,6 +54,6 @@ public class PivotVisualizer {
             0,
             PivotConstants.pivotOrigin.getY(),
             new Rotation3d(0, -angleRads, 0.0));
-    Logger.recordOutput("Potvt/Mechanism3d/" + key, pivot);
+    Logger.recordOutput("Shooter/Pivot/Mechanism3d/" + key, pivot);
   }
 }
