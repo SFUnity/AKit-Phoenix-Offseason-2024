@@ -42,7 +42,7 @@ import frc.robot.subsystems.shooter.BeamBreakIO;
 import frc.robot.subsystems.shooter.BeamBreakIORev;
 import frc.robot.subsystems.shooter.BeamBreakIOSim;
 import frc.robot.subsystems.shooter.Shooter;
-import frc.robot.subsystems.shooter.flywheel.Flywheel;
+import frc.robot.subsystems.shooter.flywheel.Flywheels;
 import frc.robot.subsystems.shooter.flywheel.FlywheelIO;
 import frc.robot.subsystems.shooter.flywheel.FlywheelIOSim;
 import frc.robot.subsystems.shooter.flywheel.FlywheelIOSparkMax;
@@ -94,7 +94,7 @@ public class RobotContainer {
         aprilTagVision = new AprilTagVision(new AprilTagVisionIOLimelight("limelight"));
         shooter =
             new Shooter(
-                new Flywheel(new FlywheelIOSparkMax()),
+                new Flywheels(new FlywheelIOSparkMax()),
                 new Pivot(new PivotIOSparkMax(), aprilTagVision),
                 new BeamBreakIORev());
         break;
@@ -112,7 +112,7 @@ public class RobotContainer {
         aprilTagVision = new AprilTagVision(new AprilTagVisionIO() {});
         shooter =
             new Shooter(
-                new Flywheel(new FlywheelIOSim()),
+                new Flywheels(new FlywheelIOSim()),
                 new Pivot(new PivotIOSim(), aprilTagVision),
                 new BeamBreakIOSim());
         break;
@@ -130,7 +130,7 @@ public class RobotContainer {
         aprilTagVision = new AprilTagVision(new AprilTagVisionIO() {});
         shooter =
             new Shooter(
-                new Flywheel(new FlywheelIO() {}),
+                new Flywheels(new FlywheelIO() {}),
                 new Pivot(new PivotIO() {}, aprilTagVision),
                 new BeamBreakIO() {});
         break;

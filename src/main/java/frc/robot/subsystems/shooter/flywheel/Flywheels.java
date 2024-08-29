@@ -27,7 +27,7 @@ import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.LoggedDashboardNumber;
 
-public class Flywheel extends SubsystemBase {
+public class Flywheels extends SubsystemBase {
   private final FlywheelIO io;
   private final FlywheelIOInputsAutoLogged inputs = new FlywheelIOInputsAutoLogged();
   private final SimpleMotorFeedforward ffModel;
@@ -37,7 +37,7 @@ public class Flywheel extends SubsystemBase {
       new LoggedDashboardNumber("Flywheel Speed", 1500.0);
 
   /** Creates a new Flywheel. */
-  public Flywheel(FlywheelIO io) {
+  public Flywheels(FlywheelIO io) {
     this.io = io;
 
     // Switch constants based on mode (the physics simulator is treated as a
