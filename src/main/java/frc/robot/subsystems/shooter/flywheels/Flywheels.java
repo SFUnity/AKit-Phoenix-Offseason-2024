@@ -1,6 +1,6 @@
 package frc.robot.subsystems.shooter.flywheels;
 
-import static edu.wpi.first.units.Units.*;
+// import static edu.wpi.first.units.Units.*;
 
 // import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.util.Units;
@@ -18,8 +18,8 @@ public class Flywheels extends SubsystemBase {
   private final FlywheelsIOInputsAutoLogged inputs = new FlywheelsIOInputsAutoLogged();
   // private final SimpleMotorFeedforward ffModelTop;
   // private final SimpleMotorFeedforward ffModelBottom;
-  private final SysIdRoutine sysIdTop;
-  private final SysIdRoutine sysIdBottom;
+  // private final SysIdRoutine sysIdTop;
+  // private final SysIdRoutine sysIdBottom;
 
   private final double kFlywheelIntakeSpeedVoltage = -2;
   private final double kAmpShootingSpeedBottomVoltage = 3.5;
@@ -33,6 +33,7 @@ public class Flywheels extends SubsystemBase {
     SPEAKER,
     FEEDING
   }
+
   private LastGoal lastGoal = LastGoal.NONE;
 
   /** Creates a new Flywheel. */
@@ -60,23 +61,24 @@ public class Flywheels extends SubsystemBase {
     }
 
     // Configure SysId
-    sysIdTop =
-        new SysIdRoutine(
-            new SysIdRoutine.Config(
-                null,
-                null,
-                null,
-                (state) -> Logger.recordOutput("Flywheels/Top/SysIdState", state.toString())),
-            new SysIdRoutine.Mechanism((voltage) -> runVoltsTop(voltage.in(Volts)), null, this));
+    // sysIdTop =
+    //     new SysIdRoutine(
+    //         new SysIdRoutine.Config(
+    //             null,
+    //             null,
+    //             null,
+    //             (state) -> Logger.recordOutput("Flywheels/Top/SysIdState", state.toString())),
+    //         new SysIdRoutine.Mechanism((voltage) -> runVoltsTop(voltage.in(Volts)), null, this));
 
-    sysIdBottom =
-        new SysIdRoutine(
-            new SysIdRoutine.Config(
-                null,
-                null,
-                null,
-                (state) -> Logger.recordOutput("Flywheels/Bottom/SysIdState", state.toString())),
-            new SysIdRoutine.Mechanism((voltage) -> runVoltsBottom(voltage.in(Volts)), null, this));
+    // sysIdBottom =
+    //     new SysIdRoutine(
+    //         new SysIdRoutine.Config(
+    //             null,
+    //             null,
+    //             null,
+    //             (state) -> Logger.recordOutput("Flywheels/Bottom/SysIdState", state.toString())),
+    //         new SysIdRoutine.Mechanism((voltage) -> runVoltsBottom(voltage.in(Volts)), null,
+    // this));
   }
 
   @Override
@@ -126,79 +128,95 @@ public class Flywheels extends SubsystemBase {
   }
 
   public Command intake(boolean intakeWorking) {
-    return Commands.startEnd(() -> {
-      if (intakeWorking) {
-        runVoltsBoth(kShooterDefaultSpeedVoltage / 2);
-      } else {
-        runVoltsBoth(kFlywheelIntakeSpeedVoltage);
-      }
-    }, () -> {
-      switch (lastGoal) {
-        case AMP:
-          shootAmp();
-          break;
-        case SPEAKER:
-          shootSpeaker();
-          break;
-        case FEEDING:
-          feed();
-          break;
-        default:
-          stop();
-          break;
-      }
-    }).withName("Flywheels Intake");
+    return Commands.startEnd(
+            () -> {
+              if (intakeWorking) {
+                runVoltsBoth(kShooterDefaultSpeedVoltage / 2);
+              } else {
+                runVoltsBoth(kFlywheelIntakeSpeedVoltage);
+              }
+            },
+            () -> {
+              switch (lastGoal) {
+                case AMP:
+                  shootAmp();
+                  break;
+                case SPEAKER:
+                  shootSpeaker();
+                  break;
+                case FEEDING:
+                  feed();
+                  break;
+                default:
+                  stop();
+                  break;
+              }
+            })
+        .withName("Flywheels Intake");
   }
 
   public Command shootAmp() {
-    return runOnce(() -> {
-      runVoltsTop(kAmpShootingSpeedTopVoltage);
-      runVoltsBottom(kAmpShootingSpeedBottomVoltage);
-      lastGoal = LastGoal.AMP;
-    }).withName("Flywheels Shoot Amp");
+    return runOnce(
+            () -> {
+              runVoltsTop(kAmpShootingSpeedTopVoltage);
+              runVoltsBottom(kAmpShootingSpeedBottomVoltage);
+              lastGoal = LastGoal.AMP;
+            })
+        .withName("Flywheels Shoot Amp");
   }
 
   public Command shootSpeaker() {
-    return runOnce(() -> {
-      runVoltsBoth(kShooterDefaultSpeedVoltage);
-      lastGoal = LastGoal.SPEAKER;
-    }).withName("Flywheels Shoot Speaker");
+    return runOnce(
+            () -> {
+              runVoltsBoth(kShooterDefaultSpeedVoltage);
+              lastGoal = LastGoal.SPEAKER;
+            })
+        .withName("Flywheels Shoot Speaker");
   }
 
   public Command feed() {
-    return runOnce(() -> {
-      runVoltsBoth(kShooterFeedingSpeedVoltage);
-      lastGoal = LastGoal.FEEDING;
-    }).withName("Flywheels Feed");
+    return runOnce(
+            () -> {
+              runVoltsBoth(kShooterFeedingSpeedVoltage);
+              lastGoal = LastGoal.FEEDING;
+            })
+        .withName("Flywheels Feed");
   }
 
   public Command stop() {
-    return runOnce(() -> {
-      stopBoth();
-      lastGoal = LastGoal.NONE;
-    }).withName("Flywheels Stop");
+    return runOnce(
+            () -> {
+              stopBoth();
+              lastGoal = LastGoal.NONE;
+            })
+        .withName("Flywheels Stop");
   }
-  
-  // TODO make a default cmd that stops if on opponents side of field when this merges with the advanced branch
+
+  // TODO make a default cmd that stops if on opponents side of field when this merges with the
+  // advanced branch
 
   /** Returns a command to run a quasistatic test in the specified direction. */
   public Command sysIdQuasistaticTop(SysIdRoutine.Direction direction) {
-    return sysIdTop.quasistatic(direction);
+    // return sysIdTop.quasistatic(direction);
+    return Commands.none().withName("This is a BS cmd");
   }
 
   /** Returns a command to run a dynamic test in the specified direction. */
   public Command sysIdDynamicTop(SysIdRoutine.Direction direction) {
-    return sysIdTop.dynamic(direction);
+    // return sysIdTop.dynamic(direction);
+    return Commands.none().withName("This is a BS cmd");
   }
 
   /** Returns a command to run a quasistatic test in the specified direction. */
   public Command sysIdQuasistaticBottom(SysIdRoutine.Direction direction) {
-    return sysIdBottom.quasistatic(direction);
+    // return sysIdBottom.quasistatic(direction);
+    return Commands.none().withName("This is a BS cmd");
   }
 
   /** Returns a command to run a dynamic test in the specified direction. */
   public Command sysIdDynamicBottom(SysIdRoutine.Direction direction) {
-    return sysIdBottom.dynamic(direction);
+    // return sysIdBottom.dynamic(direction);
+    return Commands.none().withName("This is a BS cmd");
   }
 
   /** Returns the current velocity in RPM. */
