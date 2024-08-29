@@ -24,7 +24,7 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.math.util.Units;
 
-public class FlywheelIOTalonFX implements FlywheelIO {
+public class FlywheelIOTalonFX implements FlywheelsIO {
   private static final double GEAR_RATIO = 1.5;
 
   private final TalonFX leader = new TalonFX(0);
@@ -52,7 +52,7 @@ public class FlywheelIOTalonFX implements FlywheelIO {
   }
 
   @Override
-  public void updateInputs(FlywheelIOInputs inputs) {
+  public void updateInputs(FlywheelsIOInputs inputs) {
     BaseStatusSignal.refreshAll(
         leaderPosition, leaderVelocity, leaderAppliedVolts, leaderCurrent, followerCurrent);
     inputs.positionRad = Units.rotationsToRadians(leaderPosition.getValueAsDouble()) / GEAR_RATIO;

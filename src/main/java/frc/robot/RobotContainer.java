@@ -42,10 +42,10 @@ import frc.robot.subsystems.shooter.BeamBreakIO;
 import frc.robot.subsystems.shooter.BeamBreakIORev;
 import frc.robot.subsystems.shooter.BeamBreakIOSim;
 import frc.robot.subsystems.shooter.Shooter;
-import frc.robot.subsystems.shooter.flywheel.Flywheels;
-import frc.robot.subsystems.shooter.flywheel.FlywheelIO;
 import frc.robot.subsystems.shooter.flywheel.FlywheelIOSim;
 import frc.robot.subsystems.shooter.flywheel.FlywheelIOSparkMax;
+import frc.robot.subsystems.shooter.flywheel.Flywheels;
+import frc.robot.subsystems.shooter.flywheel.FlywheelsIO;
 import frc.robot.subsystems.shooter.pivot.Pivot;
 import frc.robot.subsystems.shooter.pivot.PivotIO;
 import frc.robot.subsystems.shooter.pivot.PivotIOSim;
@@ -130,7 +130,7 @@ public class RobotContainer {
         aprilTagVision = new AprilTagVision(new AprilTagVisionIO() {});
         shooter =
             new Shooter(
-                new Flywheels(new FlywheelIO() {}),
+                new Flywheels(new FlywheelsIO() {}),
                 new Pivot(new PivotIO() {}, aprilTagVision),
                 new BeamBreakIO() {});
         break;
