@@ -60,11 +60,20 @@ public class Shooter extends VirtualSubsystem {
     return flywheel.sysIdDynamic(direction);
   }
 
+  // Pivot Commands
   public Command setManualAngle() {
     return pivot.setManualShootAngleCommand();
   }
 
   public Command setAutoAim() {
     return pivot.setAutoShootAngleCommand();
+  }
+
+  public Command setAmpAngle() {
+    return pivot.setAmpAngleCommand();
+  }
+
+  public Command setFeedAngle() {
+    return pivot.setFeedAngleCommand();
   }
 }
