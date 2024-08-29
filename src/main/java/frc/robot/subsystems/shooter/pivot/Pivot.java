@@ -150,6 +150,7 @@ public class Pivot extends SubsystemBase {
     desiredAngle = feedingAngleEntry.getDouble(PivotConstants.kFeedingAngleRevRotations);
   }
 
+  // TODO any setter methods used in these commands should be made private
   public Command setManualShootAngleCommand() {
     return run(() -> {
           readyShootSpeakerManual();
@@ -196,4 +197,6 @@ public class Pivot extends SubsystemBase {
             })
         .withName("gotta be a team player");
   }
+
+  // TODO add intake command
 }
