@@ -28,7 +28,7 @@ public class Shooter extends VirtualSubsystem {
 
   public void periodic() {
     beamBreakIO.updateInputs(beamBreakInputs);
-    Logger.processInputs("BeamBreak", beamBreakInputs);
+    Logger.processInputs("Shooter/BeamBreak", beamBreakInputs);
 
     Leds.getInstance().noteInShooter = noteInShooter();
   }

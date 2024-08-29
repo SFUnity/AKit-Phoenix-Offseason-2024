@@ -102,12 +102,12 @@ public class Pivot extends SubsystemBase {
   @Override
   public void periodic() {
     io.updateInputs(inputs);
-    Logger.processInputs("Pivot", inputs);
+    Logger.processInputs("Shooter/Pivot", inputs);
 
     measuredVisualizer.update(inputs.positionRots);
     setpointVisualizer.update(desiredAngle);
     Logger.recordOutput("Pivot/positionSetpointRots", desiredAngle);
-    GeneralUtil.logSubsystem(this, "Pivot");
+    GeneralUtil.logSubsystem(this, "Shooter/Pivot");
   }
 
   /** Run open loop at the specified voltage. */
