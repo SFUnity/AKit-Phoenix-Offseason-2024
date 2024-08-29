@@ -12,47 +12,49 @@ public class FlywheelsIOSim implements FlywheelsIO {
 
   private boolean closedLoop = false;
   private double ffVolts = 0.0;
-  private double appliedVolts = 0.0;
+
+  private double appliedVoltsTop = 0.0;
+  private double appliedVoltsBottom = 0.0;
 
   @Override
   public void updateInputs(FlywheelsIOInputs inputs) {
     if (closedLoop) {
-      appliedVolts =
+      appliedVoltsTop =
           MathUtil.clamp(
               pid.calculate(simTop.getAngularVelocityRadPerSec()) + ffVolts, -12.0, 12.0);
-      simTop.setInputVoltage(appliedVolts);
+      simTop.setInputVoltage(appliedVoltsTop);
     }
 
     if (closedLoop) {
-      appliedVolts =
+      appliedVoltsBottom =
           MathUtil.clamp(
               pid.calculate(simBottom.getAngularVelocityRadPerSec()) + ffVolts, -12.0, 12.0);
-      simBottom.setInputVoltage(appliedVolts);
+      simBottom.setInputVoltage(appliedVoltsBottom);
     }
 
     simTop.update(0.02);
     simBottom.update(0.02);
 
     inputs.velocityRadPerSecTop = simTop.getAngularVelocityRadPerSec();
-    inputs.appliedVoltsTop = appliedVolts;
+    inputs.appliedVoltsTop = appliedVoltsTop;
     inputs.currentAmpsTop = new double[] {simTop.getCurrentDrawAmps()};
 
     inputs.velocityRadPerSecBottom = simBottom.getAngularVelocityRadPerSec();
-    inputs.appliedVoltsBottom = appliedVolts;
+    inputs.appliedVoltsBottom = appliedVoltsBottom;
     inputs.currentAmpsBottom = new double[] {simBottom.getCurrentDrawAmps()};
   }
 
   @Override
   public void setVoltageTop(double volts) {
     closedLoop = false;
-    appliedVolts = volts;
+    appliedVoltsTop = volts;
     simTop.setInputVoltage(volts);
   }
 
   @Override
   public void setVoltageBottom(double volts) {
     closedLoop = false;
-    appliedVolts = volts;
+    appliedVoltsBottom = volts;
     simBottom.setInputVoltage(volts);
   }
 
