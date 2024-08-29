@@ -1,16 +1,16 @@
-package frc.robot.subsystems.shooter.handoff;
+package frc.robot.subsystems.shooter.feeder;
 
 import org.littletonrobotics.junction.AutoLog;
 
-public interface HandoffIO {
+public interface FeederIO {
   @AutoLog
-  public static class HandoffIOInputs {
+  public static class FeederIOInputs {
     public double appliedVolts = 0.0;
     public double[] currentAmps = new double[] {};
   }
 
   /** Updates the set of loggable inputs. */
-  default void updateInputs(HandoffIOInputs inputs) {}
+  default void updateInputs(FeederIOInputs inputs) {}
 
   /** Run open loop at the specified voltage. */
   default void runVolts(double volts) {}

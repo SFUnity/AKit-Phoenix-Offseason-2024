@@ -1,12 +1,12 @@
-package frc.robot.subsystems.shooter.handoff;
+package frc.robot.subsystems.shooter.feeder;
 
-public class HandoffIOSim implements HandoffIO {
+public class FeederIOSim implements FeederIO {
   private double appliedVolts = 0.0;
 
-  public HandoffIOSim() {}
+  public FeederIOSim() {}
 
   @Override
-  public void updateInputs(HandoffIOInputs inputs) {
+  public void updateInputs(FeederIOInputs inputs) {
     inputs.appliedVolts = appliedVolts;
   }
 
