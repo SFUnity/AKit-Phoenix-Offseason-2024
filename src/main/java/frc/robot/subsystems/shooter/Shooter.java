@@ -2,7 +2,6 @@ package frc.robot.subsystems.shooter;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.subsystems.shooter.flywheel.Flywheel;
 import frc.robot.subsystems.shooter.pivot.Pivot;
@@ -43,8 +42,8 @@ public class Shooter extends VirtualSubsystem{
    * @return boolean value of if there is a note in shooter
    */
   // May make sense to change this to return a boolean. TBD
-  public Trigger noteInShooter() {
-    return new Trigger(() -> beamBreakInputs.distSensorRange <= kDistSensorRangeWhenNoteInches).and(() -> distanceSensorWorking());
+  public boolean noteInShooter() {
+    return beamBreakInputs.distSensorRange <= kDistSensorRangeWhenNoteInches && distanceSensorWorking();
   }
 
   public boolean distanceSensorWorking() {
