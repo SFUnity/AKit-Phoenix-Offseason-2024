@@ -12,7 +12,7 @@ import org.littletonrobotics.junction.Logger;
 public class Shooter extends VirtualSubsystem {
   private final double kDistSensorRangeWhenNoteInches = 2.5;
 
-  private final Flywheels flywheel;
+  private final Flywheels flywheels;
   private final Pivot pivot;
   private final BeamBreakIO beamBreakIO;
 
@@ -20,8 +20,8 @@ public class Shooter extends VirtualSubsystem {
   private final LoggedShuffleboardBoolean beamBreakWorkingEntry =
       new LoggedShuffleboardBoolean("BeamBreak Working", "Shooter", true);
 
-  public Shooter(Flywheels flywheel, Pivot pivot, BeamBreakIO beamBreakIO) {
-    this.flywheel = flywheel;
+  public Shooter(Flywheels flywheels, Pivot pivot, BeamBreakIO beamBreakIO) {
+    this.flywheels = flywheels;
     this.pivot = pivot;
     this.beamBreakIO = beamBreakIO;
   }
@@ -50,15 +50,15 @@ public class Shooter extends VirtualSubsystem {
 
   // Flywheel Commands
   public Command runFlywheels() {
-    return flywheel.runFlywheelCmd();
+    return flywheels.runFlywheelCmd();
   }
 
   public Command flywheelSysIdQuasistatic(SysIdRoutine.Direction direction) {
-    return flywheel.sysIdQuasistatic(direction);
+    return flywheels.sysIdQuasistatic(direction);
   }
 
   public Command flywheelSysIdDynamic(SysIdRoutine.Direction direction) {
-    return flywheel.sysIdDynamic(direction);
+    return flywheels.sysIdDynamic(direction);
   }
 
   // Pivot Commands

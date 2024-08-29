@@ -71,10 +71,10 @@ public class Flywheels extends SubsystemBase {
   @Override
   public void periodic() {
     io.updateInputs(inputs);
-    Logger.processInputs("Shooter/Flywheel", inputs);
+    Logger.processInputs("Shooter/Flywheels", inputs);
 
     // Logs
-    GeneralUtil.logSubsystem(this, "Shooter/Flywheel");
+    GeneralUtil.logSubsystem(this, "Shooter/Flywheels");
   }
 
   /** Run open loop at the specified voltage. */
@@ -87,11 +87,11 @@ public class Flywheels extends SubsystemBase {
     var velocityRadPerSec = Units.rotationsPerMinuteToRadiansPerSecond(velocityRPM);
     io.setVelocity(velocityRadPerSec, ffModel.calculate(velocityRadPerSec));
 
-    // Log flywheel setpoint
+    // Log flywheels setpoint
     Logger.recordOutput("Flywheel/SetpointRPM", velocityRPM);
   }
 
-  /** Stops the flywheel. */
+  /** Stops the flywheels. */
   private void stop() {
     io.stop();
   }
