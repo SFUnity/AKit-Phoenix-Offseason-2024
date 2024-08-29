@@ -1,4 +1,9 @@
 {
+  "System Joysticks": {
+    "window": {
+      "visible": false
+    }
+  },
   "keyboardJoysticks": [
     {
       "axisConfig": [
@@ -75,7 +80,13 @@
         75,
         76
       ],
-      "povCount": 0
+      "povConfig": [
+        {
+          "key0": 57,
+          "key180": 48
+        }
+      ],
+      "povCount": 1
     },
     {
       "axisConfig": [
