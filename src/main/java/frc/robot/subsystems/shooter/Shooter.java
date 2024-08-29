@@ -10,13 +10,16 @@ import org.littletonrobotics.junction.networktables.LoggedDashboardNumber;
 public class Shooter {
   private final Flywheel flywheel;
   private final Pivot pivot;
+  private final BeamBreakIO beamBreakIO;
+  private final BeamBreakInputsAutoLogged beamBreakInputs = new BeamBreakInputsAutoLogged();
 
   private final LoggedDashboardNumber flywheelSpeedInput =
       new LoggedDashboardNumber("Flywheel Speed", 1500.0);
 
-  public Shooter(Flywheel flywheel, Pivot pivot) {
+  public Shooter(Flywheel flywheel, Pivot pivot, BeamBreakIO beamBreakIO) {
     this.flywheel = flywheel;
     this.pivot = pivot;
+    this.beamBreakIO = beamBreakIO;
   }
 
   public Command runFlywheelCmd() {

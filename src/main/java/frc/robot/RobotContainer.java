@@ -38,6 +38,9 @@ import frc.robot.subsystems.drive.ModuleIOSim;
 import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.intake.IntakeIO;
 import frc.robot.subsystems.intake.IntakeIOSim;
+import frc.robot.subsystems.shooter.BeamBreakIO;
+import frc.robot.subsystems.shooter.BeamBreakIORev;
+import frc.robot.subsystems.shooter.BeamBreakIOSim;
 import frc.robot.subsystems.shooter.Shooter;
 import frc.robot.subsystems.shooter.flywheel.Flywheel;
 import frc.robot.subsystems.shooter.flywheel.FlywheelIO;
@@ -92,7 +95,8 @@ public class RobotContainer {
         shooter =
             new Shooter(
                 new Flywheel(new FlywheelIOSparkMax()),
-                new Pivot(new PivotIOSparkMax(), aprilTagVision));
+                new Pivot(new PivotIOSparkMax(), aprilTagVision),
+                new BeamBreakIORev());
         break;
 
       case SIM:
@@ -108,7 +112,7 @@ public class RobotContainer {
         aprilTagVision = new AprilTagVision(new AprilTagVisionIO() {});
         shooter =
             new Shooter(
-                new Flywheel(new FlywheelIOSim()), new Pivot(new PivotIOSim(), aprilTagVision));
+                new Flywheel(new FlywheelIOSim()), new Pivot(new PivotIOSim(), aprilTagVision), new BeamBreakIOSim());
         break;
 
       default:
@@ -124,7 +128,7 @@ public class RobotContainer {
         aprilTagVision = new AprilTagVision(new AprilTagVisionIO() {});
         shooter =
             new Shooter(
-                new Flywheel(new FlywheelIO() {}), new Pivot(new PivotIO() {}, aprilTagVision));
+                new Flywheel(new FlywheelIO() {}), new Pivot(new PivotIO() {}, aprilTagVision), new BeamBreakIO() {});
         break;
     }
 
