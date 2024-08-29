@@ -3,6 +3,7 @@ package frc.robot.subsystems.shooter;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
+import frc.robot.subsystems.leds.Leds;
 import frc.robot.subsystems.shooter.flywheel.Flywheel;
 import frc.robot.subsystems.shooter.pivot.Pivot;
 import frc.robot.util.VirtualSubsystem;
@@ -34,6 +35,8 @@ public class Shooter extends VirtualSubsystem{
   public void periodic() {
     beamBreakIO.updateInputs(beamBreakInputs);
     Logger.processInputs("BeamBreak", beamBreakInputs);
+
+    Leds.getInstance().noteInShooter = noteInShooter();
   }
 
   /**
