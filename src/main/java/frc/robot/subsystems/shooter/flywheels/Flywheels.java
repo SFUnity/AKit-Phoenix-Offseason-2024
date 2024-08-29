@@ -11,7 +11,7 @@
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU General Public License for more details.
 
-package frc.robot.subsystems.shooter.flywheel;
+package frc.robot.subsystems.shooter.flywheels;
 
 import static edu.wpi.first.units.Units.*;
 
@@ -22,14 +22,15 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants;
+import frc.robot.subsystems.shooter.flywheel.FlywheelsIOInputsAutoLogged;
 import frc.robot.util.GeneralUtil;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.LoggedDashboardNumber;
 
-public class Flywheel extends SubsystemBase {
-  private final FlywheelIO io;
-  private final FlywheelIOInputsAutoLogged inputs = new FlywheelIOInputsAutoLogged();
+public class Flywheels extends SubsystemBase {
+  private final FlywheelsIO io;
+  private final FlywheelsIOInputsAutoLogged inputs = new FlywheelsIOInputsAutoLogged();
   private final SimpleMotorFeedforward ffModel;
   private final SysIdRoutine sysId;
 
@@ -37,7 +38,7 @@ public class Flywheel extends SubsystemBase {
       new LoggedDashboardNumber("Flywheel Speed", 1500.0);
 
   /** Creates a new Flywheel. */
-  public Flywheel(FlywheelIO io) {
+  public Flywheels(FlywheelsIO io) {
     this.io = io;
 
     // Switch constants based on mode (the physics simulator is treated as a
