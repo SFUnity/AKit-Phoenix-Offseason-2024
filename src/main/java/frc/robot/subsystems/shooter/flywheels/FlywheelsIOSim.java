@@ -19,7 +19,8 @@ import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.wpilibj.simulation.FlywheelSim;
 
 public class FlywheelsIOSim implements FlywheelsIO {
-  private FlywheelSim sim = new FlywheelSim(DCMotor.getNEO(1), 1.5, 0.004);
+  private FlywheelSim simTop = new FlywheelSim(DCMotor.getNEO(1), 1.5, 0.004);
+  private FlywheelSim simBottom = new FlywheelSim(DCMotor.getNEO(1), 1.5, 0.004);
   private PIDController pid = new PIDController(0.0, 0.0, 0.0);
 
   private boolean closedLoop = false;
@@ -30,35 +31,62 @@ public class FlywheelsIOSim implements FlywheelsIO {
   public void updateInputs(FlywheelsIOInputs inputs) {
     if (closedLoop) {
       appliedVolts =
-          MathUtil.clamp(pid.calculate(sim.getAngularVelocityRadPerSec()) + ffVolts, -12.0, 12.0);
-      sim.setInputVoltage(appliedVolts);
+          MathUtil.clamp(
+              pid.calculate(simTop.getAngularVelocityRadPerSec()) + ffVolts, -12.0, 12.0);
+      simTop.setInputVoltage(appliedVolts);
     }
 
-    sim.update(0.02);
+    if (closedLoop) {
+      appliedVolts =
+          MathUtil.clamp(
+              pid.calculate(simBottom.getAngularVelocityRadPerSec()) + ffVolts, -12.0, 12.0);
+      simBottom.setInputVoltage(appliedVolts);
+    }
 
-    inputs.positionRad = 0.0;
-    inputs.velocityRadPerSec = sim.getAngularVelocityRadPerSec();
-    inputs.appliedVolts = appliedVolts;
-    inputs.currentAmps = new double[] {sim.getCurrentDrawAmps()};
+    simTop.update(0.02);
+    simBottom.update(0.02);
+
+    inputs.velocityRadPerSecTop = simTop.getAngularVelocityRadPerSec();
+    inputs.appliedVoltsTop = appliedVolts;
+    inputs.currentAmpsTop = new double[] {simTop.getCurrentDrawAmps()};
+
+    inputs.velocityRadPerSecBottom = simBottom.getAngularVelocityRadPerSec();
+    inputs.appliedVoltsBottom = appliedVolts;
+    inputs.currentAmpsBottom = new double[] {simBottom.getCurrentDrawAmps()};
   }
 
   @Override
-  public void setVoltage(double volts) {
+  public void setVoltageTop(double volts) {
     closedLoop = false;
     appliedVolts = volts;
-    sim.setInputVoltage(volts);
+    simTop.setInputVoltage(volts);
   }
 
   @Override
-  public void setVelocity(double velocityRadPerSec, double ffVolts) {
+  public void setVoltageBottom(double volts) {
+    closedLoop = false;
+    appliedVolts = volts;
+    simBottom.setInputVoltage(volts);
+  }
+
+  @Override
+  public void setVelocityTop(double velocityRadPerSec, double ffVolts) {
     closedLoop = true;
     pid.setSetpoint(velocityRadPerSec);
     this.ffVolts = ffVolts;
   }
 
   @Override
-  public void stop() {
-    setVoltage(0.0);
+  public void setVelocityBottom(double velocityRadPerSec, double ffVolts) {
+    closedLoop = true;
+    pid.setSetpoint(velocityRadPerSec);
+    this.ffVolts = ffVolts;
+  }
+
+  @Override
+  public void stopBoth() {
+    setVoltageTop(0.0);
+    setVoltageBottom(0.0);
   }
 
   @Override

@@ -26,48 +26,60 @@ import edu.wpi.first.math.util.Units;
  * "CANSparkFlex".
  */
 public class FlywheelsIOSparkMax implements FlywheelsIO {
-  private static final double GEAR_RATIO = 1.5;
-
-  private final CANSparkMax leader = new CANSparkMax(9, MotorType.kBrushless);
-  private final CANSparkMax follower = new CANSparkMax(10, MotorType.kBrushless);
-  private final RelativeEncoder encoder = leader.getEncoder();
-  private final SparkPIDController pid = leader.getPIDController();
+  private final CANSparkMax top = new CANSparkMax(9, MotorType.kBrushless);
+  private final CANSparkMax bottom = new CANSparkMax(10, MotorType.kBrushless);
+  private final RelativeEncoder encoderTop = top.getEncoder();
+  private final RelativeEncoder encoderBottom = bottom.getEncoder();
+  private final SparkPIDController pidTop = top.getPIDController();
+  private final SparkPIDController pidBottom = bottom.getPIDController();
 
   public FlywheelsIOSparkMax() {
-    leader.restoreFactoryDefaults();
-    follower.restoreFactoryDefaults();
+    top.restoreFactoryDefaults();
+    bottom.restoreFactoryDefaults();
 
-    leader.setCANTimeout(250);
-    follower.setCANTimeout(250);
+    top.setCANTimeout(250);
+    bottom.setCANTimeout(250);
 
-    leader.setInverted(false);
-    follower.follow(leader, false);
+    top.setInverted(false);
+    bottom.setInverted(true);
 
-    leader.enableVoltageCompensation(12.0);
-    leader.setSmartCurrentLimit(30);
+    top.enableVoltageCompensation(12.0);
+    top.setSmartCurrentLimit(30);
 
-    leader.burnFlash();
-    follower.burnFlash();
+    bottom.enableVoltageCompensation(12.0);
+    bottom.setSmartCurrentLimit(30);
+
+    top.burnFlash();
+    bottom.burnFlash();
   }
 
   @Override
   public void updateInputs(FlywheelsIOInputs inputs) {
-    inputs.positionRad = Units.rotationsToRadians(encoder.getPosition() / GEAR_RATIO);
-    inputs.velocityRadPerSec =
-        Units.rotationsPerMinuteToRadiansPerSecond(encoder.getVelocity() / GEAR_RATIO);
-    inputs.appliedVolts = leader.getAppliedOutput() * leader.getBusVoltage();
-    inputs.currentAmps = new double[] {leader.getOutputCurrent(), follower.getOutputCurrent()};
+    inputs.velocityRadPerSecTop =
+        Units.rotationsPerMinuteToRadiansPerSecond(encoderTop.getVelocity());
+    inputs.appliedVoltsTop = top.getAppliedOutput() * top.getBusVoltage();
+    inputs.currentAmpsTop = new double[] {top.getOutputCurrent()};
+
+    inputs.velocityRadPerSecBottom =
+        Units.rotationsPerMinuteToRadiansPerSecond(encoderBottom.getVelocity());
+    inputs.appliedVoltsBottom = bottom.getAppliedOutput() * bottom.getBusVoltage();
+    inputs.currentAmpsBottom = new double[] {bottom.getOutputCurrent()};
   }
 
   @Override
-  public void setVoltage(double volts) {
-    leader.setVoltage(volts);
+  public void setVoltageTop(double volts) {
+    top.setVoltage(volts);
   }
 
   @Override
-  public void setVelocity(double velocityRadPerSec, double ffVolts) {
-    pid.setReference(
-        Units.radiansPerSecondToRotationsPerMinute(velocityRadPerSec) * GEAR_RATIO,
+  public void setVoltageBottom(double volts) {
+    bottom.setVoltage(volts);
+  }
+
+  @Override
+  public void setVelocityTop(double velocityRadPerSec, double ffVolts) {
+    pidTop.setReference(
+        Units.radiansPerSecondToRotationsPerMinute(velocityRadPerSec),
         ControlType.kVelocity,
         0,
         ffVolts,
@@ -75,15 +87,31 @@ public class FlywheelsIOSparkMax implements FlywheelsIO {
   }
 
   @Override
-  public void stop() {
-    leader.stopMotor();
+  public void setVelocityBottom(double velocityRadPerSec, double ffVolts) {
+    pidBottom.setReference(
+        Units.radiansPerSecondToRotationsPerMinute(velocityRadPerSec),
+        ControlType.kVelocity,
+        0,
+        ffVolts,
+        ArbFFUnits.kVoltage);
+  }
+
+  @Override
+  public void stopBoth() {
+    top.stopMotor();
+    bottom.stopMotor();
   }
 
   @Override
   public void configurePID(double kP, double kI, double kD) {
-    pid.setP(kP, 0);
-    pid.setI(kI, 0);
-    pid.setD(kD, 0);
-    pid.setFF(0, 0);
+    pidTop.setP(kP, 0);
+    pidTop.setI(kI, 0);
+    pidTop.setD(kD, 0);
+    pidTop.setFF(0, 0);
+
+    pidBottom.setP(kP, 0);
+    pidBottom.setI(kI, 0);
+    pidBottom.setD(kD, 0);
+    pidBottom.setFF(0, 0);
   }
 }

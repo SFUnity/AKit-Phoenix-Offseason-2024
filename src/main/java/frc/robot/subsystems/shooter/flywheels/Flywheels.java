@@ -18,23 +18,20 @@ import static edu.wpi.first.units.Units.*;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants;
 import frc.robot.util.GeneralUtil;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
-import org.littletonrobotics.junction.networktables.LoggedDashboardNumber;
 
 public class Flywheels extends SubsystemBase {
   private final FlywheelsIO io;
   private final FlywheelsIOInputsAutoLogged inputs = new FlywheelsIOInputsAutoLogged();
-  private final SimpleMotorFeedforward ffModel;
-  private final SysIdRoutine sysId;
-
-  private final LoggedDashboardNumber flywheelSpeedInput =
-      new LoggedDashboardNumber("Flywheel Speed", 1500.0);
+  private final SimpleMotorFeedforward ffModelTop;
+  private final SimpleMotorFeedforward ffModelBottom;
+  private final SysIdRoutine sysIdTop;
+  private final SysIdRoutine sysIdBottom;
 
   /** Creates a new Flywheel. */
   public Flywheels(FlywheelsIO io) {
@@ -45,27 +42,39 @@ public class Flywheels extends SubsystemBase {
     switch (Constants.currentMode) {
       case REAL:
       case REPLAY:
-        ffModel = new SimpleMotorFeedforward(0.1, 0.05);
+        ffModelTop = new SimpleMotorFeedforward(0.1, 0.05);
+        ffModelBottom = new SimpleMotorFeedforward(0.1, 0.05);
         io.configurePID(1.0, 0.0, 0.0);
         break;
       case SIM:
-        ffModel = new SimpleMotorFeedforward(0.0, 0.03);
+        ffModelTop = new SimpleMotorFeedforward(0.0, 0.03);
+        ffModelBottom = new SimpleMotorFeedforward(0.0, 0.03);
         io.configurePID(0.5, 0.0, 0.0);
         break;
       default:
-        ffModel = new SimpleMotorFeedforward(0.0, 0.0);
+        ffModelTop = new SimpleMotorFeedforward(0.0, 0.0);
+        ffModelBottom = new SimpleMotorFeedforward(0.0, 0.0);
         break;
     }
 
     // Configure SysId
-    sysId =
+    sysIdTop =
         new SysIdRoutine(
             new SysIdRoutine.Config(
                 null,
                 null,
                 null,
-                (state) -> Logger.recordOutput("Flywheel/SysIdState", state.toString())),
-            new SysIdRoutine.Mechanism((voltage) -> runVolts(voltage.in(Volts)), null, this));
+                (state) -> Logger.recordOutput("Flywheels/Top/SysIdState", state.toString())),
+            new SysIdRoutine.Mechanism((voltage) -> runVoltsTop(voltage.in(Volts)), null, this));
+
+    sysIdBottom =
+        new SysIdRoutine(
+            new SysIdRoutine.Config(
+                null,
+                null,
+                null,
+                (state) -> Logger.recordOutput("Flywheels/Bottom/SysIdState", state.toString())),
+            new SysIdRoutine.Mechanism((voltage) -> runVoltsBottom(voltage.in(Volts)), null, this));
   }
 
   @Override
@@ -78,42 +87,67 @@ public class Flywheels extends SubsystemBase {
   }
 
   /** Run open loop at the specified voltage. */
-  private void runVolts(double volts) {
-    io.setVoltage(volts);
+  private void runVoltsTop(double volts) {
+    io.setVoltageTop(volts);
+  }
+
+  /** Run open loop at the specified voltage. */
+  private void runVoltsBottom(double volts) {
+    io.setVoltageBottom(volts);
   }
 
   /** Run closed loop at the specified velocity. */
-  private void runVelocity(double velocityRPM) {
+  private void runVelocityTop(double velocityRPM) {
     var velocityRadPerSec = Units.rotationsPerMinuteToRadiansPerSecond(velocityRPM);
-    io.setVelocity(velocityRadPerSec, ffModel.calculate(velocityRadPerSec));
+    io.setVelocityTop(velocityRadPerSec, ffModelTop.calculate(velocityRadPerSec));
 
     // Log flywheels setpoint
-    Logger.recordOutput("Flywheel/SetpointRPM", velocityRPM);
+    Logger.recordOutput("Flywheel/Top/SetpointRPM", velocityRPM);
+  }
+
+  /** Run closed loop at the specified velocity. */
+  private void runVelocityBottom(double velocityRPM) {
+    var velocityRadPerSec = Units.rotationsPerMinuteToRadiansPerSecond(velocityRPM);
+    io.setVelocityBottom(velocityRadPerSec, ffModelBottom.calculate(velocityRadPerSec));
+
+    // Log flywheels setpoint
+    Logger.recordOutput("Flywheel/Bottom/SetpointRPM", velocityRPM);
   }
 
   /** Stops the flywheels. */
-  private void stop() {
-    io.stop();
-  }
-
-  public Command runFlywheelCmd() {
-    return Commands.startEnd(() -> runVelocity(flywheelSpeedInput.get()), this::stop)
-        .withName("Run Flywheel");
+  private void stopBoth() {
+    io.stopBoth();
   }
 
   /** Returns a command to run a quasistatic test in the specified direction. */
-  public Command sysIdQuasistatic(SysIdRoutine.Direction direction) {
-    return sysId.quasistatic(direction);
+  public Command sysIdQuasistaticTop(SysIdRoutine.Direction direction) {
+    return sysIdTop.quasistatic(direction);
   }
 
   /** Returns a command to run a dynamic test in the specified direction. */
-  public Command sysIdDynamic(SysIdRoutine.Direction direction) {
-    return sysId.dynamic(direction);
+  public Command sysIdDynamicTop(SysIdRoutine.Direction direction) {
+    return sysIdTop.dynamic(direction);
+  }
+
+  /** Returns a command to run a quasistatic test in the specified direction. */
+  public Command sysIdQuasistaticBottom(SysIdRoutine.Direction direction) {
+    return sysIdBottom.quasistatic(direction);
+  }
+
+  /** Returns a command to run a dynamic test in the specified direction. */
+  public Command sysIdDynamicBottom(SysIdRoutine.Direction direction) {
+    return sysIdBottom.dynamic(direction);
   }
 
   /** Returns the current velocity in RPM. */
   @AutoLogOutput
-  public double getVelocityRPM() {
-    return Units.radiansPerSecondToRotationsPerMinute(inputs.velocityRadPerSec);
+  public double getVelocityRPMTop() {
+    return Units.radiansPerSecondToRotationsPerMinute(inputs.velocityRadPerSecTop);
+  }
+
+  /** Returns the current velocity in RPM. */
+  @AutoLogOutput
+  public double getVelocityRPMBottom() {
+    return Units.radiansPerSecondToRotationsPerMinute(inputs.velocityRadPerSecBottom);
   }
 }

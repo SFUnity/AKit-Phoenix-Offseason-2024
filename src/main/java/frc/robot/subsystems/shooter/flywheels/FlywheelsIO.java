@@ -18,23 +18,32 @@ import org.littletonrobotics.junction.AutoLog;
 public interface FlywheelsIO {
   @AutoLog
   public static class FlywheelsIOInputs {
-    public double positionRad = 0.0;
-    public double velocityRadPerSec = 0.0;
-    public double appliedVolts = 0.0;
-    public double[] currentAmps = new double[] {};
+    public double velocityRadPerSecTop = 0.0;
+    public double appliedVoltsTop = 0.0;
+    public double[] currentAmpsTop = new double[] {};
+
+    public double velocityRadPerSecBottom = 0.0;
+    public double appliedVoltsBottom = 0.0;
+    public double[] currentAmpsBottom = new double[] {};
   }
 
   /** Updates the set of loggable inputs. */
   public default void updateInputs(FlywheelsIOInputs inputs) {}
 
   /** Run open loop at the specified voltage. */
-  public default void setVoltage(double volts) {}
+  public default void setVoltageTop(double volts) {}
 
   /** Run closed loop at the specified velocity. */
-  public default void setVelocity(double velocityRadPerSec, double ffVolts) {}
+  public default void setVelocityTop(double velocityRadPerSec, double ffVolts) {}
+
+  /** Run open loop at the specified voltage. */
+  public default void setVoltageBottom(double volts) {}
+
+  /** Run closed loop at the specified velocity. */
+  public default void setVelocityBottom(double velocityRadPerSec, double ffVolts) {}
 
   /** Stop in open loop. */
-  public default void stop() {}
+  public default void stopBoth() {}
 
   /** Set velocity PID constants. */
   public default void configurePID(double kP, double kI, double kD) {}

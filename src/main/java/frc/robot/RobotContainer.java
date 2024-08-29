@@ -14,7 +14,6 @@
 package frc.robot;
 
 import com.pathplanner.lib.auto.AutoBuilder;
-import com.pathplanner.lib.auto.NamedCommands;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -137,7 +136,6 @@ public class RobotContainer {
     }
 
     // Set up auto routines
-    NamedCommands.registerCommand("Run Flywheel", shooter.runFlywheels().withTimeout(5.0));
     autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
 
     // Set up SysId routines
@@ -151,18 +149,32 @@ public class RobotContainer {
         "Drive SysId (Dynamic Forward)", drive.sysIdDynamic(SysIdRoutine.Direction.kForward));
     autoChooser.addOption(
         "Drive SysId (Dynamic Reverse)", drive.sysIdDynamic(SysIdRoutine.Direction.kReverse));
+
     autoChooser.addOption(
-        "Flywheel SysId (Quasistatic Forward)",
-        shooter.flywheelSysIdQuasistatic(SysIdRoutine.Direction.kForward));
+        "Top Flywheel SysId (Quasistatic Forward)",
+        shooter.topFlywheelSysIdQuasistatic(SysIdRoutine.Direction.kForward));
     autoChooser.addOption(
-        "Flywheel SysId (Quasistatic Reverse)",
-        shooter.flywheelSysIdQuasistatic(SysIdRoutine.Direction.kReverse));
+        "Top Flywheel SysId (Quasistatic Reverse)",
+        shooter.topFlywheelSysIdQuasistatic(SysIdRoutine.Direction.kReverse));
     autoChooser.addOption(
-        "Flywheel SysId (Dynamic Forward)",
-        shooter.flywheelSysIdDynamic(SysIdRoutine.Direction.kForward));
+        "Top Flywheel SysId (Dynamic Forward)",
+        shooter.topFlywheelSysIdDynamic(SysIdRoutine.Direction.kForward));
     autoChooser.addOption(
-        "Flywheel SysId (Dynamic Reverse)",
-        shooter.flywheelSysIdDynamic(SysIdRoutine.Direction.kReverse));
+        "Top Flywheel SysId (Dynamic Reverse)",
+        shooter.topFlywheelSysIdDynamic(SysIdRoutine.Direction.kReverse));
+
+    autoChooser.addOption(
+        "Bottom Flywheel SysId (Quasistatic Forward)",
+        shooter.bottomFlywheelSysIdQuasistatic(SysIdRoutine.Direction.kForward));
+    autoChooser.addOption(
+        "Bottom Flywheel SysId (Quasistatic Reverse)",
+        shooter.bottomFlywheelSysIdQuasistatic(SysIdRoutine.Direction.kReverse));
+    autoChooser.addOption(
+        "Bottom Flywheel SysId (Dynamic Forward)",
+        shooter.bottomFlywheelSysIdDynamic(SysIdRoutine.Direction.kForward));
+    autoChooser.addOption(
+        "Bottom Flywheel SysId (Dynamic Reverse)",
+        shooter.bottomFlywheelSysIdDynamic(SysIdRoutine.Direction.kReverse));
 
     // Configure the button bindings
     configureButtonBindings();

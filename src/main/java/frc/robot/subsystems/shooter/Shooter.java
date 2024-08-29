@@ -49,16 +49,20 @@ public class Shooter extends VirtualSubsystem {
   }
 
   // Flywheel Commands
-  public Command runFlywheels() {
-    return flywheels.runFlywheelCmd();
+  public Command topFlywheelSysIdQuasistatic(SysIdRoutine.Direction direction) {
+    return flywheels.sysIdQuasistaticTop(direction);
   }
 
-  public Command flywheelSysIdQuasistatic(SysIdRoutine.Direction direction) {
-    return flywheels.sysIdQuasistatic(direction);
+  public Command topFlywheelSysIdDynamic(SysIdRoutine.Direction direction) {
+    return flywheels.sysIdDynamicTop(direction);
   }
 
-  public Command flywheelSysIdDynamic(SysIdRoutine.Direction direction) {
-    return flywheels.sysIdDynamic(direction);
+  public Command bottomFlywheelSysIdQuasistatic(SysIdRoutine.Direction direction) {
+    return flywheels.sysIdQuasistaticBottom(direction);
+  }
+
+  public Command bottomFlywheelSysIdDynamic(SysIdRoutine.Direction direction) {
+    return flywheels.sysIdDynamicBottom(direction);
   }
 
   // Pivot Commands
