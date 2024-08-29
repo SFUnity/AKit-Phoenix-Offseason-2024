@@ -1,18 +1,15 @@
 package frc.robot.subsystems.shooter;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.subsystems.leds.Leds;
 import frc.robot.subsystems.shooter.flywheel.Flywheel;
 import frc.robot.subsystems.shooter.pivot.Pivot;
 import frc.robot.util.VirtualSubsystem;
 import frc.robot.util.loggedShuffleboardClasses.LoggedShuffleboardBoolean;
-
 import org.littletonrobotics.junction.Logger;
-import org.littletonrobotics.junction.networktables.LoggedDashboardNumber;
 
-public class Shooter extends VirtualSubsystem{
+public class Shooter extends VirtualSubsystem {
   private final double kDistSensorRangeWhenNoteInches = 2.5;
 
   private final Flywheel flywheel;
@@ -22,9 +19,6 @@ public class Shooter extends VirtualSubsystem{
   private final BeamBreakInputsAutoLogged beamBreakInputs = new BeamBreakInputsAutoLogged();
   private final LoggedShuffleboardBoolean beamBreakWorkingEntry =
       new LoggedShuffleboardBoolean("BeamBreak Working", "Shooter", true);
-
-  private final LoggedDashboardNumber flywheelSpeedInput =
-      new LoggedDashboardNumber("Flywheel Speed", 1500.0);
 
   public Shooter(Flywheel flywheel, Pivot pivot, BeamBreakIO beamBreakIO) {
     this.flywheel = flywheel;
@@ -46,7 +40,8 @@ public class Shooter extends VirtualSubsystem{
    */
   // May make sense to change this to return a boolean. TBD
   public boolean noteInShooter() {
-    return beamBreakInputs.distSensorRange <= kDistSensorRangeWhenNoteInches && distanceSensorWorking();
+    return beamBreakInputs.distSensorRange <= kDistSensorRangeWhenNoteInches
+        && distanceSensorWorking();
   }
 
   public boolean distanceSensorWorking() {
@@ -54,9 +49,7 @@ public class Shooter extends VirtualSubsystem{
   }
 
   public Command runFlywheelCmd() {
-    return Commands.startEnd(
-            () -> flywheel.runVelocity(flywheelSpeedInput.get()), flywheel::stop, flywheel)
-        .withName("Run Flywheel");
+    return flywheel.runFlywheelCmd();
   }
 
   public Command flywheelSysIdQuasistatic(SysIdRoutine.Direction direction) {

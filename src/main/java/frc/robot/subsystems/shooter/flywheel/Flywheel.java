@@ -18,17 +18,22 @@ import static edu.wpi.first.units.Units.*;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
+import org.littletonrobotics.junction.networktables.LoggedDashboardNumber;
 
 public class Flywheel extends SubsystemBase {
   private final FlywheelIO io;
   private final FlywheelIOInputsAutoLogged inputs = new FlywheelIOInputsAutoLogged();
   private final SimpleMotorFeedforward ffModel;
   private final SysIdRoutine sysId;
+
+  private final LoggedDashboardNumber flywheelSpeedInput =
+      new LoggedDashboardNumber("Flywheel Speed", 1500.0);
 
   /** Creates a new Flywheel. */
   public Flywheel(FlywheelIO io) {
@@ -69,12 +74,12 @@ public class Flywheel extends SubsystemBase {
   }
 
   /** Run open loop at the specified voltage. */
-  public void runVolts(double volts) {
+  private void runVolts(double volts) {
     io.setVoltage(volts);
   }
 
   /** Run closed loop at the specified velocity. */
-  public void runVelocity(double velocityRPM) {
+  private void runVelocity(double velocityRPM) {
     var velocityRadPerSec = Units.rotationsPerMinuteToRadiansPerSecond(velocityRPM);
     io.setVelocity(velocityRadPerSec, ffModel.calculate(velocityRadPerSec));
 
@@ -83,8 +88,13 @@ public class Flywheel extends SubsystemBase {
   }
 
   /** Stops the flywheel. */
-  public void stop() {
+  private void stop() {
     io.stop();
+  }
+
+  public Command runFlywheelCmd() {
+    return Commands.startEnd(() -> runVelocity(flywheelSpeedInput.get()), this::stop)
+        .withName("Run Flywheel");
   }
 
   /** Returns a command to run a quasistatic test in the specified direction. */
