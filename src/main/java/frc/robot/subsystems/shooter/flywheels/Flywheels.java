@@ -14,11 +14,11 @@ public class Flywheels extends SubsystemBase {
   private final FlywheelsIO io;
   private final FlywheelsIOInputsAutoLogged inputs = new FlywheelsIOInputsAutoLogged();
 
-  private final double kFlywheelIntakeSpeedVoltage = -2;
+  private final double kIntakeSpeedVoltage = -2;
   private final double kAmpShootingSpeedBottomVoltage = 3.5;
   private final double kAmpShootingSpeedTopVoltage = 0.5;
-  private final double kShooterDefaultSpeedVoltage = 10;
-  private final double kShooterFeedingSpeedVoltage = 5;
+  private final double kDefaultSpeedVoltage = 10;
+  private final double kFeedingSpeedVoltage = 5;
 
   private static enum LastGoal {
     NONE,
@@ -117,7 +117,7 @@ public class Flywheels extends SubsystemBase {
   public Command shootSpeaker() {
     return runOnce(
             () -> {
-              runVoltsBoth(kShooterDefaultSpeedVoltage);
+              runVoltsBoth(kDefaultSpeedVoltage);
               lastGoal = LastGoal.SPEAKER;
             })
         .withName("Flywheels Shoot Speaker");
@@ -126,7 +126,7 @@ public class Flywheels extends SubsystemBase {
   public Command feed() {
     return runOnce(
             () -> {
-              runVoltsBoth(kShooterFeedingSpeedVoltage);
+              runVoltsBoth(kFeedingSpeedVoltage);
               lastGoal = LastGoal.FEEDING;
             })
         .withName("Flywheels Feed");
