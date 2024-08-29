@@ -137,7 +137,7 @@ public class RobotContainer {
     }
 
     // Set up auto routines
-    NamedCommands.registerCommand("Run Flywheel", shooter.runFlywheelCmd().withTimeout(5.0));
+    NamedCommands.registerCommand("Run Flywheel", shooter.runFlywheels().withTimeout(5.0));
     autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
 
     // Set up SysId routines
@@ -205,7 +205,7 @@ public class RobotContainer {
     operator.circle().whileTrue(intake.intakeCmd(new Trigger(() -> false)));
 
     // Operator controls for pivot
-    operator.circle().whileTrue(shooter.setManualShootAngleCommand());
+    operator.circle().whileTrue(shooter.setManualAngle());
   }
 
   /** Updates the alerts for disconnected controllers. */

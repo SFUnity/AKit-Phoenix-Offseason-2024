@@ -48,7 +48,7 @@ public class Shooter extends VirtualSubsystem {
     return beamBreakInputs.isRangeValid && beamBreakWorkingEntry.get();
   }
 
-  public Command runFlywheelCmd() {
+  public Command runFlywheels() {
     return flywheel.runFlywheelCmd();
   }
 
@@ -60,7 +60,11 @@ public class Shooter extends VirtualSubsystem {
     return flywheel.sysIdDynamic(direction);
   }
 
-  public Command setManualShootAngleCommand() {
+  public Command setManualAngle() {
     return pivot.setManualShootAngleCommand();
+  }
+
+  public Command setAutoAim() {
+    return pivot.setAutoShootAngleCommand();
   }
 }
