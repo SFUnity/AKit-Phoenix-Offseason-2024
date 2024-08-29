@@ -1,16 +1,3 @@
-// Copyright 2021-2024 FRC 6328
-// http://github.com/Mechanical-Advantage
-//
-// This program is free software; you can redistribute it and/or
-// modify it under the terms of the GNU General Public License
-// version 3 as published by the Free Software Foundation or
-// available in the root directory of this project.
-//
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-// GNU General Public License for more details.
-
 package frc.robot.subsystems.shooter.flywheels;
 
 import com.revrobotics.CANSparkBase.ControlType;
@@ -21,10 +8,6 @@ import com.revrobotics.SparkPIDController;
 import com.revrobotics.SparkPIDController.ArbFFUnits;
 import edu.wpi.first.math.util.Units;
 
-/**
- * NOTE: To use the Spark Flex / NEO Vortex, replace all instances of "CANSparkMax" with
- * "CANSparkFlex".
- */
 public class FlywheelsIOSparkMax implements FlywheelsIO {
   private final CANSparkMax top = new CANSparkMax(9, MotorType.kBrushless);
   private final CANSparkMax bottom = new CANSparkMax(10, MotorType.kBrushless);
