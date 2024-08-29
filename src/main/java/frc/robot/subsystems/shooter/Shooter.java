@@ -48,6 +48,7 @@ public class Shooter extends VirtualSubsystem {
     return beamBreakInputs.isRangeValid && beamBreakWorkingEntry.get();
   }
 
+  // Flywheel Commands
   public Command runFlywheels() {
     return flywheel.runFlywheelCmd();
   }
