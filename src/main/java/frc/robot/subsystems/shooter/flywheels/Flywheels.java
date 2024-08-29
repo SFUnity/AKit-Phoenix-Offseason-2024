@@ -75,10 +75,10 @@ public class Flywheels extends SubsystemBase {
     io.stopBoth();
   }
 
-  public Command intake(boolean intakeWorking) {
-    return Commands.startEnd(
+  public Command intake(LoggedShuffleboardBoolean intakeWorking) {
+    return Commands.runEnd(
             () -> {
-              if (intakeWorking) {
+              if (intakeWorking.get()) {
                 runVoltsBoth(kShooterDefaultSpeedVoltage / 2);
               } else {
                 runVoltsBoth(kFlywheelIntakeSpeedVoltage);

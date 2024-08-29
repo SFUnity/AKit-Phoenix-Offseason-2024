@@ -63,7 +63,7 @@ public class Shooter extends VirtualSubsystem {
     return pivot.setFeedAngleCommand().alongWith(flywheels.feed());
   }
 
-  public Command setIntaking(boolean intakeWorking) {
+  public Command setIntaking(LoggedShuffleboardBoolean intakeWorking) {
     return flywheels.intake(intakeWorking); // add pivot command once written
   }
 }
