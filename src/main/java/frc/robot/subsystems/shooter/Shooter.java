@@ -47,20 +47,23 @@ public class Shooter extends VirtualSubsystem {
     return beamBreakInputs.isRangeValid && beamBreakWorkingEntry.get();
   }
 
-  // Pivot Commands
-  public Command setManualAngle() {
-    return pivot.setManualShootAngleCommand();
+  public Command setManualSpeakerShot() {
+    return pivot.setManualShootAngleCommand().alongWith(flywheels.shootSpeaker());
   }
 
-  public Command setAutoAim() {
-    return pivot.setAutoShootAngleCommand();
+  public Command setAutoAimShot() {
+    return pivot.setAutoShootAngleCommand().alongWith(flywheels.shootSpeaker());
   }
 
-  public Command setAmpAngle() {
-    return pivot.setAmpAngleCommand();
+  public Command setAmpShot() {
+    return pivot.setAmpAngleCommand().alongWith(flywheels.shootAmp());
   }
 
-  public Command setFeedAngle() {
-    return pivot.setFeedAngleCommand();
+  public Command setFeeding() {
+    return pivot.setFeedAngleCommand().alongWith(flywheels.feed());
+  }
+
+  public Command setIntaking(boolean intakeWorking) {
+    return flywheels.intake(intakeWorking); // add pivot command once written
   }
 }
