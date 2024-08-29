@@ -11,15 +11,27 @@
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU General Public License for more details.
 
-package frc.robot.subsystems.flywheel;
+package frc.robot.subsystems.shooter.pivot;
 
-import edu.wpi.first.math.MathUtil;
+import static frc.robot.subsystems.shooter.pivot.PivotConstants.pivotLength;
+
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.system.plant.DCMotor;
-import edu.wpi.first.wpilibj.simulation.FlywheelSim;
+import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.simulation.SingleJointedArmSim;
 
-public class FlywheelIOSim implements FlywheelIO {
-  private FlywheelSim sim = new FlywheelSim(DCMotor.getNEO(1), 1.5, 0.004);
+public class PivotIOSim implements PivotIO {
+  // TODO use an arm sim
+  private final SingleJointedArmSim sim =
+      new SingleJointedArmSim(
+          DCMotor.getNEO(1),
+          100,
+          1.06328,
+          pivotLength,
+          Math.toRadians(0.0),
+          Math.toRadians(125.0),
+          false,
+          Units.degreesToRadians(0.0));
   private PIDController pid = new PIDController(0.0, 0.0, 0.0);
 
   private boolean closedLoop = false;
@@ -27,17 +39,15 @@ public class FlywheelIOSim implements FlywheelIO {
   private double appliedVolts = 0.0;
 
   @Override
-  public void updateInputs(FlywheelIOInputs inputs) {
+  public void updateInputs(PivotIOInputs inputs) {
     if (closedLoop) {
-      appliedVolts =
-          MathUtil.clamp(pid.calculate(sim.getAngularVelocityRadPerSec()) + ffVolts, -12.0, 12.0);
-      sim.setInputVoltage(appliedVolts);
+      inputs.appliedVolts = appliedVolts;
     }
 
     sim.update(0.02);
 
-    inputs.positionRad = 0.0;
-    inputs.velocityRadPerSec = sim.getAngularVelocityRadPerSec();
+    inputs.positionRots = 0.0;
+    inputs.velocityRotsPerSec = Units.radiansToRotations(sim.getVelocityRadPerSec());
     inputs.appliedVolts = appliedVolts;
     inputs.currentAmps = new double[] {sim.getCurrentDrawAmps()};
   }

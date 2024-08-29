@@ -11,7 +11,9 @@
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU General Public License for more details.
 
-package frc.robot.subsystems.flywheel;
+package frc.robot.subsystems.shooter.pivot;
+
+import static frc.robot.subsystems.intake.IntakeConstants.angleMotorId;
 
 import com.revrobotics.CANSparkBase.ControlType;
 import com.revrobotics.CANSparkLowLevel.MotorType;
@@ -25,43 +27,38 @@ import edu.wpi.first.math.util.Units;
  * NOTE: To use the Spark Flex / NEO Vortex, replace all instances of "CANSparkMax" with
  * "CANSparkFlex".
  */
-public class FlywheelIOSparkMax implements FlywheelIO {
+public class PivotIOSparkMax implements PivotIO {
   private static final double GEAR_RATIO = 1.5;
 
-  private final CANSparkMax leader = new CANSparkMax(9, MotorType.kBrushless);
-  private final CANSparkMax follower = new CANSparkMax(10, MotorType.kBrushless);
-  private final RelativeEncoder encoder = leader.getEncoder();
-  private final SparkPIDController pid = leader.getPIDController();
+  private final CANSparkMax angleMotor = new CANSparkMax(angleMotorId, MotorType.kBrushless);
+  private final RelativeEncoder encoder = angleMotor.getEncoder();
+  private final SparkPIDController pid = angleMotor.getPIDController();
 
-  public FlywheelIOSparkMax() {
-    leader.restoreFactoryDefaults();
-    follower.restoreFactoryDefaults();
+  public PivotIOSparkMax() {
+    angleMotor.restoreFactoryDefaults();
 
-    leader.setCANTimeout(250);
-    follower.setCANTimeout(250);
+    angleMotor.setCANTimeout(250);
 
-    leader.setInverted(false);
-    follower.follow(leader, false);
+    angleMotor.setInverted(false);
 
-    leader.enableVoltageCompensation(12.0);
-    leader.setSmartCurrentLimit(30);
+    angleMotor.enableVoltageCompensation(12.0);
+    angleMotor.setSmartCurrentLimit(30);
 
-    leader.burnFlash();
-    follower.burnFlash();
+    angleMotor.burnFlash();
   }
 
   @Override
-  public void updateInputs(FlywheelIOInputs inputs) {
-    inputs.positionRad = Units.rotationsToRadians(encoder.getPosition() / GEAR_RATIO);
-    inputs.velocityRadPerSec =
-        Units.rotationsPerMinuteToRadiansPerSecond(encoder.getVelocity() / GEAR_RATIO);
-    inputs.appliedVolts = leader.getAppliedOutput() * leader.getBusVoltage();
-    inputs.currentAmps = new double[] {leader.getOutputCurrent(), follower.getOutputCurrent()};
+  public void updateInputs(PivotIOInputs inputs) {
+    inputs.positionRots = encoder.getPosition();
+    inputs.velocityRotsPerSec = encoder.getVelocity();
+    inputs.appliedVolts = angleMotor.getAppliedOutput() * angleMotor.getBusVoltage();
+    inputs.currentAmps =
+        new double[] {angleMotor.getOutputCurrent(), angleMotor.getOutputCurrent()};
   }
 
   @Override
   public void setVoltage(double volts) {
-    leader.setVoltage(volts);
+    angleMotor.setVoltage(volts);
   }
 
   @Override
@@ -76,7 +73,12 @@ public class FlywheelIOSparkMax implements FlywheelIO {
 
   @Override
   public void stop() {
-    leader.stopMotor();
+    angleMotor.stopMotor();
+  }
+
+  @Override
+  public void setAngleMotorSpeeds(double desiredAngle) {
+    pid.setReference(desiredAngle, ControlType.kPosition);
   }
 
   @Override

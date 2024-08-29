@@ -11,7 +11,7 @@
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU General Public License for more details.
 
-package frc.robot.subsystems.pivot;
+package frc.robot.subsystems.shooter.pivot;
 
 import static edu.wpi.first.units.Units.*;
 
@@ -92,7 +92,7 @@ public class Pivot extends SubsystemBase {
                 null,
                 null,
                 null,
-                (state) -> Logger.recordOutput("Pivot/SysIdState", state.toString())),
+                (state) -> Logger.recordOutput("Shooter/Pivot/SysIdState", state.toString())),
             new SysIdRoutine.Mechanism((voltage) -> runVolts(voltage.in(Volts)), null, this));
 
     measuredVisualizer = new PivotVisualizer("Measured", Color.kRed);
@@ -102,12 +102,12 @@ public class Pivot extends SubsystemBase {
   @Override
   public void periodic() {
     io.updateInputs(inputs);
-    Logger.processInputs("Pivot", inputs);
+    Logger.processInputs("Shooter/Pivot", inputs);
 
     measuredVisualizer.update(inputs.positionRots);
     setpointVisualizer.update(desiredAngle);
-    Logger.recordOutput("Pivot/positionSetpointRots", desiredAngle);
-    GeneralUtil.logSubsystem(this, "Pivot");
+    Logger.recordOutput("Shooter/Pivot/positionSetpointRots", desiredAngle);
+    GeneralUtil.logSubsystem(this, "Shooter/Pivot");
   }
 
   /** Run open loop at the specified voltage. */
@@ -134,7 +134,7 @@ public class Pivot extends SubsystemBase {
     desiredAngle = PivotConstants.kSpeakerManualAngleRevRotations;
   }
 
-  public void readyShootSpeakerAutomatic() {
+  public void readyShootSpeakerAutomatic() { // TODO change when moved to advanced-vision-and-swerve
     double heightOfTarget =
         hegihtOfSpeakerEntry.getDouble(AprilTagVisionConstants.heightOfSpeakerInches);
     double angleRad = Math.atan(heightOfTarget / aprilTagVision.getDistance());
