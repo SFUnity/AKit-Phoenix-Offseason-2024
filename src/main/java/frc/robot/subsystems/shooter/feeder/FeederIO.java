@@ -12,8 +12,8 @@ public interface FeederIO {
   /** Updates the set of loggable inputs. */
   default void updateInputs(FeederIOInputs inputs) {}
 
-  /** Run open loop at the specified voltage. */
-  default void runVolts(double volts) {}
+  /** Run open loop at the specified percent output. */
+  default void runPercent(double percent) {}
 
   /** Stop handoff */
   default void stop() {}

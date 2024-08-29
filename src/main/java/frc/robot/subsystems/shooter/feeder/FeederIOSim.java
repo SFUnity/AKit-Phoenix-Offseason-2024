@@ -11,8 +11,8 @@ public class FeederIOSim implements FeederIO {
   }
 
   @Override
-  public void runVolts(double volts) {
-    appliedVolts = volts;
+  public void runPercent(double percent) {
+    appliedVolts = percent * 12;
   }
 
   @Override
