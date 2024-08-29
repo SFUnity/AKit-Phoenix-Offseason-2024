@@ -20,14 +20,16 @@ public class Flywheels extends SubsystemBase {
   private final double kDefaultSpeedVoltage = 10;
   private final double kFeedingSpeedVoltage = 5;
 
-  private static enum LastGoal {
+  private static enum Goal {
     NONE,
     AMP,
     SPEAKER,
-    FEEDING
+    FEEDING,
+    STOP
   }
 
-  private LastGoal lastGoal = LastGoal.NONE;
+  private Goal lastGoal = Goal.NONE;
+  private Goal goal = Goal.NONE;
 
   /** Creates a new Flywheel. */
   public Flywheels(FlywheelsIO io) {
@@ -52,6 +54,26 @@ public class Flywheels extends SubsystemBase {
   public void periodic() {
     io.updateInputs(inputs);
     Logger.processInputs("Shooter/Flywheels", inputs);
+
+    switch (goal) {
+      case AMP:
+        runVoltsTop(kAmpShootingSpeedTopVoltage);
+        runVoltsBottom(kAmpShootingSpeedBottomVoltage);
+        break;
+      case SPEAKER:
+        runVoltsBoth(kDefaultSpeedVoltage);
+        break;
+      case FEEDING:
+        runVoltsBoth(kFeedingSpeedVoltage);
+        break;
+      case STOP:
+        stopBoth();
+      default:
+        break;
+    }
+    if (lastGoal != goal && goal != Goal.NONE) {
+      lastGoal = goal;
+    }
 
     // Logs
     GeneralUtil.logSubsystem(this, "Shooter/Flywheels");
@@ -80,36 +102,32 @@ public class Flywheels extends SubsystemBase {
     return Commands.runEnd(
             () -> {
               if (intakeWorking.get()) {
-                runVoltsBoth(kShooterDefaultSpeedVoltage / 2);
+                runVoltsBoth(kDefaultSpeedVoltage / 2);
               } else {
-                runVoltsBoth(kFlywheelIntakeSpeedVoltage);
+                runVoltsBoth(kIntakeSpeedVoltage);
               }
+              goal = Goal.NONE;
             },
-            () -> {
-              switch (lastGoal) {
-                case AMP:
-                  shootAmp();
-                  break;
-                case SPEAKER:
-                  shootSpeaker();
-                  break;
-                case FEEDING:
-                  feed();
-                  break;
-                default:
-                  stop();
-                  break;
-              }
-            })
+            () -> goal = lastGoal,
+            this)
         .withName("Flywheels Intake");
+  }
+
+  public Command outtake() {
+    return Commands.startEnd(
+            () -> {
+              runVoltsBoth(-kDefaultSpeedVoltage / 2);
+              goal = Goal.NONE;
+            },
+            () -> goal = lastGoal,
+            this)
+        .withName("Flywheels Outtake");
   }
 
   public Command shootAmp() {
     return runOnce(
             () -> {
-              runVoltsTop(kAmpShootingSpeedTopVoltage);
-              runVoltsBottom(kAmpShootingSpeedBottomVoltage);
-              lastGoal = LastGoal.AMP;
+              goal = Goal.AMP;
             })
         .withName("Flywheels Shoot Amp");
   }
@@ -117,8 +135,7 @@ public class Flywheels extends SubsystemBase {
   public Command shootSpeaker() {
     return runOnce(
             () -> {
-              runVoltsBoth(kDefaultSpeedVoltage);
-              lastGoal = LastGoal.SPEAKER;
+              goal = Goal.SPEAKER;
             })
         .withName("Flywheels Shoot Speaker");
   }
@@ -126,8 +143,7 @@ public class Flywheels extends SubsystemBase {
   public Command feed() {
     return runOnce(
             () -> {
-              runVoltsBoth(kFeedingSpeedVoltage);
-              lastGoal = LastGoal.FEEDING;
+              goal = Goal.FEEDING;
             })
         .withName("Flywheels Feed");
   }
@@ -136,7 +152,7 @@ public class Flywheels extends SubsystemBase {
     return runOnce(
             () -> {
               stopBoth();
-              lastGoal = LastGoal.NONE;
+              goal = Goal.STOP;
             })
         .withName("Flywheels Stop");
   }

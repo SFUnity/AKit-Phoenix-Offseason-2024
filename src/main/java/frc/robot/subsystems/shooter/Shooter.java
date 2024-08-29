@@ -79,6 +79,10 @@ public class Shooter extends VirtualSubsystem {
     return flywheels.intake(intakeWorking); // add pivot command once written
   }
 
+  public Command setOuttaking() {
+    return flywheels.outtake(); // add pivot command once written
+  }
+
   public Command stopFlywheels() {
     return flywheels.stop();
   }

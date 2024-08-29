@@ -186,7 +186,7 @@ public class RobotContainer {
                 .ignoringDisable(true));
 
     // Operator controls
-    operator.triangle().whileTrue(intake.poopCmd());
+    operator.triangle().whileTrue(intake.poopCmd().alongWith(shooter.setOuttaking()));
     operator
         .square()
         .whileTrue(
