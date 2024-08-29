@@ -48,22 +48,38 @@ public class Shooter extends VirtualSubsystem {
   }
 
   public Command setManualSpeakerShot() {
-    return pivot.setManualShootAngleCommand().alongWith(flywheels.shootSpeaker());
+    return pivot
+        .setManualShootAngleCommand()
+        .alongWith(flywheels.shootSpeaker())
+        .withName(flywheels.shootSpeaker().getName() + " Manual");
   }
 
   public Command setAutoAimShot() {
-    return pivot.setAutoShootAngleCommand().alongWith(flywheels.shootSpeaker());
+    return pivot
+        .setAutoShootAngleCommand()
+        .alongWith(flywheels.shootSpeaker())
+        .withName(flywheels.shootSpeaker().getName() + " Auto");
   }
 
   public Command setAmpShot() {
-    return pivot.setAmpAngleCommand().alongWith(flywheels.shootAmp());
+    return pivot
+        .setAmpAngleCommand()
+        .alongWith(flywheels.shootAmp())
+        .withName(flywheels.shootAmp().getName());
   }
 
   public Command setFeeding() {
-    return pivot.setFeedAngleCommand().alongWith(flywheels.feed());
+    return pivot
+        .setFeedAngleCommand()
+        .alongWith(flywheels.feed())
+        .withName(flywheels.feed().getName());
   }
 
   public Command setIntaking(LoggedShuffleboardBoolean intakeWorking) {
     return flywheels.intake(intakeWorking); // add pivot command once written
+  }
+
+  public Command stopFlywheels() {
+    return flywheels.stop();
   }
 }

@@ -185,13 +185,22 @@ public class RobotContainer {
                     drive)
                 .ignoringDisable(true));
 
-    // Operator controls for intake
+    // Operator controls
     operator.triangle().whileTrue(intake.poopCmd());
-    operator.square().whileTrue(intake.intakeCmd(operator.cross()));
+    operator
+        .square()
+        .whileTrue(
+            intake
+                .intakeCmd(operator.cross())
+                .alongWith(shooter.setIntaking(intake.intakeWorking)));
     operator.circle().whileTrue(intake.intakeCmd(new Trigger(() -> false)));
 
-    // Operator controls for pivot
-    operator.circle().whileTrue(shooter.setManualAngle());
+    operator.povUp().onTrue(shooter.stopFlywheels());
+
+    operator.L1().onTrue(shooter.setAmpShot());
+    operator.R1().onTrue(shooter.setAutoAimShot());
+    operator.L2().onTrue(shooter.setFeeding());
+    operator.R2().onTrue(shooter.setManualSpeakerShot());
   }
 
   /** Updates the alerts for disconnected controllers. */
