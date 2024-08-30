@@ -280,9 +280,7 @@ public class DriveCommands {
                       driveVelocity.getX(),
                       driveVelocity.getY(),
                       thetaVelocity,
-                      AllianceFlipUtil.shouldFlip()
-                          ? poseManager.getRotation().plus(new Rotation2d(Math.PI))
-                          : poseManager.getRotation()));
+                      poseManager.getRotation()));
 
               Leds.getInstance().alignedWithTarget = linearAtGoal() && thetaAtGoal();
             },
