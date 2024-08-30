@@ -164,35 +164,36 @@ public class DriveCommands {
    */
   public Command joystickDrive() {
     return Commands.run(
-        () -> {
-          // Convert to doubles
-          double o = omegaSupplier.getAsDouble();
+            () -> {
+              // Convert to doubles
+              double o = omegaSupplier.getAsDouble();
 
-          // Check for slow mode
-          if (fastMode.getAsBoolean()) {
-            o *= slowTurnMultiplier.get();
-          }
+              // Check for slow mode
+              if (fastMode.getAsBoolean()) {
+                o *= slowTurnMultiplier.get();
+              }
 
-          // Apply deadband
-          double omega = MathUtil.applyDeadband(o, DEADBAND);
+              // Apply deadband
+              double omega = MathUtil.applyDeadband(o, DEADBAND);
 
-          // Square values
-          omega = Math.copySign(omega * omega, omega);
+              // Square values
+              omega = Math.copySign(omega * omega, omega);
 
-          // Get linear velocity
-          Translation2d linearVelocity = getLinearVelocityFromJoysticks();
+              // Get linear velocity
+              Translation2d linearVelocity = getLinearVelocityFromJoysticks();
 
-          // Convert to field relative speeds & send command
-          drive.runVelocity(
-              ChassisSpeeds.fromFieldRelativeSpeeds(
-                  linearVelocity.getX() * DriveConstants.MAX_LINEAR_VELOCITY,
-                  linearVelocity.getY() * DriveConstants.MAX_LINEAR_VELOCITY,
-                  omega * DriveConstants.MAX_ANGULAR_VELOCITY,
-                  AllianceFlipUtil.shouldFlip()
-                      ? poseManager.getRotation().plus(new Rotation2d(Math.PI))
-                      : poseManager.getRotation()));
-        },
-        drive);
+              // Convert to field relative speeds & send command
+              drive.runVelocity(
+                  ChassisSpeeds.fromFieldRelativeSpeeds(
+                      linearVelocity.getX() * DriveConstants.MAX_LINEAR_VELOCITY,
+                      linearVelocity.getY() * DriveConstants.MAX_LINEAR_VELOCITY,
+                      omega * DriveConstants.MAX_ANGULAR_VELOCITY,
+                      AllianceFlipUtil.shouldFlip()
+                          ? poseManager.getRotation().plus(new Rotation2d(Math.PI))
+                          : poseManager.getRotation()));
+            },
+            drive)
+        .withName("Joystick Drive");
   }
 
   /**
@@ -225,7 +226,8 @@ public class DriveCommands {
             () -> {
               resetThetaController();
             })
-        .finallyDo(() -> Leds.getInstance().alignedWithTarget = false);
+        .finallyDo(() -> Leds.getInstance().alignedWithTarget = false)
+        .withName("Heading Drive");
   }
 
   /**
@@ -289,7 +291,8 @@ public class DriveCommands {
             () -> {
               resetControllers(goalPoseSupplier.get());
             })
-        .finallyDo(() -> Leds.getInstance().alignedWithTarget = false);
+        .finallyDo(() -> Leds.getInstance().alignedWithTarget = false)
+        .withName("Full Auto Drive");
   }
 
   private Translation2d getLinearVelocityFromJoysticks() {
