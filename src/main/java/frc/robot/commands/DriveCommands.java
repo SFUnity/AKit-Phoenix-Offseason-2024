@@ -264,7 +264,7 @@ public class DriveCommands {
                       .getTranslation();
 
               lastSetpointTranslation =
-                  angleToTargetPose
+                  new Pose2d(targetPose.getTranslation(), angleToTarget)
                       .transformBy(
                           GeomUtil.toTransform2d(linearController.getSetpoint().position, 0.0))
                       .getTranslation();
