@@ -386,7 +386,7 @@ public class DriveCommands {
     return EqualsUtil.equalsWithTolerance(
         linearController.getSetpoint().position,
         linearController.getGoal().position,
-        Units.degreesToRadians(linearTolerance.get()));
+        linearTolerance.get());
   }
 
   /** Returns true if within tolerance of aiming at speaker */
