@@ -255,7 +255,7 @@ public class DriveCommands {
               // Calculate theta speed
               double thetaVelocity =
                   getAngularVelocityFromProfiledPID(targetPose.getRotation().getRadians());
-              if (thetaAtGoal()) thetaVelocity = 0.0;
+              if (thetaController.atGoal()) thetaVelocity = 0.0;
 
               // Send command
               drive.runVelocity(
@@ -366,10 +366,7 @@ public class DriveCommands {
   /** Returns true if within tolerance of aiming at goal */
   @AutoLogOutput(key = "DriveCommands/Linear/AtGoal")
   public boolean linearAtGoal() {
-    return EqualsUtil.equalsWithTolerance(
-        linearController.getSetpoint().position,
-        linearController.getGoal().position,
-        linearTolerance.get());
+    return linearController.atGoal();
   }
 
   /** Returns true if within tolerance of aiming at speaker */
