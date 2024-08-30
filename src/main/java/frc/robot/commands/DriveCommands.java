@@ -375,7 +375,6 @@ public class DriveCommands {
   /** Returns true if within tolerance of aiming at speaker */
   @AutoLogOutput(key = "DriveCommands/Theta/AtGoal")
   public boolean thetaAtGoal() {
-    thetaController.atGoal();
     return EqualsUtil.equalsWithTolerance(
         thetaController.getSetpoint().position,
         thetaController.getGoal().position,
