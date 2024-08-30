@@ -255,11 +255,11 @@ public class DriveCommands {
 
               if (linearAtGoal()) driveVelocityScalar = 0.0;
 
-              Pose2d angleToTargetPose =
-                  new Pose2d(new Translation2d(), poseManager.getHorizontalAngleTo(targetPose));
               // Calculate angle to target then transform by velocity scalar
+              Rotation2d angleToTarget = poseManager.getHorizontalAngleTo(targetPose);
+
               Translation2d driveVelocity =
-                  angleToTargetPose
+                  new Pose2d(new Translation2d(), angleToTarget)
                       .transformBy(GeomUtil.toTransform2d(driveVelocityScalar, 0.0))
                       .getTranslation();
 
