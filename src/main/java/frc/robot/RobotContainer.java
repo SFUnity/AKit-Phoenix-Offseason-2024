@@ -221,8 +221,7 @@ public class RobotContainer {
     driver
         .y()
         .whileTrue(
-            driveCommands.fullAutoDrive(
-                () -> new Pose2d(1.81, 7.8, new Rotation2d(-Math.PI / 2))));
+            driveCommands.fullAutoDrive(() -> new Pose2d(1.815, 7.8, new Rotation2d(-Math.PI / 2))));
 
     // Operator controls for intake
     operator.triangle().whileTrue(intake.poopCmd());
