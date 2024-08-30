@@ -26,7 +26,8 @@ public class AprilTagVision extends VirtualSubsystem {
       new LoggedTunableNumber("Vision/stdDevSlopeDistance", 0.10);
   private final LoggedTunableNumber stdDevPowerDistance =
       new LoggedTunableNumber("Vision/stdDevPowerDistance", 2.0);
-  private final LoggedTunableNumber minTagArea = new LoggedTunableNumber("Vision/minTagAreaPercentOfImage", 3.0);
+  private final LoggedTunableNumber minTagArea =
+      new LoggedTunableNumber("Vision/minTagAreaPercentOfImage", 3.0);
 
   public AprilTagVision(AprilTagVisionIO io, PoseManager poseManager) {
     this.io = io;
