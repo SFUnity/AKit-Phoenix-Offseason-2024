@@ -67,7 +67,7 @@ public class DriveCommands {
   private static final LoggedTunableNumber linearTolerance =
       new LoggedTunableNumber("DriveCommands/Linear/controllerTolerance", 0.08);
   private static final LoggedTunableNumber thetaToleranceDeg =
-      new LoggedTunableNumber("DriveCommands/Theta/controllerToleranceDeg", 1.5);
+      new LoggedTunableNumber("DriveCommands/Theta/controllerToleranceDeg", 1.0);
 
   private static final LoggedTunableNumber maxLinearVelocity =
       new LoggedTunableNumber(
@@ -84,7 +84,6 @@ public class DriveCommands {
 
   private final ProfiledPIDController thetaController;
   private final ProfiledPIDController linearController;
-  private Translation2d lastSetpointTranslation;
 
   public DriveCommands(
       Drive drive,
@@ -138,18 +137,14 @@ public class DriveCommands {
   }
 
   private void resetControllers(Pose2d goalPose) {
-    Pose2d currentPose = poseManager.getPose();
     Twist2d fieldVelocity = poseManager.fieldVelocity();
-    Rotation2d robotToGoalAngle =
-        goalPose.getTranslation().minus(currentPose.getTranslation()).getAngle();
     double linearVelocity =
         Math.min(
             0.0,
-            -new Translation2d(fieldVelocity.dx, fieldVelocity.dy)
-                .rotateBy(robotToGoalAngle.unaryMinus())
+            new Translation2d(fieldVelocity.dx, fieldVelocity.dy)
+                .rotateBy(poseManager.getHorizontalAngleTo(goalPose))
                 .getX());
     linearController.reset(poseManager.getDistanceTo(goalPose), linearVelocity);
-    lastSetpointTranslation = currentPose.getTranslation();
     resetThetaController();
   }
 
@@ -241,15 +236,9 @@ public class DriveCommands {
               updateConstraints();
 
               // Calculate linear speed
-              Pose2d currentPose = poseManager.getPose();
               Pose2d targetPose = goalPoseSupplier.get();
 
-              double currentDistance =
-                  currentPose.getTranslation().getDistance(targetPose.getTranslation());
-
-              linearController.reset(
-                  lastSetpointTranslation.getDistance(targetPose.getTranslation()),
-                  linearController.getSetpoint().velocity);
+              double currentDistance = poseManager.getDistanceTo(targetPose);
 
               double driveVelocityScalar = linearController.calculate(currentDistance, 0.0);
 
@@ -261,12 +250,6 @@ public class DriveCommands {
               Translation2d driveVelocity =
                   new Pose2d(new Translation2d(), angleToTarget)
                       .transformBy(GeomUtil.toTransform2d(driveVelocityScalar, 0.0))
-                      .getTranslation();
-
-              lastSetpointTranslation =
-                  new Pose2d(targetPose.getTranslation(), angleToTarget)
-                      .transformBy(
-                          GeomUtil.toTransform2d(linearController.getSetpoint().position, 0.0))
                       .getTranslation();
 
               // Calculate theta speed
@@ -283,6 +266,8 @@ public class DriveCommands {
                       poseManager.getRotation()));
 
               Leds.getInstance().alignedWithTarget = linearAtGoal() && thetaAtGoal();
+
+              Logger.recordOutput("DriveCommands/Linear/currentDistance", currentDistance);
             },
             drive)
         .beforeStarting(
