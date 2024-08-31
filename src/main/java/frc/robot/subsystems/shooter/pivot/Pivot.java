@@ -26,6 +26,7 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants;
 import frc.robot.subsystems.apriltagvision.AprilTagVision;
 import frc.robot.subsystems.apriltagvision.AprilTagVisionConstants;
+import frc.robot.util.EqualsUtil;
 import frc.robot.util.GeneralUtil;
 import org.littletonrobotics.junction.Logger;
 
@@ -158,6 +159,10 @@ public class Pivot extends SubsystemBase {
     desiredAngle = PivotConstants.kDesiredEjectAngleRevRotations;
   }
 
+  public boolean atDesiredAngle() {
+    return EqualsUtil.equalsWithTolerance(inputs.positionRots, desiredAngle, 0.5);
+  }
+
   // TODO any setter methods used in these commands should be made private
   public Command setManualShootAngleCommand() {
     return run(() -> {
@@ -205,8 +210,6 @@ public class Pivot extends SubsystemBase {
             })
         .withName("gotta be a team player");
   }
-
-  // TODO add outtake command (pls remove this once completed)
 
   public Command setIntakeAngleCommand() {
     return run(() -> {

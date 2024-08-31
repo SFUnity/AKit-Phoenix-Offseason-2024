@@ -1,6 +1,7 @@
 package frc.robot.subsystems.shooter;
 
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.subsystems.leds.Leds;
 import frc.robot.subsystems.shooter.feeder.Feeder;
 import frc.robot.subsystems.shooter.flywheels.Flywheels;
@@ -65,17 +66,11 @@ public class Shooter extends VirtualSubsystem {
   }
 
   public Command setAmpShot() {
-    return pivot
-        .setAmpAngleCommand()
-        .alongWith(flywheels.shootAmp())
-        .withName("setAmpShot");
+    return pivot.setAmpAngleCommand().alongWith(flywheels.shootAmp()).withName("setAmpShot");
   }
 
   public Command setFeeding() {
-    return pivot
-        .setFeedAngleCommand()
-        .alongWith(flywheels.feed())
-        .withName("setFeeding");
+    return pivot.setFeedAngleCommand().alongWith(flywheels.feed()).withName("setFeeding");
   }
 
   public Command setIntaking(LoggedShuffleboardBoolean intakeWorking) {
@@ -87,7 +82,7 @@ public class Shooter extends VirtualSubsystem {
   }
 
   public Command setOuttaking() {
-    return feeder.feederOuttake().withName("setOuttaking"); // add pivot command once written
+    return pivot.setIntakeAngleCommand().alongWith(Commands.waitUntil(pivot::atDesiredAngle).andThen(feeder.feederOuttake())).withName("setOuttaking");
   }
 
   public Command feedNoteToFlywheels() {
