@@ -1,22 +1,36 @@
 package frc.robot.subsystems.shooter.feeder;
 
-public class FeederIOSparkMax implements FeederIO {
-  private double appliedVolts = 0.0;
+import com.revrobotics.CANSparkLowLevel.MotorType;
+import com.revrobotics.CANSparkMax;
 
-  public FeederIOSparkMax() {}
+public class FeederIOSparkMax implements FeederIO {
+  private final CANSparkMax motor = new CANSparkMax(7, MotorType.kBrushless);
+
+  public FeederIOSparkMax() {
+    motor.restoreFactoryDefaults();
+
+    motor.setCANTimeout(250);
+
+    motor.setInverted(false);
+
+    motor.enableVoltageCompensation(12.0);
+    motor.setSmartCurrentLimit(30);
+
+    motor.burnFlash();
+  }
 
   @Override
   public void updateInputs(FeederIOInputs inputs) {
-    inputs.appliedVolts = appliedVolts;
+    inputs.appliedVolts = motor.getAppliedOutput();
   }
 
   @Override
   public void runPercent(double percent) {
-    appliedVolts = percent * 12;
+    motor.set(percent);
   }
 
   @Override
   public void stop() {
-    appliedVolts = 0.0;
+    runPercent(0.0);
   }
 }
