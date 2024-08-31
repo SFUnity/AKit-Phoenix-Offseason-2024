@@ -218,6 +218,11 @@ public class RobotContainer {
             driveCommands.headingDrive(
                 () ->
                     poseManager.getHorizontalAngleTo(FieldConstants.Speaker.centerSpeakerOpening)));
+    driver
+        .y()
+        .whileTrue(
+            driveCommands.fullAutoDrive(
+                () -> new Pose2d(1.815, 7.8, new Rotation2d(-Math.PI / 2))));
 
     // Operator controls for intake
     operator.triangle().whileTrue(intake.poopCmd());

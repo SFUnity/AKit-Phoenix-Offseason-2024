@@ -34,6 +34,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.util.Alert;
 import frc.robot.util.AllianceFlipUtil;
+import frc.robot.util.GeneralUtil;
 import frc.robot.util.GeomUtil;
 import frc.robot.util.LocalADStarAK;
 import frc.robot.util.PoseManager;
@@ -86,7 +87,7 @@ public class Drive extends SubsystemBase {
         () -> kinematics.toChassisSpeeds(getModuleStates()),
         this::runVelocity,
         new HolonomicPathFollowerConfig(
-            DriveConstants.MAX_LINEAR_SPEED,
+            DriveConstants.MAX_LINEAR_VELOCITY,
             DriveConstants.DRIVE_BASE_RADIUS,
             new ReplanningConfig()),
         AllianceFlipUtil::shouldFlip,
@@ -178,6 +179,8 @@ public class Drive extends SubsystemBase {
 
     // update the brake mode based on the robot's velocity and state (enabled/disabled)
     updateBrakeMode();
+
+    GeneralUtil.logSubsystem(this, "Drive");
   }
 
   /**
@@ -189,7 +192,7 @@ public class Drive extends SubsystemBase {
     // Calculate module setpoints
     ChassisSpeeds discreteSpeeds = ChassisSpeeds.discretize(speeds, 0.02);
     SwerveModuleState[] setpointStates = kinematics.toSwerveModuleStates(discreteSpeeds);
-    SwerveDriveKinematics.desaturateWheelSpeeds(setpointStates, DriveConstants.MAX_LINEAR_SPEED);
+    SwerveDriveKinematics.desaturateWheelSpeeds(setpointStates, DriveConstants.MAX_LINEAR_VELOCITY);
 
     // Send setpoints to modules
     SwerveModuleState[] optimizedSetpointStates = new SwerveModuleState[4];
