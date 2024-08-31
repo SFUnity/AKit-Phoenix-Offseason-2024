@@ -71,7 +71,7 @@ public class RobotContainer {
       new Alert("Driver controller disconnected (port 0).", AlertType.WARNING);
   private final Alert operatorDisconnected =
       new Alert("Operator controller disconnected (port 1).", AlertType.WARNING);
-  public boolean slowMode = true;
+  public boolean slowMode = false;
 
   // Dashboard inputs
   private final LoggedDashboardChooser<Command> autoChooser;
