@@ -41,7 +41,6 @@ public class Shooter extends VirtualSubsystem {
    *
    * @return boolean value of if there is a note in shooter
    */
-  // May make sense to change this to return a boolean. TBD
   public boolean noteInShooter() {
     return beamBreakInputs.distSensorRange <= kDistSensorRangeWhenNoteInches
         && distanceSensorWorking();
