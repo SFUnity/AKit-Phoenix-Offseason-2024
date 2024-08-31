@@ -44,9 +44,9 @@ import org.littletonrobotics.junction.networktables.LoggedDashboardNumber;
 public class DriveCommands {
   private static final double DEADBAND = 0.05;
   private Drive drive;
-  private DoubleSupplier xSupplier;
-  private DoubleSupplier ySupplier;
-  private DoubleSupplier omegaSupplier;
+  private DoubleSupplier xJoystickIn;
+  private DoubleSupplier yJoystickIn;
+  private DoubleSupplier omegaJoystickIn;
   private BooleanSupplier fastMode;
   private LoggedDashboardNumber slowDriveMultiplier;
   private LoggedDashboardNumber slowTurnMultiplier;
@@ -87,9 +87,9 @@ public class DriveCommands {
 
   public DriveCommands(
       Drive drive,
-      DoubleSupplier xSupplier,
-      DoubleSupplier ySupplier,
-      DoubleSupplier omegaSupplier,
+      DoubleSupplier xJoystickIn,
+      DoubleSupplier yJoystickIn,
+      DoubleSupplier omegaJoystickIn,
       BooleanSupplier fastMode,
       LoggedDashboardNumber slowDriveMultiplier,
       LoggedDashboardNumber slowTurnMultiplier,
@@ -99,9 +99,9 @@ public class DriveCommands {
       Trigger povRight,
       PoseManager poseManager) {
     this.drive = drive;
-    this.xSupplier = xSupplier;
-    this.ySupplier = ySupplier;
-    this.omegaSupplier = omegaSupplier;
+    this.xJoystickIn = xJoystickIn;
+    this.yJoystickIn = yJoystickIn;
+    this.omegaJoystickIn = omegaJoystickIn;
     this.fastMode = fastMode;
     this.slowDriveMultiplier = slowDriveMultiplier;
     this.slowTurnMultiplier = slowTurnMultiplier;
@@ -161,7 +161,7 @@ public class DriveCommands {
     return Commands.run(
             () -> {
               // Convert to doubles
-              double o = omegaSupplier.getAsDouble();
+              double o = omegaJoystickIn.getAsDouble();
 
               // Check for slow mode
               if (fastMode.getAsBoolean()) {
@@ -195,7 +195,7 @@ public class DriveCommands {
    * Field relative drive command using one joystick (controlling linear velocity) with a
    * ProfiledPID for angular velocity.
    */
-  public Command headingDrive(Supplier<Rotation2d> goalHeadingSupplier) {
+  public Command headingDrive(Supplier<Rotation2d> goalHeading) {
     return Commands.run(
             () -> {
               updateThetaTunables();
@@ -209,7 +209,7 @@ public class DriveCommands {
                   ChassisSpeeds.fromFieldRelativeSpeeds(
                       linearVelocity.getX() * DriveConstants.MAX_LINEAR_VELOCITY,
                       linearVelocity.getY() * DriveConstants.MAX_LINEAR_VELOCITY,
-                      getAngularVelocityFromProfiledPID(goalHeadingSupplier.get().getRadians()),
+                      getAngularVelocityFromProfiledPID(goalHeading.get().getRadians()),
                       AllianceFlipUtil.shouldFlip()
                           ? poseManager.getRotation().plus(new Rotation2d(Math.PI))
                           : poseManager.getRotation()));
@@ -229,14 +229,14 @@ public class DriveCommands {
    * Field relative drive command using a ProfiledPID for linear velocity and a ProfiledPID for
    * angular velocity.
    */
-  public Command fullAutoDrive(Supplier<Pose2d> goalPoseSupplier) {
+  public Command fullAutoDrive(Supplier<Pose2d> goalPose) {
     return Commands.run(
             () -> {
               updateTunables();
               updateConstraints();
 
               // Calculate linear speed
-              Pose2d targetPose = goalPoseSupplier.get();
+              Pose2d targetPose = goalPose.get();
 
               double currentDistance = poseManager.getDistanceTo(targetPose);
 
@@ -272,7 +272,7 @@ public class DriveCommands {
             drive)
         .beforeStarting(
             () -> {
-              resetControllers(goalPoseSupplier.get());
+              resetControllers(goalPose.get());
             })
         .finallyDo(() -> Leds.getInstance().alignedWithTarget = false)
         .withName("Full Auto Drive");
@@ -280,8 +280,8 @@ public class DriveCommands {
 
   private Translation2d getLinearVelocityFromJoysticks() {
     // Convert to doubles
-    double x = xSupplier.getAsDouble();
-    double y = ySupplier.getAsDouble();
+    double x = xJoystickIn.getAsDouble();
+    double y = yJoystickIn.getAsDouble();
 
     // The speed value here might need to change
     double povMovementSpeed = 0.5;
