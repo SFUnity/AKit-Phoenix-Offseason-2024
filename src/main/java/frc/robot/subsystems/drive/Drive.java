@@ -58,30 +58,30 @@ public class Drive extends SubsystemBase {
   private DriveCommandsConfig config;
 
   private static final LoggedTunableNumber linearkP =
-      new LoggedTunableNumber("DriveCommands/Linear/kP", 3.5);
+      new LoggedTunableNumber("Drive/Commands/Linear/kP", 3.5);
   private static final LoggedTunableNumber linearkD =
-      new LoggedTunableNumber("DriveCommands/Linear/kD", 0.0);
+      new LoggedTunableNumber("Drive/Commands/Linear/kD", 0.0);
   private static final LoggedTunableNumber thetakP =
-      new LoggedTunableNumber("DriveCommands/Theta/kP", 6.0);
+      new LoggedTunableNumber("Drive/Commands/Theta/kP", 6.0);
   private static final LoggedTunableNumber thetakD =
-      new LoggedTunableNumber("DriveCommands/Theta/D", 0.0);
+      new LoggedTunableNumber("Drive/Commands/Theta/D", 0.0);
   private static final LoggedTunableNumber linearTolerance =
-      new LoggedTunableNumber("DriveCommands/Linear/controllerTolerance", 0.08);
+      new LoggedTunableNumber("Drive/Commands/Linear/controllerTolerance", 0.08);
   private static final LoggedTunableNumber thetaToleranceDeg =
-      new LoggedTunableNumber("DriveCommands/Theta/controllerToleranceDeg", 1.0);
+      new LoggedTunableNumber("Drive/Commands/Theta/controllerToleranceDeg", 1.0);
 
   private static final LoggedTunableNumber maxLinearVelocity =
       new LoggedTunableNumber(
-          "DriveCommands/Linear/maxVelocity", DriveConstants.MAX_LINEAR_VELOCITY);
+          "Drive/Commands/Linear/maxVelocity", DriveConstants.MAX_LINEAR_VELOCITY);
   private static final LoggedTunableNumber maxLinearAcceleration =
       new LoggedTunableNumber(
-          "DriveCommands/Linear/maxAcceleration", DriveConstants.MAX_LINEAR_ACCELERATION * 0.4);
+          "Drive/Commands/Linear/maxAcceleration", DriveConstants.MAX_LINEAR_ACCELERATION * 0.4);
   private static final LoggedTunableNumber maxAngularVelocity =
       new LoggedTunableNumber(
-          "DriveCommands/Theta/maxVelocity", DriveConstants.MAX_ANGULAR_VELOCITY * 0.8);
+          "Drive/Commands/Theta/maxVelocity", DriveConstants.MAX_ANGULAR_VELOCITY * 0.8);
   private static final LoggedTunableNumber maxAngularAcceleration =
       new LoggedTunableNumber(
-          "DriveCommands/Theta/maxAcceleration", DriveConstants.MAX_ANGULAR_ACCELERATION * 0.8);
+          "Drive/Commands/Theta/maxAcceleration", DriveConstants.MAX_ANGULAR_ACCELERATION * 0.8);
 
   private final ProfiledPIDController thetaController;
   private final ProfiledPIDController linearController;
@@ -199,8 +199,8 @@ public class Drive extends SubsystemBase {
     }
     // Log empty setpoint states when disabled
     if (DriverStation.isDisabled()) {
-      Logger.recordOutput("SwerveStates/Setpoints", new SwerveModuleState[] {});
-      Logger.recordOutput("SwerveStates/SetpointsOptimized", new SwerveModuleState[] {});
+      Logger.recordOutput("Odometry/SwerveStates/Setpoints", new SwerveModuleState[] {});
+      Logger.recordOutput("Odometry/SwerveStates/SetpointsOptimized", new SwerveModuleState[] {});
     }
 
     // Read wheel positions and deltas from each module
@@ -262,8 +262,8 @@ public class Drive extends SubsystemBase {
     }
 
     // Log setpoint states
-    Logger.recordOutput("SwerveStates/Setpoints", setpointStates);
-    Logger.recordOutput("SwerveStates/SetpointsOptimized", optimizedSetpointStates);
+    Logger.recordOutput("Odometry/SwerveStates/Setpoints", setpointStates);
+    Logger.recordOutput("Odometry/SwerveStates/SetpointsOptimized", optimizedSetpointStates);
   }
 
   /** Stops the drive. */
@@ -295,7 +295,7 @@ public class Drive extends SubsystemBase {
   }
 
   /** Returns the module states (turn angles and drive velocities) for all of the modules. */
-  @AutoLogOutput(key = "SwerveStates/Measured")
+  @AutoLogOutput(key = "Odometry/SwerveStates/Measured")
   private SwerveModuleState[] getModuleStates() {
     SwerveModuleState[] states = new SwerveModuleState[4];
     for (int i = 0; i < 4; i++) {
@@ -352,7 +352,7 @@ public class Drive extends SubsystemBase {
   }
 
   // Drive Commands
-  
+
   /**
    * Field relative drive command using two joysticks (controlling linear and angular velocities).
    */
@@ -459,7 +459,7 @@ public class Drive extends SubsystemBase {
 
           Leds.getInstance().alignedWithTarget = linearAtGoal() && thetaAtGoal();
 
-          Logger.recordOutput("DriveCommands/Linear/currentDistance", currentDistance);
+          Logger.recordOutput("Drive/Commands/Linear/currentDistance", currentDistance);
         })
         .beforeStarting(
             () -> {
@@ -512,7 +512,7 @@ public class Drive extends SubsystemBase {
         thetaController.calculate(
             poseManager.getPose().getRotation().getRadians(), goalHeadingRads);
 
-    Logger.recordOutput("DriveCommands/Theta/HeadingError", thetaController.getPositionError());
+    Logger.recordOutput("Drive/Commands/Theta/HeadingError", thetaController.getPositionError());
     return output;
   }
 
@@ -582,13 +582,13 @@ public class Drive extends SubsystemBase {
   }
 
   /** Returns true if within tolerance of aiming at goal */
-  @AutoLogOutput(key = "DriveCommands/Linear/AtGoal")
+  @AutoLogOutput(key = "Drive/Commands/Linear/AtGoal")
   public boolean linearAtGoal() {
     return linearController.atGoal();
   }
 
   /** Returns true if within tolerance of aiming at speaker */
-  @AutoLogOutput(key = "DriveCommands/Theta/AtGoal")
+  @AutoLogOutput(key = "Drive/Commands/Theta/AtGoal")
   public boolean thetaAtGoal() {
     return EqualsUtil.equalsWithTolerance(
         thetaController.getSetpoint().position,
