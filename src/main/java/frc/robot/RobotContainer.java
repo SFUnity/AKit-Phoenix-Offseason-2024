@@ -72,7 +72,7 @@ public class RobotContainer {
       new Alert("Driver controller disconnected (port 0).", AlertType.WARNING);
   private final Alert operatorDisconnected =
       new Alert("Operator controller disconnected (port 1).", AlertType.WARNING);
-  public boolean fastMode = false;
+  public boolean slowMode = true;
 
   // Dashboard inputs
   private final LoggedDashboardChooser<Command> autoChooser;
@@ -140,7 +140,7 @@ public class RobotContainer {
             () -> -driver.getLeftY(),
             () -> -driver.getLeftX(),
             () -> -driver.getRightX(),
-            () -> fastMode,
+            () -> slowMode,
             slowDriveMultiplier,
             slowTurnMultiplier,
             driver.povUp(),
@@ -211,7 +211,7 @@ public class RobotContainer {
                             new Pose2d(poseManager.getTranslation(), new Rotation2d())),
                     drive)
                 .ignoringDisable(true));
-    driver.leftBumper().onTrue(Commands.runOnce(() -> fastMode = !fastMode, drive));
+    driver.leftBumper().onTrue(Commands.runOnce(() -> slowMode = !slowMode, drive));
     driver
         .b()
         .whileTrue(

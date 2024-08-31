@@ -47,7 +47,7 @@ public class DriveCommands {
   private DoubleSupplier xJoystickIn;
   private DoubleSupplier yJoystickIn;
   private DoubleSupplier omegaJoystickIn;
-  private BooleanSupplier fastMode;
+  private BooleanSupplier slowMode;
   private LoggedDashboardNumber slowDriveMultiplier;
   private LoggedDashboardNumber slowTurnMultiplier;
   private Trigger povUp;
@@ -90,7 +90,7 @@ public class DriveCommands {
       DoubleSupplier xJoystickIn,
       DoubleSupplier yJoystickIn,
       DoubleSupplier omegaJoystickIn,
-      BooleanSupplier fastMode,
+      BooleanSupplier slowMode,
       LoggedDashboardNumber slowDriveMultiplier,
       LoggedDashboardNumber slowTurnMultiplier,
       Trigger povUp,
@@ -102,7 +102,7 @@ public class DriveCommands {
     this.xJoystickIn = xJoystickIn;
     this.yJoystickIn = yJoystickIn;
     this.omegaJoystickIn = omegaJoystickIn;
-    this.fastMode = fastMode;
+    this.slowMode = slowMode;
     this.slowDriveMultiplier = slowDriveMultiplier;
     this.slowTurnMultiplier = slowTurnMultiplier;
     this.povUp = povUp;
@@ -164,7 +164,7 @@ public class DriveCommands {
               double o = omegaJoystickIn.getAsDouble();
 
               // Check for slow mode
-              if (fastMode.getAsBoolean()) {
+              if (slowMode.getAsBoolean()) {
                 o *= slowTurnMultiplier.get();
               }
 
@@ -296,7 +296,7 @@ public class DriveCommands {
     }
 
     // Check for slow mode
-    if (fastMode.getAsBoolean()) {
+    if (slowMode.getAsBoolean()) {
       double multiplier = slowDriveMultiplier.get();
       x *= multiplier;
       y *= multiplier;
