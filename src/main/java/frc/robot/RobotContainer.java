@@ -61,9 +61,7 @@ public class RobotContainer {
   private final Flywheel flywheel;
   private final Intake intake;
   private final AprilTagVision aprilTagVision;
-  private final DriveCommands driveCommands;
 
-  // Pose Manager
   private final PoseManager poseManager = new PoseManager();
 
   // Controller
@@ -83,6 +81,20 @@ public class RobotContainer {
       new LoggedDashboardNumber("Slow Drive Multiplier", 0.6);
   private final LoggedDashboardNumber slowTurnMultiplier =
       new LoggedDashboardNumber("Slow Turn Multiplier", 0.5);
+
+  private final DriveCommands driveCommands = new DriveCommands(
+    poseManager,
+    new DriveCommandsConfig(
+        () -> -driver.getLeftY(),
+        () -> -driver.getLeftX(),
+        () -> -driver.getRightX(),
+        () -> slowMode,
+        slowDriveMultiplier,
+        slowTurnMultiplier,
+        driver.povUp(),
+        driver.povDown(),
+        driver.povLeft(),
+        driver.povRight()));
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
@@ -135,22 +147,6 @@ public class RobotContainer {
         break;
     }
 
-    driveCommands =
-        new DriveCommands(
-            drive,
-            poseManager,
-            new DriveCommandsConfig(
-                () -> -driver.getLeftY(),
-                () -> -driver.getLeftX(),
-                () -> -driver.getRightX(),
-                () -> slowMode,
-                slowDriveMultiplier,
-                slowTurnMultiplier,
-                driver.povUp(),
-                driver.povDown(),
-                driver.povLeft(),
-                driver.povRight()));
-
     // Set up auto routines
     NamedCommands.registerCommand(
         "Run Flywheel", // also does stuff w/ the intake
@@ -199,7 +195,7 @@ public class RobotContainer {
   /** Use this method to define your button->command mappings. */
   private void configureButtonBindings() {
     // Default cmds
-    drive.setDefaultCommand(driveCommands.joystickDrive());
+    drive.setDefaultCommand(driveCommands.joystickDrive(drive));
     intake.setDefaultCommand(intake.raiseAndStopCmd());
 
     // Driver controls
@@ -219,12 +215,12 @@ public class RobotContainer {
         .whileTrue(
             driveCommands.headingDrive(
                 () ->
-                    poseManager.getHorizontalAngleTo(FieldConstants.Speaker.centerSpeakerOpening)));
+                    poseManager.getHorizontalAngleTo(FieldConstants.Speaker.centerSpeakerOpening), drive));
     driver
         .y()
         .whileTrue(
             driveCommands.fullAutoDrive(
-                () -> new Pose2d(1.815, 7.8, new Rotation2d(-Math.PI / 2))));
+                () -> new Pose2d(1.815, 7.8, new Rotation2d(-Math.PI / 2)), drive));
 
     // Operator controls for intake
     operator.triangle().whileTrue(intake.poopCmd());
