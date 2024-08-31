@@ -17,7 +17,6 @@ import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Twist2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
@@ -31,7 +30,6 @@ import frc.robot.subsystems.drive.DriveConstants;
 import frc.robot.subsystems.leds.Leds;
 import frc.robot.util.AllianceFlipUtil;
 import frc.robot.util.EqualsUtil;
-import frc.robot.util.GeomUtil;
 import frc.robot.util.LoggedTunableNumber;
 import frc.robot.util.PoseManager;
 import java.util.function.BooleanSupplier;
@@ -247,10 +245,7 @@ public class DriveCommands {
               // Calculate angle to target then transform by velocity scalar
               Rotation2d angleToTarget = poseManager.getHorizontalAngleTo(targetPose);
 
-              Translation2d driveVelocity =
-                  new Pose2d(new Translation2d(), angleToTarget)
-                      .transformBy(GeomUtil.toTransform2d(driveVelocityScalar, 0.0))
-                      .getTranslation();
+              Translation2d driveVelocity = new Translation2d(driveVelocityScalar, angleToTarget);
 
               // Calculate theta speed
               double thetaVelocity =
@@ -310,10 +305,7 @@ public class DriveCommands {
     linearMagnitude = linearMagnitude * linearMagnitude;
 
     // Calcaulate new linear velocity
-    Translation2d linearVelocity =
-        new Pose2d(new Translation2d(), linearDirection)
-            .transformBy(new Transform2d(linearMagnitude, 0.0, new Rotation2d()))
-            .getTranslation();
+    Translation2d linearVelocity = new Translation2d(linearMagnitude, linearDirection);
 
     return linearVelocity;
   }
