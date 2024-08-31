@@ -150,6 +150,14 @@ public class Pivot extends SubsystemBase {
     desiredAngle = feedingAngleEntry.getDouble(PivotConstants.kFeedingAngleRevRotations);
   }
 
+  public void readyShooterIntake() {
+    desiredAngle = PivotConstants.kDesiredIntakeAngleRevRotations;
+  }
+
+  public void readyShooterEject() {
+    desiredAngle = PivotConstants.kDesiredEjectAngleRevRotations;
+  }
+
   // TODO any setter methods used in these commands should be made private
   public Command setManualShootAngleCommand() {
     return run(() -> {
@@ -199,4 +207,17 @@ public class Pivot extends SubsystemBase {
   }
 
   // TODO add intake command
+
+  public Command setIntakeAngleCommand(){
+    return run(() -> {
+      readyShooterIntake();
+      io.setAngleMotorSpeeds(desiredAngle);
+    })
+    .finallyDo(
+      () -> {
+        readyShootAmp();
+        io.setAngleMotorSpeeds(desiredAngle);
+      })
+      .withName("setIntakeAngle");
+  }
 }

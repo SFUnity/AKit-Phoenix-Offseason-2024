@@ -49,6 +49,9 @@ import frc.robot.subsystems.shooter.pivot.Pivot;
 import frc.robot.subsystems.shooter.pivot.PivotIO;
 import frc.robot.subsystems.shooter.pivot.PivotIOSim;
 import frc.robot.subsystems.shooter.pivot.PivotIOSparkMax;
+import frc.robot.subsystems.shooter.feeder.Feeder;
+import frc.robot.subsystems.shooter.feeder.FeederIO;
+import frc.robot.subsystems.shooter.feeder.FeederIOSim;
 import frc.robot.util.Alert;
 import frc.robot.util.Alert.AlertType;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
@@ -95,7 +98,9 @@ public class RobotContainer {
             new Shooter(
                 new Flywheels(new FlywheelsIOSparkMax()),
                 new Pivot(new PivotIOSparkMax(), aprilTagVision),
-                new BeamBreakIORev());
+                new BeamBreakIORev(), 
+                new Feeder(new FeederIO()));
+                
         break;
 
       case SIM:
@@ -113,7 +118,8 @@ public class RobotContainer {
             new Shooter(
                 new Flywheels(new FlywheelsIOSim()),
                 new Pivot(new PivotIOSim(), aprilTagVision),
-                new BeamBreakIOSim());
+                new BeamBreakIOSim(), 
+                new Feeder(new FeederIOSim()));
         break;
 
       default:
@@ -131,7 +137,8 @@ public class RobotContainer {
             new Shooter(
                 new Flywheels(new FlywheelsIO() {}),
                 new Pivot(new PivotIO() {}, aprilTagVision),
-                new BeamBreakIO() {});
+                new BeamBreakIO() {},
+                new Feeder(new FeederIO()));
         break;
     }
 

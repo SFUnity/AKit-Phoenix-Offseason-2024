@@ -4,6 +4,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.leds.Leds;
 import frc.robot.subsystems.shooter.flywheels.Flywheels;
 import frc.robot.subsystems.shooter.pivot.Pivot;
+import frc.robot.subsystems.shooter.feeder.Feeder;
 import frc.robot.util.VirtualSubsystem;
 import frc.robot.util.loggedShuffleboardClasses.LoggedShuffleboardBoolean;
 import org.littletonrobotics.junction.Logger;
@@ -12,6 +13,7 @@ public class Shooter extends VirtualSubsystem {
   private final double kDistSensorRangeWhenNoteInches = 2.5;
 
   private final Flywheels flywheels;
+  private final Feeder feeder;
   private final Pivot pivot;
   private final BeamBreakIO beamBreakIO;
 
@@ -19,10 +21,11 @@ public class Shooter extends VirtualSubsystem {
   private final LoggedShuffleboardBoolean beamBreakWorkingEntry =
       new LoggedShuffleboardBoolean("BeamBreak Working", "Shooter", true);
 
-  public Shooter(Flywheels flywheels, Pivot pivot, BeamBreakIO beamBreakIO) {
+  public Shooter(Flywheels flywheels, Pivot pivot, BeamBreakIO beamBreakIO, Feeder feeder) {
     this.flywheels = flywheels;
     this.pivot = pivot;
     this.beamBreakIO = beamBreakIO;
+    this.feeder = feeder;
   }
 
   public void periodic() {
@@ -76,7 +79,10 @@ public class Shooter extends VirtualSubsystem {
   }
 
   public Command setIntaking(LoggedShuffleboardBoolean intakeWorking) {
-    return flywheels.intake(intakeWorking); // add pivot command once written
+    return pivot
+        .setIntakeAngleCommand()
+        .alongWith(flywheels.intake(intakeWorking))
+        .alongWith(feeder.feederIntake());
   }
 
   public Command setOuttaking() {
