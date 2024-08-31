@@ -113,17 +113,6 @@ public class Flywheels extends SubsystemBase {
         .withName("Flywheels Intake");
   }
 
-  public Command outtake() {
-    return Commands.startEnd(
-            () -> {
-              runVoltsBoth(-kDefaultSpeedVoltage / 2);
-              goal = Goal.NONE;
-            },
-            () -> goal = lastGoal,
-            this)
-        .withName("Flywheels Outtake");
-  }
-
   public Command shootAmp() {
     return runOnce(
             () -> {

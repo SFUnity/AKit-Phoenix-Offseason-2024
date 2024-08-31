@@ -33,11 +33,19 @@ public class Feeder extends SubsystemBase {
     io.runPercent(kIntakingSpeedPercent);
   }
 
+  private void outtake() {
+    io.runPercent(-kIntakingSpeedPercent);
+  }
+
   public Command feederShoot() {
     return run(this::shoot);
   }
 
   public Command feederIntake() {
     return Commands.startEnd(this::intake, () -> io.runPercent(0));
+  }
+
+  public Command feederOuttake() {
+    return run(this::outtake);
   }
 }

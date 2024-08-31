@@ -206,7 +206,7 @@ public class Pivot extends SubsystemBase {
         .withName("gotta be a team player");
   }
 
-  // TODO add intake command
+  // TODO add outtake command (pls remove this once completed)
 
   public Command setIntakeAngleCommand() {
     return run(() -> {
