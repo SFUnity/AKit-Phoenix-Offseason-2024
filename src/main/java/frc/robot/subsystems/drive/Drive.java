@@ -477,13 +477,13 @@ public class Drive extends SubsystemBase {
     // The speed value here might need to change
     double povMovementSpeed = 0.5;
     if (config.povDownPressed()) {
-      x = -povMovementSpeed;
-    } else if (config.povUpPressed()) {
       x = povMovementSpeed;
+    } else if (config.povUpPressed()) {
+      x = -povMovementSpeed;
     } else if (config.povLeftPressed()) {
-      y = povMovementSpeed;
-    } else if (config.povRightPressed()) {
       y = -povMovementSpeed;
+    } else if (config.povRightPressed()) {
+      y = povMovementSpeed;
     }
 
     // Check for slow mode

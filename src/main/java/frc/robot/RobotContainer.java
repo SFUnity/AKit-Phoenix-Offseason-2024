@@ -83,11 +83,7 @@ public class RobotContainer {
       new LoggedDashboardNumber("Slow Turn Multiplier", 0.5);
 
   private final DriveCommandsConfig driveCommandsConfig =
-      new DriveCommandsConfig(
-          driver,
-          () -> slowMode,
-          slowDriveMultiplier,
-          slowTurnMultiplier);
+      new DriveCommandsConfig(driver, () -> slowMode, slowDriveMultiplier, slowTurnMultiplier);
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
