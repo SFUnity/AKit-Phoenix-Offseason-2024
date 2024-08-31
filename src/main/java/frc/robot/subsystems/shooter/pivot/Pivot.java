@@ -122,6 +122,7 @@ public class Pivot extends SubsystemBase {
     desiredAngle = feedingAngleEntry.getDouble(PivotConstants.kFeedingAngleRevRotations);
   }
 
+  // TODO what if we want to source intake?
   public void readyShooterIntake() {
     desiredAngle = PivotConstants.kDesiredIntakeAngleRevRotations;
   }
