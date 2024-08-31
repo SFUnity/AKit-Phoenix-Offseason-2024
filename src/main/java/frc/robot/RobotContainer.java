@@ -30,6 +30,7 @@ import frc.robot.subsystems.apriltagvision.AprilTagVision;
 import frc.robot.subsystems.apriltagvision.AprilTagVisionIO;
 import frc.robot.subsystems.apriltagvision.AprilTagVisionIOLimelight;
 import frc.robot.subsystems.drive.Drive;
+import frc.robot.subsystems.drive.DriveConstants.DriveCommandsConfig;
 import frc.robot.subsystems.drive.GyroIO;
 import frc.robot.subsystems.drive.GyroIOPigeon2;
 import frc.robot.subsystems.drive.ModuleIO;
@@ -137,17 +138,18 @@ public class RobotContainer {
     driveCommands =
         new DriveCommands(
             drive,
-            () -> -driver.getLeftY(),
-            () -> -driver.getLeftX(),
-            () -> -driver.getRightX(),
-            () -> slowMode,
-            slowDriveMultiplier,
-            slowTurnMultiplier,
-            driver.povUp(),
-            driver.povDown(),
-            driver.povLeft(),
-            driver.povRight(),
-            poseManager);
+            poseManager,
+            new DriveCommandsConfig(
+                () -> -driver.getLeftY(),
+                () -> -driver.getLeftX(),
+                () -> -driver.getRightX(),
+                () -> slowMode,
+                slowDriveMultiplier,
+                slowTurnMultiplier,
+                driver.povUp(),
+                driver.povDown(),
+                driver.povLeft(),
+                driver.povRight()));
 
     // Set up auto routines
     NamedCommands.registerCommand(

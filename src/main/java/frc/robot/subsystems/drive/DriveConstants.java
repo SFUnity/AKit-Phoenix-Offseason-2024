@@ -3,6 +3,10 @@ package frc.robot.subsystems.drive;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
+import java.util.function.BooleanSupplier;
+import java.util.function.DoubleSupplier;
+import org.littletonrobotics.junction.networktables.LoggedDashboardNumber;
 
 /** All Constants Measured in Meters and Radians (m/s, m/s^2, rad/s, rad/s^2) */
 public final class DriveConstants {
@@ -28,4 +32,30 @@ public final class DriveConstants {
 
   public static final SwerveDriveKinematics kinematics =
       new SwerveDriveKinematics(moduleTranslations);
+
+  /**
+   * Drive Command Config
+   *
+   * @param xJoystick - Left Joystick X axis
+   * @param yJoystick - Left Joystick Y axis
+   * @param omegaJoystick - Right Joystick X axis
+   * @param slowMode - If the joystick drive should be slowed down
+   * @param slowDriveMultiplier - Multiplier for slow mode
+   * @param slowTurnMultiplier - Multiplier for slow mode
+   * @param povUp - POV/Dpad Up
+   * @param povDown - POV/Dpad Down
+   * @param povLeft - POV/Dpad Left
+   * @param povRight - POV/Dpad Right
+   */
+  public static final record DriveCommandsConfig(
+      DoubleSupplier xJoystick,
+      DoubleSupplier yJoystick,
+      DoubleSupplier omegaJoystick,
+      BooleanSupplier slowMode,
+      LoggedDashboardNumber slowDriveMultiplier,
+      LoggedDashboardNumber slowTurnMultiplier,
+      Trigger povUp,
+      Trigger povDown,
+      Trigger povLeft,
+      Trigger povRight) {}
 }

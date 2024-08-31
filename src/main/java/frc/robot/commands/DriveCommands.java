@@ -24,35 +24,23 @@ import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.DriveConstants;
+import frc.robot.subsystems.drive.DriveConstants.DriveCommandsConfig;
 import frc.robot.subsystems.leds.Leds;
 import frc.robot.util.AllianceFlipUtil;
 import frc.robot.util.EqualsUtil;
 import frc.robot.util.LoggedTunableNumber;
 import frc.robot.util.PoseManager;
-import java.util.function.BooleanSupplier;
-import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
-import org.littletonrobotics.junction.networktables.LoggedDashboardNumber;
 
 public class DriveCommands {
   private static final double DEADBAND = 0.05;
   private Drive drive;
-  private DoubleSupplier xJoystickIn;
-  private DoubleSupplier yJoystickIn;
-  private DoubleSupplier omegaJoystickIn;
-  private BooleanSupplier slowMode;
-  private LoggedDashboardNumber slowDriveMultiplier;
-  private LoggedDashboardNumber slowTurnMultiplier;
-  private Trigger povUp;
-  private Trigger povDown;
-  private Trigger povLeft;
-  private Trigger povRight;
   private PoseManager poseManager;
+  private DriveCommandsConfig config;
 
   private static final LoggedTunableNumber linearkP =
       new LoggedTunableNumber("DriveCommands/Linear/kP", 3.5);
@@ -83,31 +71,10 @@ public class DriveCommands {
   private final ProfiledPIDController thetaController;
   private final ProfiledPIDController linearController;
 
-  public DriveCommands(
-      Drive drive,
-      DoubleSupplier xJoystickIn,
-      DoubleSupplier yJoystickIn,
-      DoubleSupplier omegaJoystickIn,
-      BooleanSupplier slowMode,
-      LoggedDashboardNumber slowDriveMultiplier,
-      LoggedDashboardNumber slowTurnMultiplier,
-      Trigger povUp,
-      Trigger povDown,
-      Trigger povLeft,
-      Trigger povRight,
-      PoseManager poseManager) {
+  public DriveCommands(Drive drive, PoseManager poseManager, DriveCommandsConfig config) {
     this.drive = drive;
-    this.xJoystickIn = xJoystickIn;
-    this.yJoystickIn = yJoystickIn;
-    this.omegaJoystickIn = omegaJoystickIn;
-    this.slowMode = slowMode;
-    this.slowDriveMultiplier = slowDriveMultiplier;
-    this.slowTurnMultiplier = slowTurnMultiplier;
-    this.povUp = povUp;
-    this.povDown = povDown;
-    this.povLeft = povLeft;
-    this.povRight = povRight;
     this.poseManager = poseManager;
+    this.config = config;
 
     linearController =
         new ProfiledPIDController(
@@ -159,11 +126,11 @@ public class DriveCommands {
     return Commands.run(
             () -> {
               // Convert to doubles
-              double o = omegaJoystickIn.getAsDouble();
+              double o = config.omegaJoystick().getAsDouble();
 
               // Check for slow mode
-              if (slowMode.getAsBoolean()) {
-                o *= slowTurnMultiplier.get();
+              if (config.slowMode().getAsBoolean()) {
+                o *= config.slowTurnMultiplier().get();
               }
 
               // Apply deadband
@@ -276,24 +243,24 @@ public class DriveCommands {
 
   private Translation2d getLinearVelocityFromJoysticks() {
     // Convert to doubles
-    double x = xJoystickIn.getAsDouble();
-    double y = yJoystickIn.getAsDouble();
+    double x = config.xJoystick().getAsDouble();
+    double y = config.yJoystick().getAsDouble();
 
     // The speed value here might need to change
     double povMovementSpeed = 0.5;
-    if (povDown.getAsBoolean()) {
+    if (config.povDown().getAsBoolean()) {
       x = -povMovementSpeed;
-    } else if (povUp.getAsBoolean()) {
+    } else if (config.povUp().getAsBoolean()) {
       x = povMovementSpeed;
-    } else if (povLeft.getAsBoolean()) {
+    } else if (config.povLeft().getAsBoolean()) {
       y = povMovementSpeed;
-    } else if (povRight.getAsBoolean()) {
+    } else if (config.povRight().getAsBoolean()) {
       y = -povMovementSpeed;
     }
 
     // Check for slow mode
-    if (slowMode.getAsBoolean()) {
-      double multiplier = slowDriveMultiplier.get();
+    if (config.slowMode().getAsBoolean()) {
+      double multiplier = config.slowDriveMultiplier().get();
       x *= multiplier;
       y *= multiplier;
     }
