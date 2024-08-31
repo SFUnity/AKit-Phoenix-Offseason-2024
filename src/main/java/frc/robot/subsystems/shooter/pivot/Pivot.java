@@ -164,7 +164,7 @@ public class Pivot extends SubsystemBase {
   }
 
   // TODO any setter methods used in these commands should be made private
-  public Command setManualShootAngleCommand() {
+  public Command setManualSpeakerAngle() {
     return run(() -> {
           readyShootSpeakerManual();
           io.setAngleMotorSpeeds(desiredAngle);
@@ -177,7 +177,7 @@ public class Pivot extends SubsystemBase {
         .withName("setManualShootAngle");
   }
 
-  public Command setAutoShootAngleCommand() {
+  public Command setAutoSpeakerAngle() {
     return run(() -> {
           readyShootSpeakerAutomatic();
           io.setAngleMotorSpeeds(desiredAngle);
@@ -190,7 +190,7 @@ public class Pivot extends SubsystemBase {
         .withName("setAutoShootAngle");
   }
 
-  public Command setAmpAngleCommand() {
+  public Command setAmpAngle() {
     return run(() -> {
           readyShootAmp();
           io.setAngleMotorSpeeds(desiredAngle);
@@ -198,7 +198,7 @@ public class Pivot extends SubsystemBase {
         .withName("setAmpAngle");
   }
 
-  public Command setFeedAngleCommand() {
+  public Command setFeedAngle() {
     return run(() -> {
           readyShootFeed();
           io.setAngleMotorSpeeds(desiredAngle);
@@ -211,7 +211,7 @@ public class Pivot extends SubsystemBase {
         .withName("gotta be a team player");
   }
 
-  public Command setIntakeAngleCommand() {
+  public Command setIntakeAngle() {
     return run(() -> {
           readyShooterIntake();
           io.setAngleMotorSpeeds(desiredAngle);

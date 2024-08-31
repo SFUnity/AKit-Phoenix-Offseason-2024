@@ -25,27 +25,15 @@ public class Feeder extends SubsystemBase {
     GeneralUtil.logSubsystem(this, "Shooter/Feeder");
   }
 
-  private void shoot() {
-    io.runPercent(kShootingSpeedPercent);
+  public Command shoot() {
+    return Commands.startEnd(() -> io.runPercent(kShootingSpeedPercent), () -> io.runPercent(0));
   }
 
-  private void intake() {
-    io.runPercent(kIntakingSpeedPercent);
+  public Command intake() {
+    return Commands.startEnd(() -> io.runPercent(kIntakingSpeedPercent), () -> io.runPercent(0));
   }
 
-  private void outtake() {
-    io.runPercent(-kIntakingSpeedPercent);
-  }
-
-  public Command feederShoot() {
-    return Commands.startEnd(this::shoot, () -> io.runPercent(0));
-  }
-
-  public Command feederIntake() {
-    return Commands.startEnd(this::intake, () -> io.runPercent(0));
-  }
-
-  public Command feederOuttake() {
-    return run(this::outtake);
+  public Command outtake() {
+    return Commands.startEnd(() -> io.runPercent(-kIntakingSpeedPercent), () -> io.runPercent(0));
   }
 }

@@ -53,40 +53,40 @@ public class Shooter extends VirtualSubsystem {
 
   public Command setManualSpeakerShot() {
     return pivot
-        .setManualShootAngleCommand()
+        .setManualSpeakerAngle()
         .alongWith(flywheels.shootSpeaker())
         .withName("setManualSpeakerShot");
   }
 
   public Command setAutoAimShot() {
     return pivot
-        .setAutoShootAngleCommand()
+        .setAutoSpeakerAngle()
         .alongWith(flywheels.shootSpeaker())
         .withName("setManualSpeakerShot");
   }
 
   public Command setAmpShot() {
-    return pivot.setAmpAngleCommand().alongWith(flywheels.shootAmp()).withName("setAmpShot");
+    return pivot.setAmpAngle().alongWith(flywheels.shootAmp()).withName("setAmpShot");
   }
 
   public Command setFeeding() {
-    return pivot.setFeedAngleCommand().alongWith(flywheels.feed()).withName("setFeeding");
+    return pivot.setFeedAngle().alongWith(flywheels.feed()).withName("setFeeding");
   }
 
   public Command setIntaking(LoggedShuffleboardBoolean intakeWorking) {
     return pivot
-        .setIntakeAngleCommand()
+        .setIntakeAngle()
         .alongWith(flywheels.intake(intakeWorking))
-        .alongWith(feeder.feederIntake().until(this::noteInShooter))
+        .alongWith(feeder.intake().until(this::noteInShooter))
         .withName("setIntaking");
   }
 
   public Command setOuttaking() {
-    return pivot.setIntakeAngleCommand().alongWith(Commands.waitUntil(pivot::atDesiredAngle).andThen(feeder.feederOuttake())).withName("setOuttaking");
+    return pivot.setIntakeAngle().alongWith(Commands.waitUntil(pivot::atDesiredAngle).andThen(feeder.outtake())).withName("setOuttaking");
   }
 
   public Command feedNoteToFlywheels() {
-    return feeder.feederShoot().until(() -> !noteInShooter()).withName("feedNoteToFlywheels");
+    return feeder.shoot().until(() -> !noteInShooter()).withName("feedNoteToFlywheels");
   }
 
   public Command stopFlywheels() {
