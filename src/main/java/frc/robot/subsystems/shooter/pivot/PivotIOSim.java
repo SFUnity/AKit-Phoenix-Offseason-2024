@@ -21,7 +21,6 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.simulation.SingleJointedArmSim;
 
 public class PivotIOSim implements PivotIO {
-  // TODO use an arm sim
   private final SingleJointedArmSim sim =
       new SingleJointedArmSim(
           DCMotor.getNEO(1),
