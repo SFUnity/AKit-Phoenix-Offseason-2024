@@ -37,6 +37,7 @@ import frc.robot.subsystems.drive.ModuleIOSim;
 import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.intake.IntakeIO;
 import frc.robot.subsystems.intake.IntakeIOSim;
+import frc.robot.subsystems.intake.IntakeIOSparkMax;
 import frc.robot.subsystems.shooter.BeamBreakIO;
 import frc.robot.subsystems.shooter.BeamBreakIORev;
 import frc.robot.subsystems.shooter.BeamBreakIOSim;
@@ -44,6 +45,7 @@ import frc.robot.subsystems.shooter.Shooter;
 import frc.robot.subsystems.shooter.feeder.Feeder;
 import frc.robot.subsystems.shooter.feeder.FeederIO;
 import frc.robot.subsystems.shooter.feeder.FeederIOSim;
+import frc.robot.subsystems.shooter.feeder.FeederIOSparkMax;
 import frc.robot.subsystems.shooter.flywheels.Flywheels;
 import frc.robot.subsystems.shooter.flywheels.FlywheelsIO;
 import frc.robot.subsystems.shooter.flywheels.FlywheelsIOSim;
@@ -92,14 +94,14 @@ public class RobotContainer {
                 new ModuleIOMixed(1),
                 new ModuleIOMixed(2),
                 new ModuleIOMixed(3));
-        intake = new Intake(new IntakeIOSim());
+        intake = new Intake(new IntakeIOSparkMax());
         aprilTagVision = new AprilTagVision(new AprilTagVisionIOLimelight("limelight"));
         shooter =
             new Shooter(
                 new Flywheels(new FlywheelsIOSparkMax()),
                 new Pivot(new PivotIOSparkMax(), aprilTagVision),
                 new BeamBreakIORev(),
-                new Feeder(new FeederIOSim())); // TODO make a real io implementation
+                new Feeder(new FeederIOSparkMax()));
         break;
 
       case SIM:
