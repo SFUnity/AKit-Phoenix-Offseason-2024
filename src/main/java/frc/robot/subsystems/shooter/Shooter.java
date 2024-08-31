@@ -2,9 +2,9 @@ package frc.robot.subsystems.shooter;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.leds.Leds;
+import frc.robot.subsystems.shooter.feeder.Feeder;
 import frc.robot.subsystems.shooter.flywheels.Flywheels;
 import frc.robot.subsystems.shooter.pivot.Pivot;
-import frc.robot.subsystems.shooter.feeder.Feeder;
 import frc.robot.util.VirtualSubsystem;
 import frc.robot.util.loggedShuffleboardClasses.LoggedShuffleboardBoolean;
 import org.littletonrobotics.junction.Logger;

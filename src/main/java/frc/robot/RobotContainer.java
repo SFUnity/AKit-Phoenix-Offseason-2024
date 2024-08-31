@@ -41,6 +41,9 @@ import frc.robot.subsystems.shooter.BeamBreakIO;
 import frc.robot.subsystems.shooter.BeamBreakIORev;
 import frc.robot.subsystems.shooter.BeamBreakIOSim;
 import frc.robot.subsystems.shooter.Shooter;
+import frc.robot.subsystems.shooter.feeder.Feeder;
+import frc.robot.subsystems.shooter.feeder.FeederIO;
+import frc.robot.subsystems.shooter.feeder.FeederIOSim;
 import frc.robot.subsystems.shooter.flywheels.Flywheels;
 import frc.robot.subsystems.shooter.flywheels.FlywheelsIO;
 import frc.robot.subsystems.shooter.flywheels.FlywheelsIOSim;
@@ -49,9 +52,6 @@ import frc.robot.subsystems.shooter.pivot.Pivot;
 import frc.robot.subsystems.shooter.pivot.PivotIO;
 import frc.robot.subsystems.shooter.pivot.PivotIOSim;
 import frc.robot.subsystems.shooter.pivot.PivotIOSparkMax;
-import frc.robot.subsystems.shooter.feeder.Feeder;
-import frc.robot.subsystems.shooter.feeder.FeederIO;
-import frc.robot.subsystems.shooter.feeder.FeederIOSim;
 import frc.robot.util.Alert;
 import frc.robot.util.Alert.AlertType;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
@@ -98,9 +98,8 @@ public class RobotContainer {
             new Shooter(
                 new Flywheels(new FlywheelsIOSparkMax()),
                 new Pivot(new PivotIOSparkMax(), aprilTagVision),
-                new BeamBreakIORev(), 
-                new Feeder(new FeederIO()));
-                
+                new BeamBreakIORev(),
+                new Feeder(new FeederIOSim())); // TODO make a real io implementation
         break;
 
       case SIM:
@@ -118,7 +117,7 @@ public class RobotContainer {
             new Shooter(
                 new Flywheels(new FlywheelsIOSim()),
                 new Pivot(new PivotIOSim(), aprilTagVision),
-                new BeamBreakIOSim(), 
+                new BeamBreakIOSim(),
                 new Feeder(new FeederIOSim()));
         break;
 
@@ -138,7 +137,7 @@ public class RobotContainer {
                 new Flywheels(new FlywheelsIO() {}),
                 new Pivot(new PivotIO() {}, aprilTagVision),
                 new BeamBreakIO() {},
-                new Feeder(new FeederIO()));
+                new Feeder(new FeederIO() {}));
         break;
     }
 

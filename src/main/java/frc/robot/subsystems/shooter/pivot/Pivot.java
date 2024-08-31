@@ -208,16 +208,16 @@ public class Pivot extends SubsystemBase {
 
   // TODO add intake command
 
-  public Command setIntakeAngleCommand(){
+  public Command setIntakeAngleCommand() {
     return run(() -> {
-      readyShooterIntake();
-      io.setAngleMotorSpeeds(desiredAngle);
-    })
-    .finallyDo(
-      () -> {
-        readyShootAmp();
-        io.setAngleMotorSpeeds(desiredAngle);
-      })
-      .withName("setIntakeAngle");
+          readyShooterIntake();
+          io.setAngleMotorSpeeds(desiredAngle);
+        })
+        .finallyDo(
+            () -> {
+              readyShootAmp();
+              io.setAngleMotorSpeeds(desiredAngle);
+            })
+        .withName("setIntakeAngle");
   }
 }
