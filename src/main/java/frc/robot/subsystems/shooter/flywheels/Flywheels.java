@@ -146,9 +146,6 @@ public class Flywheels extends SubsystemBase {
         .withName("Flywheels Stop");
   }
 
-  // TODO make a default cmd that stops if on opponents side of field when this merges with the
-  // advanced branch
-
   /** Returns the current velocity in RPM. */
   @AutoLogOutput(key = "Shooter/Flywheels/VelocityRPMTop")
   public double getVelocityRPMTop() {
