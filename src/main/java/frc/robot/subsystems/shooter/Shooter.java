@@ -89,6 +89,10 @@ public class Shooter extends VirtualSubsystem {
     return feeder.feederOuttake(); // add pivot command once written
   }
 
+  public Command feedNoteToFlywheels() {
+    return feeder.feederShoot().until(() -> !noteInShooter());
+  }
+
   public Command stopFlywheels() {
     return flywheels.stop();
   }

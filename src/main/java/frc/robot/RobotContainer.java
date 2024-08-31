@@ -199,7 +199,7 @@ public class RobotContainer {
             intake
                 .intakeCmd(operator.cross())
                 .alongWith(shooter.setIntaking(intake.intakeWorking)));
-    operator.circle().whileTrue(intake.intakeCmd(new Trigger(() -> false)));
+    operator.circle().whileTrue(intake.intakeCmd(new Trigger(() -> false)).alongWith(shooter.feedNoteToFlywheels()));
 
     operator.povUp().onTrue(shooter.stopFlywheels());
 

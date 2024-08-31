@@ -38,7 +38,7 @@ public class Feeder extends SubsystemBase {
   }
 
   public Command feederShoot() {
-    return run(this::shoot);
+    return Commands.startEnd(this::shoot, () -> io.runPercent(0));
   }
 
   public Command feederIntake() {
