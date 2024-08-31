@@ -38,6 +38,7 @@ import org.littletonrobotics.junction.Logger;
 
 public class DriveCommands {
   private static final double DEADBAND = 0.05;
+  private Drive drive;
   private PoseManager poseManager;
   private DriveCommandsConfig config;
 
@@ -70,7 +71,8 @@ public class DriveCommands {
   private final ProfiledPIDController thetaController;
   private final ProfiledPIDController linearController;
 
-  public DriveCommands(PoseManager poseManager, DriveCommandsConfig config) {
+  public DriveCommands(Drive drive, PoseManager poseManager, DriveCommandsConfig config) {
+    this.drive = drive;
     this.poseManager = poseManager;
     this.config = config;
 
@@ -120,7 +122,7 @@ public class DriveCommands {
   /**
    * Field relative drive command using two joysticks (controlling linear and angular velocities).
    */
-  public Command joystickDrive(Drive drive) {
+  public Command joystickDrive() {
     return Commands.run(
             () -> {
               // Convert to doubles
@@ -159,7 +161,7 @@ public class DriveCommands {
    * Field relative drive command using one joystick (controlling linear velocity) with a
    * ProfiledPID for angular velocity.
    */
-  public Command headingDrive(Supplier<Rotation2d> goalHeading, Drive drive) {
+  public Command headingDrive(Supplier<Rotation2d> goalHeading) {
     return Commands.run(
             () -> {
               updateThetaTunables();
@@ -193,7 +195,7 @@ public class DriveCommands {
    * Field relative drive command using a ProfiledPID for linear velocity and a ProfiledPID for
    * angular velocity.
    */
-  public Command fullAutoDrive(Supplier<Pose2d> goalPose, Drive drive) {
+  public Command fullAutoDrive(Supplier<Pose2d> goalPose) {
     return Commands.run(
             () -> {
               updateTunables();
