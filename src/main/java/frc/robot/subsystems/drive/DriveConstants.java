@@ -3,9 +3,8 @@ package frc.robot.subsystems.drive;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.wpilibj2.command.button.Trigger;
+import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import java.util.function.BooleanSupplier;
-import java.util.function.DoubleSupplier;
 import org.littletonrobotics.junction.networktables.LoggedDashboardNumber;
 
 /** All Constants Measured in Meters and Radians (m/s, m/s^2, rad/s, rad/s^2) */
@@ -48,14 +47,30 @@ public final class DriveConstants {
    * @param povRight - POV/Dpad Right
    */
   public static final record DriveCommandsConfig(
-      DoubleSupplier xJoystick,
-      DoubleSupplier yJoystick,
-      DoubleSupplier omegaJoystick,
+      CommandXboxController controller,
       BooleanSupplier slowMode,
       LoggedDashboardNumber slowDriveMultiplier,
-      LoggedDashboardNumber slowTurnMultiplier,
-      Trigger povUp,
-      Trigger povDown,
-      Trigger povLeft,
-      Trigger povRight) {}
+      LoggedDashboardNumber slowTurnMultiplier) {
+        public double getXInput() {
+          return -controller.getLeftY();
+        }
+        public double getYInput() {
+          return -controller.getLeftX();
+        }
+        public double getOmegaInput() {
+          return -controller.getRightX();
+        }
+        public boolean povUpPressed() {
+          return controller.povUp().getAsBoolean();
+        }
+        public boolean povDownPressed() {
+          return controller.povDown().getAsBoolean();
+        }
+        public boolean povLeftPressed() {
+          return controller.povLeft().getAsBoolean();
+        }
+        public boolean povRightPressed() {
+          return controller.povRight().getAsBoolean();
+        }
+      }
 }

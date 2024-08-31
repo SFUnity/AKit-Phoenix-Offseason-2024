@@ -84,16 +84,10 @@ public class RobotContainer {
 
   private final DriveCommandsConfig driveCommandsConfig =
       new DriveCommandsConfig(
-          () -> -driver.getLeftY(),
-          () -> -driver.getLeftX(),
-          () -> -driver.getRightX(),
+          driver,
           () -> slowMode,
           slowDriveMultiplier,
-          slowTurnMultiplier,
-          driver.povUp(),
-          driver.povDown(),
-          driver.povLeft(),
-          driver.povRight());
+          slowTurnMultiplier);
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {

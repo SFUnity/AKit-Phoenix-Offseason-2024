@@ -359,7 +359,7 @@ public class Drive extends SubsystemBase {
   public Command joystickDrive() {
     return run(() -> {
           // Convert to doubles
-          double o = config.omegaJoystick().getAsDouble();
+          double o = config.getOmegaInput();
 
           // Check for slow mode
           if (config.slowMode().getAsBoolean()) {
@@ -471,18 +471,18 @@ public class Drive extends SubsystemBase {
 
   private Translation2d getLinearVelocityFromJoysticks() {
     // Convert to doubles
-    double x = config.xJoystick().getAsDouble();
-    double y = config.yJoystick().getAsDouble();
+    double x = config.getXInput();
+    double y = config.getYInput();
 
     // The speed value here might need to change
     double povMovementSpeed = 0.5;
-    if (config.povDown().getAsBoolean()) {
+    if (config.povDownPressed()) {
       x = -povMovementSpeed;
-    } else if (config.povUp().getAsBoolean()) {
+    } else if (config.povUpPressed()) {
       x = povMovementSpeed;
-    } else if (config.povLeft().getAsBoolean()) {
+    } else if (config.povLeftPressed()) {
       y = povMovementSpeed;
-    } else if (config.povRight().getAsBoolean()) {
+    } else if (config.povRightPressed()) {
       y = -povMovementSpeed;
     }
 
