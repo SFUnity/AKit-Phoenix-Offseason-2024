@@ -352,35 +352,7 @@ public class Drive extends SubsystemBase {
   }
 
   // Drive Commands
-  private void updateConstraints() {
-    linearController.setConstraints(
-        new TrapezoidProfile.Constraints(maxLinearVelocity.get(), maxLinearAcceleration.get()));
-    updateThetaConstraints();
-  }
-
-  private void updateThetaConstraints() {
-    thetaController.setConstraints(
-        new TrapezoidProfile.Constraints(maxAngularVelocity.get(), maxAngularAcceleration.get()));
-  }
-
-  private void resetControllers(Pose2d goalPose) {
-    Twist2d fieldVelocity = poseManager.fieldVelocity();
-    double linearVelocity =
-        Math.min(
-            0.0,
-            new Translation2d(fieldVelocity.dx, fieldVelocity.dy)
-                .rotateBy(poseManager.getHorizontalAngleTo(goalPose))
-                .getX());
-    linearController.reset(poseManager.getDistanceTo(goalPose), linearVelocity);
-    resetThetaController();
-  }
-
-  private void resetThetaController() {
-    Pose2d currentPose = poseManager.getPose();
-    Twist2d fieldVelocity = poseManager.fieldVelocity();
-    thetaController.reset(currentPose.getRotation().getRadians(), fieldVelocity.dtheta);
-  }
-
+  
   /**
    * Field relative drive command using two joysticks (controlling linear and angular velocities).
    */
@@ -578,6 +550,35 @@ public class Drive extends SubsystemBase {
         thetaToleranceDeg);
     LoggedTunableNumber.ifChanged(
         hashCode(), this::updateThetaConstraints, maxAngularVelocity, maxAngularAcceleration);
+  }
+
+  private void updateConstraints() {
+    linearController.setConstraints(
+        new TrapezoidProfile.Constraints(maxLinearVelocity.get(), maxLinearAcceleration.get()));
+    updateThetaConstraints();
+  }
+
+  private void updateThetaConstraints() {
+    thetaController.setConstraints(
+        new TrapezoidProfile.Constraints(maxAngularVelocity.get(), maxAngularAcceleration.get()));
+  }
+
+  private void resetControllers(Pose2d goalPose) {
+    Twist2d fieldVelocity = poseManager.fieldVelocity();
+    double linearVelocity =
+        Math.min(
+            0.0,
+            new Translation2d(fieldVelocity.dx, fieldVelocity.dy)
+                .rotateBy(poseManager.getHorizontalAngleTo(goalPose))
+                .getX());
+    linearController.reset(poseManager.getDistanceTo(goalPose), linearVelocity);
+    resetThetaController();
+  }
+
+  private void resetThetaController() {
+    Pose2d currentPose = poseManager.getPose();
+    Twist2d fieldVelocity = poseManager.fieldVelocity();
+    thetaController.reset(currentPose.getRotation().getRadians(), fieldVelocity.dtheta);
   }
 
   /** Returns true if within tolerance of aiming at goal */
