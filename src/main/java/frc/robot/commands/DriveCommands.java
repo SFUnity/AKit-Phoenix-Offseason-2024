@@ -169,8 +169,9 @@ public class DriveCommands {
               // Apply deadband
               double omega = MathUtil.applyDeadband(o, DEADBAND);
 
-              // Square values
+              // Square values and scale to max velocity
               omega = Math.copySign(omega * omega, omega);
+              omega *= DriveConstants.MAX_ANGULAR_VELOCITY;
 
               // Get linear velocity
               Translation2d linearVelocity = getLinearVelocityFromJoysticks();
@@ -180,7 +181,7 @@ public class DriveCommands {
                   ChassisSpeeds.fromFieldRelativeSpeeds(
                       linearVelocity.getX(),
                       linearVelocity.getY(),
-                      omega * DriveConstants.MAX_ANGULAR_VELOCITY,
+                      omega,
                       AllianceFlipUtil.shouldFlip()
                           ? poseManager.getRotation().plus(new Rotation2d(Math.PI))
                           : poseManager.getRotation()));
@@ -302,7 +303,8 @@ public class DriveCommands {
     Rotation2d linearDirection = new Rotation2d(x, y);
 
     // Square values and scale to max velocity
-    linearMagnitude = linearMagnitude * linearMagnitude * DriveConstants.MAX_LINEAR_VELOCITY;
+    linearMagnitude = linearMagnitude * linearMagnitude;
+    linearMagnitude *= DriveConstants.MAX_LINEAR_VELOCITY;
 
     // Calcaulate new linear velocity
     Translation2d linearVelocity = new Translation2d(linearMagnitude, linearDirection);
