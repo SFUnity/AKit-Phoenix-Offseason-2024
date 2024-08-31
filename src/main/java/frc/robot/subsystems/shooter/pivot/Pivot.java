@@ -115,7 +115,7 @@ public class Pivot extends SubsystemBase {
     io.setVoltage(volts);
   }
 
-  /** Stops the flywheel. */
+  /** Stops the pivot. */
   public void stop() {
     io.stop();
   }
