@@ -28,8 +28,6 @@ import edu.wpi.first.math.util.Units;
  * "CANSparkFlex".
  */
 public class PivotIOSparkMax implements PivotIO {
-  private static final double GEAR_RATIO = 1.5;
-
   private final CANSparkMax angleMotor = new CANSparkMax(angleMotorId, MotorType.kBrushless);
   private final RelativeEncoder encoder = angleMotor.getEncoder();
   private final SparkPIDController pid = angleMotor.getPIDController();
@@ -59,16 +57,6 @@ public class PivotIOSparkMax implements PivotIO {
   @Override
   public void setVoltage(double volts) {
     angleMotor.setVoltage(volts);
-  }
-
-  @Override
-  public void setVelocity(double velocityRadPerSec, double ffVolts) {
-    pid.setReference(
-        Units.radiansPerSecondToRotationsPerMinute(velocityRadPerSec) * GEAR_RATIO,
-        ControlType.kVelocity,
-        0,
-        ffVolts,
-        ArbFFUnits.kVoltage);
   }
 
   @Override

@@ -34,8 +34,6 @@ public class Pivot extends SubsystemBase {
   private final PivotIO io;
   private final AprilTagVision aprilTagVision;
   private final PivotIOInputsAutoLogged inputs = new PivotIOInputsAutoLogged();
-  private final SimpleMotorFeedforward ffModel;
-  private final SysIdRoutine sysId;
   private final PivotVisualizer measuredVisualizer;
   private final PivotVisualizer setpointVisualizer;
   private ShuffleboardTab driversTab = Shuffleboard.getTab("Drivers");
@@ -74,27 +72,14 @@ public class Pivot extends SubsystemBase {
     switch (Constants.currentMode) {
       case REAL:
       case REPLAY:
-        ffModel = new SimpleMotorFeedforward(0.1, 0.05);
         io.configurePID(1.0, 0.0, 0.0);
         break;
       case SIM:
-        ffModel = new SimpleMotorFeedforward(0.0, 0.03);
         io.configurePID(0.5, 0.0, 0.0);
         break;
       default:
-        ffModel = new SimpleMotorFeedforward(0.0, 0.0);
         break;
     }
-
-    // Configure SysId
-    sysId =
-        new SysIdRoutine(
-            new SysIdRoutine.Config(
-                null,
-                null,
-                null,
-                (state) -> Logger.recordOutput("Shooter/Pivot/SysIdState", state.toString())),
-            new SysIdRoutine.Mechanism((voltage) -> runVolts(voltage.in(Volts)), null, this));
 
     measuredVisualizer = new PivotVisualizer("Measured", Color.kRed);
     setpointVisualizer = new PivotVisualizer("Setpoint", Color.kBlue);
@@ -119,16 +104,6 @@ public class Pivot extends SubsystemBase {
   /** Stops the pivot. */
   public void stop() {
     io.stop();
-  }
-
-  /** Returns a command to run a quasistatic test in the specified direction. */
-  public Command sysIdQuasistatic(SysIdRoutine.Direction direction) {
-    return sysId.quasistatic(direction);
-  }
-
-  /** Returns a command to run a dynamic test in the specified direction. */
-  public Command sysIdDynamic(SysIdRoutine.Direction direction) {
-    return sysId.dynamic(direction);
   }
 
   public void readyShootSpeakerManual() {

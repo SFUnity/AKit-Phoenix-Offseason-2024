@@ -34,7 +34,6 @@ public class PivotIOSim implements PivotIO {
   private PIDController pid = new PIDController(0.0, 0.0, 0.0);
 
   private boolean closedLoop = false;
-  private double ffVolts = 0.0;
   private double appliedVolts = 0.0;
 
   @Override
@@ -51,18 +50,13 @@ public class PivotIOSim implements PivotIO {
     inputs.currentAmps = new double[] {sim.getCurrentDrawAmps()};
   }
 
+  // TODO make a setAngleMotorSpeeds method
+
   @Override
   public void setVoltage(double volts) {
     closedLoop = false;
     appliedVolts = volts;
     sim.setInputVoltage(volts);
-  }
-
-  @Override
-  public void setVelocity(double velocityRadPerSec, double ffVolts) {
-    closedLoop = true;
-    pid.setSetpoint(velocityRadPerSec);
-    this.ffVolts = ffVolts;
   }
 
   @Override
