@@ -20,7 +20,7 @@ public class Shooter extends VirtualSubsystem {
 
   private final BeamBreakInputsAutoLogged beamBreakInputs = new BeamBreakInputsAutoLogged();
   private final LoggedShuffleboardBoolean beamBreakWorkingEntry =
-      new LoggedShuffleboardBoolean("BeamBreak Working", "Shooter", true);
+      new LoggedShuffleboardBoolean("Beam Break Working", "Shooter", true);
 
   public Shooter(Flywheels flywheels, Pivot pivot, BeamBreakIO beamBreakIO, Feeder feeder) {
     this.flywheels = flywheels;
