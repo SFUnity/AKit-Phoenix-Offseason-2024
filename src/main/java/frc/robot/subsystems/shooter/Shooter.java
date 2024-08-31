@@ -82,7 +82,7 @@ public class Shooter extends VirtualSubsystem {
     return pivot
         .setIntakeAngleCommand()
         .alongWith(flywheels.intake(intakeWorking))
-        .alongWith(feeder.feederIntake());
+        .alongWith(feeder.feederIntake().until(this::noteInShooter));
   }
 
   public Command setOuttaking() {
