@@ -192,17 +192,23 @@ public class RobotContainer {
                 .ignoringDisable(true));
 
     // Operator controls
-    operator.triangle().whileTrue(intake.poopCmd().alongWith(shooter.setOuttaking()));
+    operator
+        .triangle()
+        .whileTrue(intake.poopCmd().alongWith(shooter.setOuttaking()).withName("poop"));
     operator
         .square()
         .whileTrue(
             intake
                 .intakeCmd(operator.cross())
-                .alongWith(shooter.setIntaking(intake.intakeWorking)));
+                .alongWith(shooter.setIntaking(intake.intakeWorking))
+                .withName("setIntaking"));
     operator
         .circle()
         .whileTrue(
-            intake.intakeCmd(new Trigger(() -> false)).alongWith(shooter.feedNoteToFlywheels()));
+            intake
+                .intakeCmd(new Trigger(() -> false))
+                .alongWith(shooter.feedNoteToFlywheels())
+                .withName("shootNote"));
 
     operator.povUp().onTrue(shooter.stopFlywheels());
 
