@@ -178,8 +178,8 @@ public class DriveCommands {
               // Convert to field relative speeds & send command
               drive.runVelocity(
                   ChassisSpeeds.fromFieldRelativeSpeeds(
-                      linearVelocity.getX() * DriveConstants.MAX_LINEAR_VELOCITY,
-                      linearVelocity.getY() * DriveConstants.MAX_LINEAR_VELOCITY,
+                      linearVelocity.getX(),
+                      linearVelocity.getY(),
                       omega * DriveConstants.MAX_ANGULAR_VELOCITY,
                       AllianceFlipUtil.shouldFlip()
                           ? poseManager.getRotation().plus(new Rotation2d(Math.PI))
@@ -205,8 +205,8 @@ public class DriveCommands {
               // Convert to field relative speeds & send command
               drive.runVelocity(
                   ChassisSpeeds.fromFieldRelativeSpeeds(
-                      linearVelocity.getX() * DriveConstants.MAX_LINEAR_VELOCITY,
-                      linearVelocity.getY() * DriveConstants.MAX_LINEAR_VELOCITY,
+                      linearVelocity.getX(),
+                      linearVelocity.getY(),
                       getAngularVelocityFromProfiledPID(goalHeading.get().getRadians()),
                       AllianceFlipUtil.shouldFlip()
                           ? poseManager.getRotation().plus(new Rotation2d(Math.PI))
@@ -301,8 +301,8 @@ public class DriveCommands {
     double linearMagnitude = MathUtil.applyDeadband(Math.hypot(x, y), DEADBAND);
     Rotation2d linearDirection = new Rotation2d(x, y);
 
-    // Square values
-    linearMagnitude = linearMagnitude * linearMagnitude;
+    // Square values and scale to max velocity
+    linearMagnitude = linearMagnitude * linearMagnitude * DriveConstants.MAX_LINEAR_VELOCITY;
 
     // Calcaulate new linear velocity
     Translation2d linearVelocity = new Translation2d(linearMagnitude, linearDirection);
