@@ -86,7 +86,7 @@ public class RobotContainer {
                 new ModuleIOMixed(2),
                 new ModuleIOMixed(3));
         flywheel = new Flywheel(new FlywheelIOSparkMax());
-        intake = new Intake(new IntakeIOSim());
+        intake = new Intake(new IntakeIOSim()); // TODO make real impl
         aprilTagVision = new AprilTagVision(new AprilTagVisionIOLimelight("limelight"));
         break;
 
