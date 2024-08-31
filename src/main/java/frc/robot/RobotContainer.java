@@ -25,7 +25,6 @@ import edu.wpi.first.wpilibj2.command.button.CommandPS5Controller;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
-import frc.robot.commands.DriveCommands;
 import frc.robot.subsystems.apriltagvision.AprilTagVision;
 import frc.robot.subsystems.apriltagvision.AprilTagVisionIO;
 import frc.robot.subsystems.apriltagvision.AprilTagVisionIOLimelight;
@@ -61,7 +60,6 @@ public class RobotContainer {
   private final Flywheel flywheel;
   private final Intake intake;
   private final AprilTagVision aprilTagVision;
-  private final DriveCommands driveCommands;
 
   // Pose Manager
   private final PoseManager poseManager = new PoseManager();
@@ -84,6 +82,19 @@ public class RobotContainer {
   private final LoggedDashboardNumber slowTurnMultiplier =
       new LoggedDashboardNumber("Slow Turn Multiplier", 0.5);
 
+  private final DriveCommandsConfig driveCommandsConfig =
+      new DriveCommandsConfig(
+          () -> -driver.getLeftY(),
+          () -> -driver.getLeftX(),
+          () -> -driver.getRightX(),
+          () -> slowMode,
+          slowDriveMultiplier,
+          slowTurnMultiplier,
+          driver.povUp(),
+          driver.povDown(),
+          driver.povLeft(),
+          driver.povRight());
+
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
     switch (Constants.currentMode) {
@@ -96,7 +107,8 @@ public class RobotContainer {
                 new ModuleIOMixed(1),
                 new ModuleIOMixed(2),
                 new ModuleIOMixed(3),
-                poseManager);
+                poseManager,
+                driveCommandsConfig);
         aprilTagVision =
             new AprilTagVision(
                 new AprilTagVisionIOLimelight("limelight", poseManager), poseManager);
@@ -113,7 +125,8 @@ public class RobotContainer {
                 new ModuleIOSim(),
                 new ModuleIOSim(),
                 new ModuleIOSim(),
-                poseManager);
+                poseManager,
+                driveCommandsConfig);
         aprilTagVision = new AprilTagVision(new AprilTagVisionIO() {}, poseManager);
         flywheel = new Flywheel(new FlywheelIOSim());
         intake = new Intake(new IntakeIOSim());
@@ -128,28 +141,13 @@ public class RobotContainer {
                 new ModuleIO() {},
                 new ModuleIO() {},
                 new ModuleIO() {},
-                poseManager);
+                poseManager,
+                driveCommandsConfig);
         aprilTagVision = new AprilTagVision(new AprilTagVisionIO() {}, poseManager);
         flywheel = new Flywheel(new FlywheelIO() {});
         intake = new Intake(new IntakeIO() {});
         break;
     }
-
-    driveCommands =
-        new DriveCommands(
-            drive,
-            poseManager,
-            new DriveCommandsConfig(
-                () -> -driver.getLeftY(),
-                () -> -driver.getLeftX(),
-                () -> -driver.getRightX(),
-                () -> slowMode,
-                slowDriveMultiplier,
-                slowTurnMultiplier,
-                driver.povUp(),
-                driver.povDown(),
-                driver.povLeft(),
-                driver.povRight()));
 
     // Set up auto routines
     NamedCommands.registerCommand(
@@ -199,7 +197,7 @@ public class RobotContainer {
   /** Use this method to define your button->command mappings. */
   private void configureButtonBindings() {
     // Default cmds
-    drive.setDefaultCommand(driveCommands.joystickDrive());
+    drive.setDefaultCommand(drive.joystickDrive());
     intake.setDefaultCommand(intake.raiseAndStopCmd());
 
     // Driver controls
@@ -217,14 +215,12 @@ public class RobotContainer {
     driver
         .b()
         .whileTrue(
-            driveCommands.headingDrive(
+            drive.headingDrive(
                 () ->
                     poseManager.getHorizontalAngleTo(FieldConstants.Speaker.centerSpeakerOpening)));
     driver
         .y()
-        .whileTrue(
-            driveCommands.fullAutoDrive(
-                () -> new Pose2d(1.815, 7.8, new Rotation2d(-Math.PI / 2))));
+        .whileTrue(drive.fullAutoDrive(() -> new Pose2d(1.815, 7.8, new Rotation2d(-Math.PI / 2))));
 
     // Operator controls for intake
     operator.triangle().whileTrue(intake.poopCmd());
