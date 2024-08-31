@@ -2,99 +2,65 @@ package frc.robot.subsystems.intake;
 
 import static frc.robot.subsystems.intake.IntakeConstants.*;
 
-import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.math.system.plant.DCMotor;
-import edu.wpi.first.math.util.Units;
-import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.simulation.SingleJointedArmSim;
-import frc.robot.Constants;
+import com.revrobotics.CANSparkBase.ControlType;
+import com.revrobotics.CANSparkLowLevel.MotorType;
+import com.revrobotics.CANSparkMax;
+import com.revrobotics.RelativeEncoder;
+import com.revrobotics.SparkPIDController;
 
 public class IntakeIOSparkMax implements IntakeIO {
-  private static final double autoStartAngle = Units.degreesToRadians(0.0);
-
-  private final SingleJointedArmSim sim =
-      new SingleJointedArmSim(
-          DCMotor.getNEO(1),
-          100,
-          1.06328,
-          intakeLength,
-          Math.toRadians(0.0),
-          Math.toRadians(125.0),
-          false,
-          Units.degreesToRadians(0.0));
-
-  private final PIDController controller;
-  private double pivotAppliedVoltage = 0.0;
-
-  private double rollersAppliedVoltage = 0.0;
-  private double indexerAppliedVoltage = 0.0;
-
-  private boolean controllerNeedsReset = false;
-  private boolean wasNotAuto = true;
+  private final CANSparkMax angleMotor = new CANSparkMax(angleMotorId, MotorType.kBrushless);
+  private final RelativeEncoder encoder = angleMotor.getEncoder();
+  private final SparkPIDController pid = angleMotor.getPIDController();
+  private final CANSparkMax rollersMotor = new CANSparkMax(rollersMotorId, MotorType.kBrushless);
+  private final CANSparkMax handoffMotor = new CANSparkMax(handoffMotorId, MotorType.kBrushless);
 
   public IntakeIOSparkMax() {
-    controller = new PIDController(0.0, 0.0, 0.0);
-    sim.setState(0.0, 0.0);
+    basicMotorConfig(angleMotor);
+    basicMotorConfig(rollersMotor);
+    basicMotorConfig(handoffMotor);
+  }
+
+  private void basicMotorConfig(CANSparkMax motor) {
+    motor.restoreFactoryDefaults();
+
+    motor.setCANTimeout(250);
+
+    motor.setInverted(false);
+
+    motor.enableVoltageCompensation(12.0);
+    motor.setSmartCurrentLimit(30);
+
+    motor.burnFlash();
   }
 
   @Override
   public void updateInputs(IntakeIOInputs inputs) {
-    if (DriverStation.isDisabled()) {
-      controllerNeedsReset = true;
-    }
+    inputs.pivotPositionRots = encoder.getPosition();
+    inputs.pivotAppliedVolts = angleMotor.getAppliedOutput() * angleMotor.getBusVoltage();
+    inputs.pivotCurrentAmps = angleMotor.getOutputCurrent();
 
-    // Reset at start of auto
-    if (wasNotAuto && DriverStation.isAutonomousEnabled()) {
-      sim.setState(autoStartAngle, 0.0);
-      wasNotAuto = false;
-    }
-    wasNotAuto = !DriverStation.isAutonomousEnabled();
-
-    sim.update(Constants.loopPeriodSecs);
-
-    inputs.pivotPositionRots = Units.radiansToRotations(sim.getAngleRads()) * 100;
-    inputs.pivotAppliedVolts = pivotAppliedVoltage;
-    inputs.pivotCurrentAmps = sim.getCurrentDrawAmps();
-
-    inputs.rollersAppliedVolts = rollersAppliedVoltage;
-    inputs.indexerAppliedVolts = indexerAppliedVoltage;
-
-    // Reset input
-    sim.setInputVoltage(0.0);
+    inputs.rollersAppliedVolts = rollersMotor.getAppliedOutput();
+    inputs.indexerAppliedVolts = handoffMotor.getAppliedOutput();
   }
 
   @Override
   public void runIntakeRollers(double percentOutput) {
-    rollersAppliedVoltage = 12 * percentOutput;
+    rollersMotor.set(percentOutput);
   }
 
   @Override
   public void runIndexer(double percentOutput) {
-    indexerAppliedVoltage = 12 * percentOutput;
+    handoffMotor.set(percentOutput);
   }
 
   @Override
   public void setPivotPosition(double setpointRots) {
-    if (controllerNeedsReset) {
-      controller.reset();
-      controllerNeedsReset = false;
-    }
-
-    double setpointRads = Units.rotationsToRadians(setpointRots) / 100;
-    double volts = controller.calculate(sim.getAngleRads(), setpointRads);
-    pivotAppliedVoltage = MathUtil.clamp(volts, -12.0, 12.0);
-    sim.setInputVoltage(pivotAppliedVoltage);
+    pid.setReference(setpointRots, ControlType.kPosition);
   }
 
   @Override
   public void setPID(double p) {
-    controller.setPID(p, 0, 0);
-  }
-
-  @Override
-  public void stop() {
-    pivotAppliedVoltage = 0.0;
-    sim.setInputVoltage(pivotAppliedVoltage);
+    pid.setP(p);
   }
 }
