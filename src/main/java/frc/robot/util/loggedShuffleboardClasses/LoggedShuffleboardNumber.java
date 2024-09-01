@@ -67,12 +67,10 @@ public class LoggedShuffleboardNumber
     Logger.processInputs(prefix, inputs);
   }
 
-  @Override
   public SimpleWidget getWidget() {
     return widget;
   }
 
-  @Override
   public void setWidget(SimpleWidget widget) {
     this.widget = widget;
   }
