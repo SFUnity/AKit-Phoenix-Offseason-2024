@@ -16,6 +16,7 @@ public class LoggedShuffleboardChooser<V>
   private String selectedValue = null;
   private SendableChooser<String> sendableChooser = new SendableChooser<>();
   private Map<String, V> options = new HashMap<>();
+  private Map<Integer, V> lastHasChangedValues = new HashMap<>();
   private ComplexWidget widget;
 
   private final LoggableInputs inputs =
@@ -124,6 +125,25 @@ public class LoggedShuffleboardChooser<V>
       selectedValue = sendableChooser.getSelected();
     }
     Logger.processInputs(prefix, inputs);
+  }
+
+  /**
+   * Checks whether the number has changed since our last check
+   *
+   * @param id Unique identifier for the caller to avoid conflicts when shared between multiple
+   *     objects. Recommended approach is to pass the result of "hashCode()"
+   * @return True if the number has changed since the last time this method was called, false
+   *     otherwise.
+   */
+  public boolean hasChanged(int id) {
+    V currentValue = get();
+    V lastValue = lastHasChangedValues.get(id);
+    if (lastValue == null || currentValue != lastValue) {
+      lastHasChangedValues.put(id, currentValue);
+      return true;
+    }
+
+    return false;
   }
 
   public ComplexWidget getWidget() {
