@@ -167,6 +167,7 @@ public class RobotContainer {
     }
 
     // Set up auto routines
+    autoChooser.addDefaultOption("nothing", () -> {});
     // autoChooser.addOption("source43", source43());
 
     // Set up test routines
