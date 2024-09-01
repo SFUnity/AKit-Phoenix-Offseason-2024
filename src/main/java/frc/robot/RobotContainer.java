@@ -267,13 +267,10 @@ public class RobotContainer {
                 operator.getHID().getPort())); // Should not be an XBox controller
   }
 
-  /**
-   * Use this to pass the autonomous command to the main {@link Robot} class.
-   *
-   * @return the command to run in autonomous
-   */
-  public Command getAutonomousCommand() {
-    return Commands.runOnce(autoChooser.get());
+  public void setAutoIfChanged() {
+    if (autoChooser.hasChanged(hashCode())) {
+      autoChooser.get().run();
+    }
   }
 
   //   private static Trigger autoTrigger(BooleanSupplier condition) {

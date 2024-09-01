@@ -22,7 +22,6 @@ import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.subsystems.leds.Leds;
 import frc.robot.util.Alert;
@@ -47,7 +46,6 @@ public class Robot extends LoggedRobot {
   private static final double lowBatteryVoltage = 11.8;
   private static final double lowBatteryDisabledTime = 1.5;
 
-  private Command autoCommand;
   private RobotContainer robotContainer;
   private double autoStart;
   private boolean autoMessagePrinted;
@@ -148,20 +146,13 @@ public class Robot extends LoggedRobot {
     CommandScheduler.getInstance().run();
 
     // Print auto duration
-    if (autoCommand != null) {
-      if (!autoCommand.isScheduled() && !autoMessagePrinted) {
-        if (DriverStation.isAutonomousEnabled()) {
-          System.out.printf(
-              "*** Auto finished in %.2f secs ***%n", Timer.getFPGATimestamp() - autoStart);
-        } else {
-          System.out.printf(
-              "*** Auto cancelled in %.2f secs ***%n", Timer.getFPGATimestamp() - autoStart);
-        }
-        autoMessagePrinted = true;
-        Leds.getInstance().autoFinished = true;
-        Leds.getInstance().autoFinishedTime = Timer.getFPGATimestamp();
-      }
+    if (!DriverStation.isAutonomousEnabled() && !autoMessagePrinted) {
+      System.out.printf("*** Auto ended in %.2f secs ***%n", Timer.getFPGATimestamp() - autoStart);
+      autoMessagePrinted = true;
+      Leds.getInstance().autoFinished = true;
+      Leds.getInstance().autoFinishedTime = Timer.getFPGATimestamp();
     }
+    robotContainer.setAutoIfChanged();
 
     // Robot container periodic methods
     robotContainer.checkControllers();
@@ -199,12 +190,6 @@ public class Robot extends LoggedRobot {
   public void autonomousInit() {
     autoStart = Timer.getFPGATimestamp();
     autoMessagePrinted = false;
-    autoCommand = robotContainer.getAutonomousCommand();
-
-    // schedule the autonomous command (example)
-    if (autoCommand != null) {
-      autoCommand.schedule();
-    }
   }
 
   /** This function is called periodically during autonomous. */
@@ -213,15 +198,7 @@ public class Robot extends LoggedRobot {
 
   /** This function is called once when teleop is enabled. */
   @Override
-  public void teleopInit() {
-    // This makes sure that the autonomous stops running when
-    // teleop starts running. If you want the autonomous to
-    // continue until interrupted by another command, remove
-    // this line or comment it out.
-    if (autoCommand != null) {
-      autoCommand.cancel();
-    }
-  }
+  public void teleopInit() {}
 
   /** This function is called periodically during operator control. */
   @Override
