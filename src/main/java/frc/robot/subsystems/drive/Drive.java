@@ -15,7 +15,11 @@ package frc.robot.subsystems.drive;
 
 import static edu.wpi.first.units.Units.*;
 
+import com.choreo.lib.Choreo;
+import com.choreo.lib.ChoreoControlFunction;
+import com.choreo.lib.ChoreoTrajectory;
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -30,17 +34,22 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.FunctionalCommand;
+import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
+import frc.robot.Constants;
 import frc.robot.subsystems.drive.DriveConstants.DriveCommandsConfig;
 import frc.robot.subsystems.leds.Leds;
 import frc.robot.util.Alert;
-import frc.robot.util.GeneralUtil;
-import frc.robot.util.GeomUtil;
 import frc.robot.util.AllianceFlipUtil;
 import frc.robot.util.EqualsUtil;
+import frc.robot.util.GeneralUtil;
+import frc.robot.util.GeomUtil;
 import frc.robot.util.LoggedTunableNumber;
 import frc.robot.util.PoseManager;
+import java.util.function.BooleanSupplier;
+import java.util.function.Consumer;
 import java.util.function.Supplier;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
@@ -76,6 +85,13 @@ public class Drive extends SubsystemBase {
   private static final LoggedTunableNumber maxAngularAcceleration =
       new LoggedTunableNumber(
           "Drive/Commands/Theta/maxAcceleration", DriveConstants.MAX_ANGULAR_ACCELERATION * 0.8);
+
+  private static final LoggedTunableNumber choreoxP =
+      new LoggedTunableNumber("Drive/Choreo/xP", 1.5);
+  private static final LoggedTunableNumber choreoyP =
+      new LoggedTunableNumber("Drive/Choreo/yP", 1.5);
+  private static final LoggedTunableNumber choreorP =
+      new LoggedTunableNumber("Drive/Choreo/rP", 3.0);
 
   private final ProfiledPIDController thetaController;
   private final ProfiledPIDController linearController;
@@ -575,5 +591,104 @@ public class Drive extends SubsystemBase {
         thetaController.getSetpoint().position,
         thetaController.getGoal().position,
         Units.degreesToRadians(thetaToleranceDeg.get()));
+  }
+
+  // Auto Commands
+  public Command runChoreoTraj(ChoreoTrajectory traj) {
+    return this.runChoreoTraj(traj, false);
+  }
+
+  public Command runChoreoTraj(ChoreoTrajectory traj, boolean resetPose) {
+    return choreoFullFollowSwerveCommand(
+            traj,
+            poseManager::getPose,
+            Choreo.choreoSwerveController(
+                new PIDController(choreoxP.get(), 0.0, 0.0),
+                new PIDController(choreoyP.get(), 0.0, 0.0),
+                new PIDController(choreorP.get(), 0.0, 0.0)),
+            (ChassisSpeeds speeds) -> runVelocity(speeds),
+            AllianceFlipUtil::shouldFlip,
+            this)
+        .beforeStarting(
+            runOnce(
+                    () -> {
+                      if (AllianceFlipUtil.shouldFlip()) {
+                        poseManager.setPose(traj.getInitialState().flipped().getPose());
+                      } else {
+                        poseManager.setPose(traj.getInitialPose());
+                      }
+                    })
+                .onlyIf(() -> resetPose));
+  }
+
+  /**
+   * Create a command to follow a Choreo path.
+   *
+   * @param trajectory The trajectory to follow. Use Choreo.getTrajectory(String trajName) to load
+   *     this from the deploy directory.
+   * @param poseSupplier A function that returns the current field-relative pose of the robot.
+   * @param controller A ChoreoControlFunction to follow the current trajectory state. Use
+   *     ChoreoCommands.choreoSwerveController(PIDController xController, PIDController yController,
+   *     PIDController rotationController) to create one using PID controllers for each degree of
+   *     freedom. You can also pass in a function with the signature (Pose2d currentPose,
+   *     ChoreoTrajectoryState referenceState) -&gt; ChassisSpeeds to implement a custom follower
+   *     (i.e. for logging).
+   * @param outputChassisSpeeds A function that consumes the target robot-relative chassis speeds
+   *     and commands them to the robot.
+   * @param mirrorTrajectory If this returns true, the path will be mirrored to the opposite side,
+   *     while keeping the same coordinate system origin. This will be called every loop during the
+   *     command.
+   * @param requirements The subsystem(s) to require, typically your drive subsystem only.
+   * @return A command that follows a Choreo path.
+   */
+  public static Command choreoFullFollowSwerveCommand(
+      ChoreoTrajectory trajectory,
+      Supplier<Pose2d> poseSupplier,
+      ChoreoControlFunction controller,
+      Consumer<ChassisSpeeds> outputChassisSpeeds,
+      BooleanSupplier mirrorTrajectory,
+      Subsystem... requirements) {
+    var timer = new Timer();
+    return new FunctionalCommand(
+        () -> {
+          timer.restart();
+          if (Constants.currentMode != Constants.Mode.REAL) {
+            Logger.recordOutput(
+                "Drive/Choreo/Active Traj",
+                (mirrorTrajectory.getAsBoolean() ? trajectory.flipped() : trajectory).getPoses());
+          }
+        },
+        () -> {
+          Logger.recordOutput(
+              "Drive/Choreo/Target Pose",
+              trajectory.sample(timer.get(), mirrorTrajectory.getAsBoolean()).getPose());
+          Logger.recordOutput(
+              "Drive/Choreo/Target Speeds",
+              trajectory.sample(timer.get(), mirrorTrajectory.getAsBoolean()).getChassisSpeeds());
+          outputChassisSpeeds.accept(
+              controller.apply(
+                  poseSupplier.get(),
+                  trajectory.sample(timer.get(), mirrorTrajectory.getAsBoolean())));
+        },
+        (interrupted) -> {
+          timer.stop();
+          outputChassisSpeeds.accept(new ChassisSpeeds());
+        },
+        () -> {
+          var finalPose =
+              mirrorTrajectory.getAsBoolean()
+                  ? trajectory.getFinalState().flipped().getPose()
+                  : trajectory.getFinalState().getPose();
+          Logger.recordOutput("Drive/Choreo/Current Traj End Pose", finalPose);
+          return timer.hasElapsed(trajectory.getTotalTime())
+              && (MathUtil.isNear(finalPose.getX(), poseSupplier.get().getX(), 0.4)
+                  && MathUtil.isNear(finalPose.getY(), poseSupplier.get().getY(), 0.4)
+                  && Math.abs(
+                          (poseSupplier.get().getRotation().getDegrees()
+                                  - finalPose.getRotation().getDegrees())
+                              % 360)
+                      < 20.0);
+        },
+        requirements);
   }
 }
