@@ -13,8 +13,6 @@
 
 package frc.robot;
 
-import com.pathplanner.lib.auto.AutoBuilder;
-import com.pathplanner.lib.auto.NamedCommands;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -45,7 +43,7 @@ import frc.robot.subsystems.intake.IntakeIOSim;
 import frc.robot.util.Alert;
 import frc.robot.util.Alert.AlertType;
 import frc.robot.util.PoseManager;
-import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
+import frc.robot.util.loggedShuffleboardClasses.LoggedShuffleboardChooser;
 import org.littletonrobotics.junction.networktables.LoggedDashboardNumber;
 
 /**
@@ -75,9 +73,10 @@ public class RobotContainer {
   public boolean fastMode = false;
 
   // Dashboard inputs
-  private final LoggedDashboardChooser<Command> autoChooser;
-  private final LoggedDashboardNumber flywheelSpeedInput =
-      new LoggedDashboardNumber("Flywheel Speed", 1500.0);
+  private final LoggedShuffleboardChooser<Command> autoChooser =
+      new LoggedShuffleboardChooser<Command>("Auto Chooser", "Driver")
+          .withSize(2, 1)
+          .withPosition(0, 0);
   private final LoggedDashboardNumber slowDriveMultiplier =
       new LoggedDashboardNumber("Slow Drive Multiplier", 0.6);
   private final LoggedDashboardNumber slowTurnMultiplier =
@@ -148,14 +147,6 @@ public class RobotContainer {
             driver.povLeft(),
             driver.povRight(),
             poseManager);
-
-    // Set up auto routines
-    NamedCommands.registerCommand(
-        "Run Flywheel", // also does stuff w/ the intake
-        Commands.startEnd(
-                () -> flywheel.runVelocity(flywheelSpeedInput.get()), flywheel::stop, flywheel)
-            .withTimeout(5.0));
-    autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
 
     // Set up SysId routines
     autoChooser.addOption(
