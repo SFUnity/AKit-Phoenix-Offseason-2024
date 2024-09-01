@@ -25,7 +25,6 @@ import frc.robot.FieldConstants;
 import frc.robot.util.EqualsUtil;
 import frc.robot.util.GeneralUtil;
 import frc.robot.util.PoseManager;
-
 import org.littletonrobotics.junction.Logger;
 
 public class Pivot extends SubsystemBase {
