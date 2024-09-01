@@ -1,26 +1,26 @@
 package frc.robot.util.loggedShuffleboardClasses;
 
-import edu.wpi.first.wpilibj.shuffleboard.SimpleWidget;
+import edu.wpi.first.wpilibj.shuffleboard.ComplexWidget;
 import edu.wpi.first.wpilibj.shuffleboard.WidgetType;
 import java.util.Map;
 import org.littletonrobotics.junction.networktables.LoggedDashboardInput;
 
-public interface LoggedShuffleboardComponent<T extends LoggedShuffleboardComponent<T>>
+public interface LoggedShuffleboardComponentComplex<T extends LoggedShuffleboardComponentComplex<T>>
     extends LoggedDashboardInput {
 
   /**
-   * Gets the SimpleWidget associated with this component.
+   * Gets the ComplexWidget associated with this component.
    *
-   * @return the SimpleWidget
+   * @return the ComplexWidget
    */
-  SimpleWidget getWidget();
+  ComplexWidget getWidget();
 
   /**
-   * Sets the SimpleWidget for this component.
+   * Sets the ComplexWidget for this component.
    *
-   * @param widget the SimpleWidget to set
+   * @param widget the ComplexWidget to set
    */
-  void setWidget(SimpleWidget widget);
+  void setWidget(ComplexWidget widget);
 
   /**
    * Sets the type of widget used to display the data. If not set, the default widget type will be

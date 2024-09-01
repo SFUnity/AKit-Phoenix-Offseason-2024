@@ -9,7 +9,7 @@ import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.inputs.LoggableInputs;
 
 public class LoggedShuffleboardBoolean
-    implements LoggedShuffleboardComponent<LoggedShuffleboardBoolean> {
+    implements LoggedShuffleboardComponentSimple<LoggedShuffleboardBoolean> {
   private final String key;
   private boolean defaultValue;
   private boolean value;
