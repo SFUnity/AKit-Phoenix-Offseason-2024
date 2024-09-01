@@ -118,7 +118,7 @@ public class RobotContainer {
         shooter =
             new Shooter(
                 new Flywheels(new FlywheelsIOSparkMax()),
-                new Pivot(new PivotIOSparkMax(), aprilTagVision),
+                new Pivot(new PivotIOSparkMax(), poseManager),
                 new BeamBreakIORev(),
                 new Feeder(new FeederIOSparkMax()));
         break;
@@ -139,7 +139,7 @@ public class RobotContainer {
         shooter =
             new Shooter(
                 new Flywheels(new FlywheelsIOSim()),
-                new Pivot(new PivotIOSim(), aprilTagVision),
+                new Pivot(new PivotIOSim(), poseManager),
                 new BeamBreakIOSim(),
                 new Feeder(new FeederIOSim()));
         break;
@@ -160,7 +160,7 @@ public class RobotContainer {
         shooter =
             new Shooter(
                 new Flywheels(new FlywheelsIO() {}),
-                new Pivot(new PivotIO() {}, aprilTagVision),
+                new Pivot(new PivotIO() {}, poseManager),
                 new BeamBreakIO() {},
                 new Feeder(new FeederIO() {}));
         break;
