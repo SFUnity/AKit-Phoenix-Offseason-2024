@@ -3,6 +3,11 @@ package frc.robot.subsystems.drive;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import frc.robot.Constants;
+
+import java.util.function.BooleanSupplier;
+import org.littletonrobotics.junction.networktables.LoggedDashboardNumber;
 
 /** All Constants Measured in Meters and Radians (m/s, m/s^2, rad/s, rad/s^2) */
 public final class DriveConstants {
@@ -28,4 +33,55 @@ public final class DriveConstants {
 
   public static final SwerveDriveKinematics kinematics =
       new SwerveDriveKinematics(moduleTranslations);
+
+  /**
+   * Drive Command Config
+   *
+   * @param xJoystick - Left Joystick X axis
+   * @param yJoystick - Left Joystick Y axis
+   * @param omegaJoystick - Right Joystick X axis
+   * @param slowMode - If the joystick drive should be slowed down
+   * @param slowDriveMultiplier - Multiplier for slow mode
+   * @param slowTurnMultiplier - Multiplier for slow mode
+   * @param povUp - POV/Dpad Up
+   * @param povDown - POV/Dpad Down
+   * @param povLeft - POV/Dpad Left
+   * @param povRight - POV/Dpad Right
+   */
+  public static final record DriveCommandsConfig(
+      CommandXboxController controller,
+      BooleanSupplier slowMode,
+      LoggedDashboardNumber slowDriveMultiplier,
+      LoggedDashboardNumber slowTurnMultiplier) {
+
+    private static final boolean simMode = Constants.currentMode == Constants.Mode.SIM;
+
+    public double getXInput() {
+      return simMode ? -controller.getLeftX() : controller.getLeftY();
+    }
+
+    public double getYInput() {
+      return simMode ? controller.getLeftY() : controller.getLeftX();
+    }
+
+    public double getOmegaInput() {
+      return -controller.getRightX();
+    }
+
+    public boolean povUpPressed() {
+      return controller.povUp().getAsBoolean();
+    }
+
+    public boolean povDownPressed() {
+      return controller.povDown().getAsBoolean();
+    }
+
+    public boolean povLeftPressed() {
+      return controller.povLeft().getAsBoolean();
+    }
+
+    public boolean povRightPressed() {
+      return controller.povRight().getAsBoolean();
+    }
+  }
 }
