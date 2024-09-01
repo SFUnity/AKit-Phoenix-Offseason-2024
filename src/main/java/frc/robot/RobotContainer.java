@@ -167,18 +167,22 @@ public class RobotContainer {
         break;
     }
 
+    // Set up auto routines
+    // autoChooser.addOption("source43", source43());
+
+    // Set up test routines
     if (!DriverStation.isFMSAttached()) {
       // Set up SysId routines
       autoChooser.addOption(
           "Drive SysId (Quasistatic Forward)",
-          drive.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
+          driveSysIdQuasistatic(SysIdRoutine.Direction.kForward));
       autoChooser.addOption(
           "Drive SysId (Quasistatic Reverse)",
-          drive.sysIdQuasistatic(SysIdRoutine.Direction.kReverse));
+          driveSysIdQuasistatic(SysIdRoutine.Direction.kReverse));
       autoChooser.addOption(
-          "Drive SysId (Dynamic Forward)", drive.sysIdDynamic(SysIdRoutine.Direction.kForward));
+          "Drive SysId (Dynamic Forward)", driveSysIdDynamic(SysIdRoutine.Direction.kForward));
       autoChooser.addOption(
-          "Drive SysId (Dynamic Reverse)", drive.sysIdDynamic(SysIdRoutine.Direction.kReverse));
+          "Drive SysId (Dynamic Reverse)", driveSysIdDynamic(SysIdRoutine.Direction.kReverse));
     }
 
     // Configure the button bindings
@@ -269,6 +273,26 @@ public class RobotContainer {
    * @return the command to run in autonomous
    */
   public Command getAutonomousCommand() {
-    return Commands.run(autoChooser.get());
+    return Commands.runOnce(autoChooser.get());
+  }
+
+//   private static Trigger autoTrigger(BooleanSupplier condition) {
+//     return new Trigger(condition).and(DriverStation::isAutonomousEnabled);
+//   }
+
+  private static Trigger atStartOfAuto(Command command) {
+    return new Trigger(DriverStation::isAutonomousEnabled).onTrue(command);
+  }
+
+  private Runnable driveSysIdQuasistatic(SysIdRoutine.Direction direction) {
+    return () -> {
+      atStartOfAuto(drive.sysIdQuasistatic(direction));
+    };
+  }
+
+  private Runnable driveSysIdDynamic(SysIdRoutine.Direction direction) {
+    return () -> {
+        atStartOfAuto(drive.sysIdDynamic(direction));
+    };
   }
 }
