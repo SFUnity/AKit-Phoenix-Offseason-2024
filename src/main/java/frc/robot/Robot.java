@@ -197,6 +197,8 @@ public class Robot extends LoggedRobot {
   /** This autonomous runs the autonomous command selected by your {@link RobotContainer} class. */
   @Override
   public void autonomousInit() {
+    autoStart = Timer.getFPGATimestamp();
+    autoMessagePrinted = false;
     autoCommand = robotContainer.getAutonomousCommand();
 
     // schedule the autonomous command (example)
