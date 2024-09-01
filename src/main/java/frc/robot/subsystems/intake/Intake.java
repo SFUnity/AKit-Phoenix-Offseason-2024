@@ -31,7 +31,7 @@ public class Intake extends SubsystemBase {
   private static final LoggedTunableNumber indexerSpeed =
       new LoggedTunableNumber("Intake/Speeds/indexer", 1);
 
-  private final LoggedShuffleboardBoolean intakeWorking =
+  public final LoggedShuffleboardBoolean intakeWorking =
       new LoggedShuffleboardBoolean("Intake Working", "Intake", true)
           .withWidget(BuiltInWidgets.kToggleButton)
           .withSize(2, 1);

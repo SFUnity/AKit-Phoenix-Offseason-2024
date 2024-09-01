@@ -13,7 +13,7 @@ public interface AprilTagVisionIO {
     /** percentage of image */
     public double avgTagArea;
 
-    public double pipeline = 0; // TODO store the pipelines where the code can see them
+    public double pipeline = 0;
     /** 0 = pipeline control, 1 = force off, 2 = force blink, 3 = force on */
     public double ledMode = 0;
   }

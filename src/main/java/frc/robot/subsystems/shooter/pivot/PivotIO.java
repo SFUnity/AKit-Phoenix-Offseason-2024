@@ -11,28 +11,29 @@
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU General Public License for more details.
 
-package frc.robot.subsystems.flywheel;
+package frc.robot.subsystems.shooter.pivot;
 
 import org.littletonrobotics.junction.AutoLog;
 
-public interface FlywheelIO {
+public interface PivotIO {
   @AutoLog
-  public static class FlywheelIOInputs {
-    public double positionRad = 0.0;
-    public double velocityRadPerSec = 0.0;
+  public static class PivotIOInputs {
+    public double positionRots = 0.0;
+    public double velocityRotsPerSec = 0.0;
     public double appliedVolts = 0.0;
     public double[] currentAmps = new double[] {};
   }
 
   /** Updates the set of loggable inputs. */
-  public default void updateInputs(FlywheelIOInputs inputs) {}
+  public default void updateInputs(PivotIOInputs inputs) {}
 
   /** Run open loop at the specified voltage. */
   public default void setVoltage(double volts) {}
 
-  /** Run closed loop at the specified velocity. */
-  public default void setVelocity(double velocityRadPerSec, double ffVolts) {}
+  public default void atDesiredAngle(double desiredAngle) {}
 
+  // TODO When reading this function's name it sounds like you're setting a motor speed to an angle
+  public default void setAngleMotorSpeeds(double desiredAngle) {}
   /** Stop in open loop. */
   public default void stop() {}
 

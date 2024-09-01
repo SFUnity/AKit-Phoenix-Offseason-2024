@@ -33,13 +33,26 @@ import frc.robot.subsystems.drive.GyroIOPigeon2;
 import frc.robot.subsystems.drive.ModuleIO;
 import frc.robot.subsystems.drive.ModuleIOMixed;
 import frc.robot.subsystems.drive.ModuleIOSim;
-import frc.robot.subsystems.flywheel.Flywheel;
-import frc.robot.subsystems.flywheel.FlywheelIO;
-import frc.robot.subsystems.flywheel.FlywheelIOSim;
-import frc.robot.subsystems.flywheel.FlywheelIOSparkMax;
 import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.intake.IntakeIO;
 import frc.robot.subsystems.intake.IntakeIOSim;
+import frc.robot.subsystems.intake.IntakeIOSparkMax;
+import frc.robot.subsystems.shooter.BeamBreakIO;
+import frc.robot.subsystems.shooter.BeamBreakIORev;
+import frc.robot.subsystems.shooter.BeamBreakIOSim;
+import frc.robot.subsystems.shooter.Shooter;
+import frc.robot.subsystems.shooter.feeder.Feeder;
+import frc.robot.subsystems.shooter.feeder.FeederIO;
+import frc.robot.subsystems.shooter.feeder.FeederIOSim;
+import frc.robot.subsystems.shooter.feeder.FeederIOSparkMax;
+import frc.robot.subsystems.shooter.flywheels.Flywheels;
+import frc.robot.subsystems.shooter.flywheels.FlywheelsIO;
+import frc.robot.subsystems.shooter.flywheels.FlywheelsIOSim;
+import frc.robot.subsystems.shooter.flywheels.FlywheelsIOSparkMax;
+import frc.robot.subsystems.shooter.pivot.Pivot;
+import frc.robot.subsystems.shooter.pivot.PivotIO;
+import frc.robot.subsystems.shooter.pivot.PivotIOSim;
+import frc.robot.subsystems.shooter.pivot.PivotIOSparkMax;
 import frc.robot.util.Alert;
 import frc.robot.util.Alert.AlertType;
 import frc.robot.util.PoseManager;
@@ -55,9 +68,9 @@ import org.littletonrobotics.junction.networktables.LoggedDashboardNumber;
 public class RobotContainer {
   // Subsystems
   private final Drive drive;
-  private final Flywheel flywheel;
   private final Intake intake;
   private final AprilTagVision aprilTagVision;
+  private final Shooter shooter;
 
   // Pose Manager
   private final PoseManager poseManager = new PoseManager();
@@ -101,8 +114,13 @@ public class RobotContainer {
         aprilTagVision =
             new AprilTagVision(
                 new AprilTagVisionIOLimelight("limelight", poseManager), poseManager);
-        flywheel = new Flywheel(new FlywheelIOSparkMax());
-        intake = new Intake(new IntakeIOSim());
+        intake = new Intake(new IntakeIOSparkMax());
+        shooter =
+            new Shooter(
+                new Flywheels(new FlywheelsIOSparkMax()),
+                new Pivot(new PivotIOSparkMax(), aprilTagVision),
+                new BeamBreakIORev(),
+                new Feeder(new FeederIOSparkMax()));
         break;
 
       case SIM:
@@ -117,8 +135,13 @@ public class RobotContainer {
                 poseManager,
                 driveCommandsConfig);
         aprilTagVision = new AprilTagVision(new AprilTagVisionIO() {}, poseManager);
-        flywheel = new Flywheel(new FlywheelIOSim());
         intake = new Intake(new IntakeIOSim());
+        shooter =
+            new Shooter(
+                new Flywheels(new FlywheelsIOSim()),
+                new Pivot(new PivotIOSim(), aprilTagVision),
+                new BeamBreakIOSim(),
+                new Feeder(new FeederIOSim()));
         break;
 
       default:
@@ -133,32 +156,29 @@ public class RobotContainer {
                 poseManager,
                 driveCommandsConfig);
         aprilTagVision = new AprilTagVision(new AprilTagVisionIO() {}, poseManager);
-        flywheel = new Flywheel(new FlywheelIO() {});
         intake = new Intake(new IntakeIO() {});
+        shooter =
+            new Shooter(
+                new Flywheels(new FlywheelsIO() {}),
+                new Pivot(new PivotIO() {}, aprilTagVision),
+                new BeamBreakIO() {},
+                new Feeder(new FeederIO() {}));
         break;
     }
 
-    // Set up SysId routines
-    autoChooser.addOption(
-        "Drive SysId (Quasistatic Forward)",
-        drive.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
-    autoChooser.addOption(
-        "Drive SysId (Quasistatic Reverse)",
-        drive.sysIdQuasistatic(SysIdRoutine.Direction.kReverse));
-    autoChooser.addOption(
-        "Drive SysId (Dynamic Forward)", drive.sysIdDynamic(SysIdRoutine.Direction.kForward));
-    autoChooser.addOption(
-        "Drive SysId (Dynamic Reverse)", drive.sysIdDynamic(SysIdRoutine.Direction.kReverse));
-    autoChooser.addOption(
-        "Flywheel SysId (Quasistatic Forward)",
-        flywheel.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
-    autoChooser.addOption(
-        "Flywheel SysId (Quasistatic Reverse)",
-        flywheel.sysIdQuasistatic(SysIdRoutine.Direction.kReverse));
-    autoChooser.addOption(
-        "Flywheel SysId (Dynamic Forward)", flywheel.sysIdDynamic(SysIdRoutine.Direction.kForward));
-    autoChooser.addOption(
-        "Flywheel SysId (Dynamic Reverse)", flywheel.sysIdDynamic(SysIdRoutine.Direction.kReverse));
+    if (!DriverStation.isFMSAttached()) {
+      // Set up SysId routines
+      autoChooser.addOption(
+          "Drive SysId (Quasistatic Forward)",
+          drive.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
+      autoChooser.addOption(
+          "Drive SysId (Quasistatic Reverse)",
+          drive.sysIdQuasistatic(SysIdRoutine.Direction.kReverse));
+      autoChooser.addOption(
+          "Drive SysId (Dynamic Forward)", drive.sysIdDynamic(SysIdRoutine.Direction.kForward));
+      autoChooser.addOption(
+          "Drive SysId (Dynamic Reverse)", drive.sysIdDynamic(SysIdRoutine.Direction.kReverse));
+    }
 
     // Configure the button bindings
     configureButtonBindings();
@@ -203,10 +223,31 @@ public class RobotContainer {
         .y()
         .whileTrue(drive.fullAutoDrive(() -> new Pose2d(1.815, 7.8, new Rotation2d(-Math.PI / 2))));
 
-    // Operator controls for intake
-    operator.triangle().whileTrue(intake.poopCmd());
-    operator.square().whileTrue(intake.intakeCmd(operator.cross()));
-    operator.circle().whileTrue(intake.intakeCmd(new Trigger(() -> false)));
+    // Operator controls
+    operator
+        .triangle()
+        .whileTrue(intake.poopCmd().alongWith(shooter.setOuttaking()).withName("poop"));
+    operator
+        .square()
+        .whileTrue(
+            intake
+                .intakeCmd(operator.cross())
+                .alongWith(shooter.setIntaking(intake.intakeWorking))
+                .withName("setIntaking"));
+    operator
+        .circle()
+        .whileTrue(
+            intake
+                .intakeCmd(new Trigger(() -> false))
+                .alongWith(shooter.feedNoteToFlywheels())
+                .withName("shootNote"));
+
+    operator.povUp().onTrue(shooter.stopFlywheels());
+
+    operator.L1().onTrue(shooter.setAmpShot());
+    operator.R1().onTrue(shooter.setAutoAimShot());
+    operator.L2().onTrue(shooter.setFeeding());
+    operator.R2().onTrue(shooter.setManualSpeakerShot());
   }
 
   /** Updates the alerts for disconnected controllers. */
