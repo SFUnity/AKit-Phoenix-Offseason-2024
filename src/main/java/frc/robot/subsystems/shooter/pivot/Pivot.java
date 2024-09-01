@@ -13,6 +13,7 @@
 
 package frc.robot.subsystems.shooter.pivot;
 
+import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
@@ -20,26 +21,20 @@ import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
-import frc.robot.subsystems.apriltagvision.AprilTagVision;
-import frc.robot.subsystems.apriltagvision.AprilTagVisionConstants;
+import frc.robot.FieldConstants;
 import frc.robot.util.EqualsUtil;
 import frc.robot.util.GeneralUtil;
+import frc.robot.util.PoseManager;
+
 import org.littletonrobotics.junction.Logger;
 
 public class Pivot extends SubsystemBase {
   private final PivotIO io;
-  private final AprilTagVision aprilTagVision;
+  private final PoseManager poseManager;
   private final PivotIOInputsAutoLogged inputs = new PivotIOInputsAutoLogged();
   private final PivotVisualizer measuredVisualizer;
   private final PivotVisualizer setpointVisualizer;
   private ShuffleboardTab driversTab = Shuffleboard.getTab("Drivers");
-
-  private GenericEntry hegihtOfSpeakerEntry =
-      driversTab
-          .addPersistent("Speaker Height", AprilTagVisionConstants.heightOfSpeakerInches)
-          .withPosition(9, 1)
-          .withSize(1, 1)
-          .getEntry();
 
   private GenericEntry feedingAngleEntry =
       driversTab
@@ -58,10 +53,9 @@ public class Pivot extends SubsystemBase {
   private double desiredAngle = 0;
 
   /** Creates a new Pivot. */
-  public Pivot(PivotIO io, AprilTagVision aprilTagVision) {
+  public Pivot(PivotIO io, PoseManager poseManager) {
     this.io = io;
-
-    this.aprilTagVision = aprilTagVision;
+    this.poseManager = poseManager;
 
     // Switch constants based on mode (the physics simulator is treated as a
     // separate robot with different tuning)
@@ -107,9 +101,9 @@ public class Pivot extends SubsystemBase {
   }
 
   public void readyShootSpeakerAutomatic() {
-    double heightOfTarget =
-        hegihtOfSpeakerEntry.getDouble(AprilTagVisionConstants.heightOfSpeakerInches);
-    double angleRad = Math.atan(heightOfTarget / aprilTagVision.getDistance());
+    Translation3d speakerOpening = FieldConstants.Speaker.centerSpeakerOpening;
+    double heightOfTarget = speakerOpening.getY();
+    double angleRad = Math.atan(heightOfTarget / poseManager.getDistanceTo(speakerOpening));
     double angleDeg = Math.toDegrees(angleRad);
     desiredAngle = angleDeg + angleOffset.getDouble(PivotConstants.kSpeakerAngleOffsetRevRotations);
   }
