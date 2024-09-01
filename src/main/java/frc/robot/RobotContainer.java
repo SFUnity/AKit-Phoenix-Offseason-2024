@@ -57,7 +57,6 @@ import frc.robot.util.Alert;
 import frc.robot.util.Alert.AlertType;
 import frc.robot.util.PoseManager;
 import frc.robot.util.loggedShuffleboardClasses.LoggedShuffleboardChooser;
-import java.util.function.BooleanSupplier;
 import org.littletonrobotics.junction.networktables.LoggedDashboardNumber;
 
 /**
@@ -276,9 +275,9 @@ public class RobotContainer {
     return Commands.runOnce(autoChooser.get());
   }
 
-//   private static Trigger autoTrigger(BooleanSupplier condition) {
-//     return new Trigger(condition).and(DriverStation::isAutonomousEnabled);
-//   }
+  //   private static Trigger autoTrigger(BooleanSupplier condition) {
+  //     return new Trigger(condition).and(DriverStation::isAutonomousEnabled);
+  //   }
 
   private static Trigger atStartOfAuto(Command command) {
     return new Trigger(DriverStation::isAutonomousEnabled).onTrue(command);
@@ -292,7 +291,7 @@ public class RobotContainer {
 
   private Runnable driveSysIdDynamic(SysIdRoutine.Direction direction) {
     return () -> {
-        atStartOfAuto(drive.sysIdDynamic(direction));
+      atStartOfAuto(drive.sysIdDynamic(direction));
     };
   }
 }
