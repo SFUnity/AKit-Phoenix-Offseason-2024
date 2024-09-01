@@ -111,10 +111,10 @@ public class RobotContainer {
                 new ModuleIOMixed(3),
                 poseManager,
                 driveCommandsConfig);
+        intake = new Intake(new IntakeIOSparkMax());
         aprilTagVision =
             new AprilTagVision(
                 new AprilTagVisionIOLimelight("limelight", poseManager), poseManager);
-        intake = new Intake(new IntakeIOSparkMax());
         shooter =
             new Shooter(
                 new Flywheels(new FlywheelsIOSparkMax()),
@@ -134,8 +134,8 @@ public class RobotContainer {
                 new ModuleIOSim(),
                 poseManager,
                 driveCommandsConfig);
-        aprilTagVision = new AprilTagVision(new AprilTagVisionIO() {}, poseManager);
         intake = new Intake(new IntakeIOSim());
+        aprilTagVision = new AprilTagVision(new AprilTagVisionIO() {}, poseManager);
         shooter =
             new Shooter(
                 new Flywheels(new FlywheelsIOSim()),
@@ -155,8 +155,8 @@ public class RobotContainer {
                 new ModuleIO() {},
                 poseManager,
                 driveCommandsConfig);
-        aprilTagVision = new AprilTagVision(new AprilTagVisionIO() {}, poseManager);
         intake = new Intake(new IntakeIO() {});
+        aprilTagVision = new AprilTagVision(new AprilTagVisionIO() {}, poseManager);
         shooter =
             new Shooter(
                 new Flywheels(new FlywheelsIO() {}),
