@@ -24,11 +24,11 @@ import edu.wpi.first.wpilibj2.command.button.CommandPS5Controller;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
-import frc.robot.commands.DriveCommands;
 import frc.robot.subsystems.apriltagvision.AprilTagVision;
 import frc.robot.subsystems.apriltagvision.AprilTagVisionIO;
 import frc.robot.subsystems.apriltagvision.AprilTagVisionIOLimelight;
 import frc.robot.subsystems.drive.Drive;
+import frc.robot.subsystems.drive.DriveConstants.DriveCommandsConfig;
 import frc.robot.subsystems.drive.GyroIO;
 import frc.robot.subsystems.drive.GyroIOPigeon2;
 import frc.robot.subsystems.drive.ModuleIO;
@@ -56,7 +56,9 @@ import frc.robot.subsystems.shooter.pivot.PivotIOSim;
 import frc.robot.subsystems.shooter.pivot.PivotIOSparkMax;
 import frc.robot.util.Alert;
 import frc.robot.util.Alert.AlertType;
+import frc.robot.util.PoseManager;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
+import org.littletonrobotics.junction.networktables.LoggedDashboardNumber;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -71,6 +73,9 @@ public class RobotContainer {
   private final AprilTagVision aprilTagVision;
   private final Shooter shooter;
 
+  // Pose Manager
+  private final PoseManager poseManager = new PoseManager();
+
   // Controller
   private final CommandXboxController driver = new CommandXboxController(0);
   private final CommandPS5Controller operator = new CommandPS5Controller(1);
@@ -78,9 +83,17 @@ public class RobotContainer {
       new Alert("Driver controller disconnected (port 0).", AlertType.WARNING);
   private final Alert operatorDisconnected =
       new Alert("Operator controller disconnected (port 1).", AlertType.WARNING);
+  public boolean slowMode = false;
 
   // Dashboard inputs
   private final LoggedDashboardChooser<Command> autoChooser;
+  private final LoggedDashboardNumber slowDriveMultiplier =
+      new LoggedDashboardNumber("Slow Drive Multiplier", 0.6);
+  private final LoggedDashboardNumber slowTurnMultiplier =
+      new LoggedDashboardNumber("Slow Turn Multiplier", 0.5);
+
+  private final DriveCommandsConfig driveCommandsConfig =
+      new DriveCommandsConfig(driver, () -> slowMode, slowDriveMultiplier, slowTurnMultiplier);
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
@@ -93,9 +106,13 @@ public class RobotContainer {
                 new ModuleIOMixed(0),
                 new ModuleIOMixed(1),
                 new ModuleIOMixed(2),
-                new ModuleIOMixed(3));
+                new ModuleIOMixed(3),
+                poseManager,
+                driveCommandsConfig);
         intake = new Intake(new IntakeIOSparkMax());
-        aprilTagVision = new AprilTagVision(new AprilTagVisionIOLimelight("limelight"));
+        aprilTagVision =
+            new AprilTagVision(
+                new AprilTagVisionIOLimelight("limelight", poseManager), poseManager);
         shooter =
             new Shooter(
                 new Flywheels(new FlywheelsIOSparkMax()),
@@ -112,9 +129,11 @@ public class RobotContainer {
                 new ModuleIOSim(),
                 new ModuleIOSim(),
                 new ModuleIOSim(),
-                new ModuleIOSim());
+                new ModuleIOSim(),
+                poseManager,
+                driveCommandsConfig);
         intake = new Intake(new IntakeIOSim());
-        aprilTagVision = new AprilTagVision(new AprilTagVisionIO() {});
+        aprilTagVision = new AprilTagVision(new AprilTagVisionIO() {}, poseManager);
         shooter =
             new Shooter(
                 new Flywheels(new FlywheelsIOSim()),
@@ -131,9 +150,11 @@ public class RobotContainer {
                 new ModuleIO() {},
                 new ModuleIO() {},
                 new ModuleIO() {},
-                new ModuleIO() {});
+                new ModuleIO() {},
+                poseManager,
+                driveCommandsConfig);
         intake = new Intake(new IntakeIO() {});
-        aprilTagVision = new AprilTagVision(new AprilTagVisionIO() {});
+        aprilTagVision = new AprilTagVision(new AprilTagVisionIO() {}, poseManager);
         shooter =
             new Shooter(
                 new Flywheels(new FlywheelsIO() {}),
@@ -178,9 +199,7 @@ public class RobotContainer {
   /** Use this method to define your button->command mappings. */
   private void configureButtonBindings() {
     // Default cmds
-    drive.setDefaultCommand(
-        DriveCommands.joystickDrive(
-            drive, () -> -driver.getLeftY(), () -> -driver.getLeftX(), () -> -driver.getRightX()));
+    drive.setDefaultCommand(drive.joystickDrive());
     intake.setDefaultCommand(intake.raiseAndStopCmd());
 
     // Driver controls
@@ -190,10 +209,20 @@ public class RobotContainer {
         .onTrue(
             Commands.runOnce(
                     () ->
-                        drive.setPose(
-                            new Pose2d(drive.getPose().getTranslation(), new Rotation2d())),
+                        poseManager.setPose(
+                            new Pose2d(poseManager.getTranslation(), new Rotation2d())),
                     drive)
                 .ignoringDisable(true));
+    driver.leftBumper().onTrue(Commands.runOnce(() -> slowMode = !slowMode, drive));
+    driver
+        .b()
+        .whileTrue(
+            drive.headingDrive(
+                () ->
+                    poseManager.getHorizontalAngleTo(FieldConstants.Speaker.centerSpeakerOpening)));
+    driver
+        .y()
+        .whileTrue(drive.fullAutoDrive(() -> new Pose2d(1.815, 7.8, new Rotation2d(-Math.PI / 2))));
 
     // Operator controls
     operator

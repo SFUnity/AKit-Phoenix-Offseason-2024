@@ -14,8 +14,8 @@
 package frc.robot;
 
 // import com.ctre.phoenix6.SignalLogger;
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Pose3d;
+// import edu.wpi.first.math.geometry.Pose2d;
+// import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.net.PortForwarder;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.PowerDistribution;
@@ -132,8 +132,8 @@ public class Robot extends LoggedRobot {
     robotContainer = new RobotContainer();
 
     DriverStation.silenceJoystickConnectionWarning(true);
-    Logger.recordOutput("ZeroedPose", new Pose2d());
-    Logger.recordOutput("ZeroedPoseIntake", new Pose3d());
+    // Logger.recordOutput("ZeroedPose", new Pose2d());
+    // Logger.recordOutput("ZeroedPoseIntake", new Pose3d());
 
     // Set up port forwarding for limelights so we can connect to them through the RoboRIO USB port
     for (int port = 5800; port <= 5809; port++) {

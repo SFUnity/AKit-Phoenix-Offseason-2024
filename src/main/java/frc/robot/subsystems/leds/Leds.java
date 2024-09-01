@@ -28,7 +28,7 @@ public class Leds extends VirtualSubsystem {
   public int loopCycleCount = 0;
   public boolean intakeWorking = true;
   public boolean noteInShooter = false;
-  public boolean targetDetected = false;
+  public boolean tagsDetected = false;
   public boolean alignedWithTarget = false;
   public boolean autoFinished = false;
   public double autoFinishedTime = 0.0;
@@ -159,7 +159,7 @@ public class Leds extends VirtualSubsystem {
         } else {
           solid(Color.kYellow);
         }
-      } else if (!targetDetected) {
+      } else if (!tagsDetected) {
         solid(Color.kBlue);
       } else if (!alignedWithTarget) {
         solid(Color.kPurple);
