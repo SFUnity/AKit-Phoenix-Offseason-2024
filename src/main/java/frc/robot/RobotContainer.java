@@ -57,6 +57,7 @@ import frc.robot.util.Alert;
 import frc.robot.util.Alert.AlertType;
 import frc.robot.util.PoseManager;
 import frc.robot.util.loggedShuffleboardClasses.LoggedShuffleboardChooser;
+import java.util.function.BooleanSupplier;
 import org.littletonrobotics.junction.networktables.LoggedDashboardNumber;
 
 /**
@@ -85,8 +86,8 @@ public class RobotContainer {
   public boolean slowMode = false;
 
   // Dashboard inputs
-  private final LoggedShuffleboardChooser<Command> autoChooser =
-      new LoggedShuffleboardChooser<Command>("Auto Chooser", "Driver")
+  private final LoggedShuffleboardChooser<Runnable> autoChooser =
+      new LoggedShuffleboardChooser<Runnable>("Auto Chooser", "Driver")
           .withSize(2, 1)
           .withPosition(0, 0);
   private final LoggedDashboardNumber slowDriveMultiplier =
@@ -268,6 +269,6 @@ public class RobotContainer {
    * @return the command to run in autonomous
    */
   public Command getAutonomousCommand() {
-    return autoChooser.get();
+    return Commands.run(autoChooser.get());
   }
 }
