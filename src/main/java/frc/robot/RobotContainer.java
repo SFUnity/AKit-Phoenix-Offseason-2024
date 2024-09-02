@@ -286,6 +286,13 @@ public class RobotContainer {
     return new Trigger(condition).and(DriverStation::isAutonomousEnabled);
   }
 
+  private Trigger loggedAutoTrigger(String key, BooleanSupplier condition) {
+    atStartOfAuto(
+        Commands.run(
+            () -> Logger.recordOutput("Drive/Choreo/Triggers/" + key, condition.getAsBoolean())));
+    return new Trigger(condition).and(DriverStation::isAutonomousEnabled);
+  }
+
   private Trigger atStartOfAuto(Command command) {
     return new Trigger(DriverStation::isAutonomousEnabled).onTrue(command);
   }
@@ -328,14 +335,17 @@ public class RobotContainer {
           trajs[0]);
       autoTrigger(shooter::noteInShooter)
           .onFalse(trajCmds[intakingIndex].andThen(trajCmds[shootingIndex]));
-      autoTriggerWithLog(() -> poseManager.near(getFinalPosition(trajs[intakingIndex]), 1))
+      loggedAutoTrigger(
+              "nearIntakingPose", () -> poseManager.near(getFinalPosition(trajs[intakingIndex]), 1))
           .onTrue(
               shooter
                   .setIntaking(intake.intakeWorking)
                   .deadlineWith(intake.fullIntakeCmd())
                   .andThen(() -> intakingIndex += 2));
       // May need to change this to only happen once the path has fully finished
-      autoTriggerWithLog(() -> poseManager.near(getFinalPosition(trajs[shootingIndex]), .5))
+      loggedAutoTrigger(
+              "nearShootingPose",
+              () -> poseManager.near(getFinalPosition(trajs[shootingIndex]), .5))
           .and(shooter::noteInShooter)
           .onTrue(
               shooter
