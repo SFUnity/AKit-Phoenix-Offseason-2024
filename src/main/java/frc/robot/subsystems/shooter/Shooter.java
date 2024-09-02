@@ -50,6 +50,10 @@ public class Shooter extends VirtualSubsystem {
     return beamBreakInputs.isRangeValid && beamBreakWorkingEntry.get();
   }
 
+  public boolean atDesiredAngle() {
+    return pivot.atDesiredAngle();
+  }
+
   public Command setManualSpeakerShot() {
     return pivot
         .setManualSpeakerAngle()
