@@ -112,6 +112,10 @@ public class Intake extends SubsystemBase {
         .withName("raise and stop");
   }
 
+  public Command fullIntakeCmd() {
+    return intakeCmd(new Trigger(() -> true));
+  }
+
   public Command intakeCmd(Trigger lowerTrig) {
     return Commands.either(
         run(() -> {
