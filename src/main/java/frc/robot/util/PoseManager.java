@@ -66,6 +66,10 @@ public class PoseManager {
     return currentTranslation.getDistance(translation);
   }
 
+  public boolean nearTo(Pose2d pose) {
+    return getDistanceTo(pose) < 1.0; // 1m
+  }
+
   public Rotation2d getHorizontalAngleTo(Pose2d pose) {
     return getHorizontalAngleTo(pose.getTranslation());
   }
