@@ -290,7 +290,7 @@ public class RobotContainer {
     atStartOfAuto(
         Commands.run(
             () -> Logger.recordOutput("Drive/Choreo/Triggers/" + key, condition.getAsBoolean())));
-    return new Trigger(condition).and(DriverStation::isAutonomousEnabled);
+    return autoTrigger(condition);
   }
 
   private Trigger atStartOfAuto(Command command) {
