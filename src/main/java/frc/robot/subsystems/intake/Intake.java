@@ -116,6 +116,10 @@ public class Intake extends SubsystemBase {
     return intakeCmd(new Trigger(() -> true));
   }
 
+  public Command shootCmd() {
+    return intakeCmd(new Trigger(() -> false));
+  }
+
   public Command intakeCmd(Trigger lowerTrig) {
     return Commands.either(
         run(() -> {

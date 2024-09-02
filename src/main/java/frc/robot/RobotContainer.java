@@ -239,13 +239,7 @@ public class RobotContainer {
                 .setIntaking(intake.intakeWorking)
                 .deadlineWith(intake.intakeCmd(operator.cross()))
                 .withName("setIntaking"));
-    operator
-        .circle()
-        .whileTrue(
-            intake
-                .intakeCmd(new Trigger(() -> false))
-                .alongWith(shooter.feedNoteToFlywheels())
-                .withName("shootNote"));
+    operator.circle().whileTrue(shootCmd());
 
     operator.povUp().onTrue(shooter.stopFlywheels());
     operator
@@ -272,8 +266,11 @@ public class RobotContainer {
                 operator.getHID().getPort())); // Should not be an XBox controller
   }
 
-  // Auto stuff
+  private Command shootCmd() {
+    return shooter.feedNoteToFlywheels().deadlineWith(intake.shootCmd()).withName("shootNote");
+  }
 
+  // Auto stuff
   public void setAutoIfChanged() {
     if (autoChooser.hasChanged(hashCode())) {
       autoChooser.get().run();
