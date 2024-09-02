@@ -25,7 +25,7 @@ public interface IntakeIO {
   default void setPivotPosition(double setpointRads) {}
 
   /** Set PID values */
-  default void setPID(double p) {}
+  default void setP(double p) {}
 
   /** Stops motors */
   default void stop() {}

@@ -13,6 +13,8 @@
 
 package frc.robot.subsystems.shooter.pivot;
 
+import static frc.robot.subsystems.shooter.pivot.PivotConstants.*;
+
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.Timer;
@@ -21,14 +23,17 @@ import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Constants;
 import frc.robot.FieldConstants;
 import frc.robot.util.EqualsUtil;
 import frc.robot.util.GeneralUtil;
+import frc.robot.util.LoggedTunableNumber;
 import frc.robot.util.PoseManager;
 import org.littletonrobotics.junction.Logger;
 
 public class Pivot extends SubsystemBase {
+  private static final LoggedTunableNumber kP =
+      new LoggedTunableNumber("Pivot/Gains/kP", gains.kP());
+
   private final PivotIO io;
   private final PoseManager poseManager;
   private final PivotIOInputsAutoLogged inputs = new PivotIOInputsAutoLogged();
@@ -58,19 +63,7 @@ public class Pivot extends SubsystemBase {
     this.io = io;
     this.poseManager = poseManager;
 
-    // Switch constants based on mode (the physics simulator is treated as a
-    // separate robot with different tuning)
-    switch (Constants.currentMode) {
-      case REAL:
-      case REPLAY:
-        io.configurePID(1.0, 0.0, 0.0);
-        break;
-      case SIM:
-        io.configurePID(0.5, 0.0, 0.0);
-        break;
-      default:
-        break;
-    }
+    io.setP(gains.kP());
 
     atGoalTimer.reset();
     atGoalTimer.start();
@@ -83,6 +76,9 @@ public class Pivot extends SubsystemBase {
   public void periodic() {
     io.updateInputs(inputs);
     Logger.processInputs("Shooter/Pivot", inputs);
+
+    // Update controllers
+    LoggedTunableNumber.ifChanged(hashCode(), () -> io.setP(kP.get()), kP);
 
     measuredVisualizer.update(inputs.positionRots);
     setpointVisualizer.update(desiredAngle);

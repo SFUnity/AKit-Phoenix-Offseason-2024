@@ -2,6 +2,7 @@ package frc.robot.subsystems.shooter.pivot;
 
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
+import frc.robot.Constants;
 
 public class PivotConstants {
 
@@ -17,4 +18,12 @@ public class PivotConstants {
 
   public static final double pivotLength = Units.inchesToMeters(13.835);
   public static final Translation2d pivotOrigin = new Translation2d(.263, .28);
+
+  public static final Gains gains =
+      switch (Constants.currentMode) {
+        default -> new Gains(0.15);
+        case SIM -> new Gains(20);
+      };
+
+  public record Gains(double kP) {}
 }
