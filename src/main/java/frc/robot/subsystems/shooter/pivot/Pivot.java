@@ -83,7 +83,6 @@ public class Pivot extends SubsystemBase {
 
     measuredVisualizer.update(inputs.positionRots);
     setpointVisualizer.update(desiredAngle);
-    Logger.recordOutput("Shooter/Pivot/positionSetpointRots", desiredAngle);
     GeneralUtil.logSubsystem(this, "Shooter/Pivot");
   }
 
