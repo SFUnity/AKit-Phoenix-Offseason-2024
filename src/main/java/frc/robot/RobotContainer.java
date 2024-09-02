@@ -330,17 +330,15 @@ public class RobotContainer {
       atStartOfAuto(
           shooter.setManualSpeakerShot().until(shooter::atDesiredAngle).andThen(shootCmd()));
       autoTrigger(shooter::noteInShooter)
-          .onFalse(trajCmds[intakingIndex].andThen(trajCmds[shootingIndex]));
-      loggedAutoTrigger(
-              "nearIntakingPose", () -> poseManager.near(getFinalPosition(trajs[intakingIndex]), 1))
+          .onFalse(trajCmds[intakingIndex].andThen(trajCmds[shootingIndex]).withName("followTraj"));
+      autoTrigger(() -> poseManager.near(getFinalPosition(trajs[intakingIndex]), 1))
           .onTrue(
               shooter
                   .setIntaking(intake.intakeWorking)
                   .deadlineWith(intake.fullIntakeCmd())
-                  .andThen(() -> intakingIndex += 2));
+                  .andThen(() -> intakingIndex += 2).withName("nearIntakePose"));
       // May need to change this to only happen once the path has fully finished
-      loggedAutoTrigger(
-              "nearShootingPose",
+      autoTrigger(
               () -> poseManager.near(getFinalPosition(trajs[shootingIndex]), .5))
           .and(shooter::noteInShooter)
           .onTrue(
