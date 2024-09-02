@@ -5,9 +5,9 @@ import org.littletonrobotics.junction.Logger;
 
 public abstract class GeneralUtil {
   public static void logSubsystem(SubsystemBase s, String sName) {
+    String key = sName + "/command";
     Logger.recordOutput(
-        sName + "command",
-        s.getCurrentCommand() != null ? s.getCurrentCommand().getName() : "none");
+        key, s.getCurrentCommand() != null ? s.getCurrentCommand().getName() : "none");
   }
 
   public static void logFullSubsystem(SubsystemBase s, String sName) {
