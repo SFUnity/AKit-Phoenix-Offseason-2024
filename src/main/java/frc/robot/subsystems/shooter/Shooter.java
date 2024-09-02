@@ -46,7 +46,7 @@ public class Shooter extends VirtualSubsystem {
         && distanceSensorWorking();
   }
 
-  public boolean distanceSensorWorking() {
+  private boolean distanceSensorWorking() {
     return beamBreakInputs.isRangeValid && beamBreakWorkingEntry.get();
   }
 
