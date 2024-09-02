@@ -66,7 +66,7 @@ public class PoseManager {
     return currentTranslation.getDistance(translation);
   }
 
-  public boolean nearTo(Translation2d translation, double tolerance) {
+  public boolean near(Translation2d translation, double tolerance) {
     return getDistanceTo(translation) < tolerance;
   }
 

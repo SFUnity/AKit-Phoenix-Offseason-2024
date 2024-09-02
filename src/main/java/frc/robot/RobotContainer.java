@@ -328,14 +328,14 @@ public class RobotContainer {
           trajs[0]);
       autoTrigger(shooter::noteInShooter)
           .onFalse(trajCmds[intakingIndex].andThen(trajCmds[shootingIndex]));
-      autoTrigger(() -> poseManager.nearTo(getFinalPosition(trajs[intakingIndex]), 1))
+      autoTriggerWithLog(() -> poseManager.near(getFinalPosition(trajs[intakingIndex]), 1))
           .onTrue(
               shooter
                   .setIntaking(intake.intakeWorking)
                   .deadlineWith(intake.fullIntakeCmd())
                   .andThen(() -> intakingIndex += 2));
       // May need to change this to only happen once the path has fully finished
-      autoTrigger(() -> poseManager.nearTo(getFinalPosition(trajs[shootingIndex]), .5))
+      autoTriggerWithLog(() -> poseManager.near(getFinalPosition(trajs[shootingIndex]), .5))
           .and(shooter::noteInShooter)
           .onTrue(
               shooter
