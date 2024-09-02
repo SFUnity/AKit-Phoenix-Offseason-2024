@@ -13,6 +13,8 @@
 
 package frc.robot;
 
+import com.choreo.lib.Choreo;
+import com.choreo.lib.ChoreoTrajectory;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -55,8 +57,10 @@ import frc.robot.subsystems.shooter.pivot.PivotIOSim;
 import frc.robot.subsystems.shooter.pivot.PivotIOSparkMax;
 import frc.robot.util.Alert;
 import frc.robot.util.Alert.AlertType;
+import frc.robot.util.AllianceFlipUtil;
 import frc.robot.util.PoseManager;
 import frc.robot.util.loggedShuffleboardClasses.LoggedShuffleboardChooser;
+import java.util.function.BooleanSupplier;
 import org.littletonrobotics.junction.networktables.LoggedDashboardNumber;
 
 /**
@@ -278,14 +282,21 @@ public class RobotContainer {
     }
   }
 
-  //   private static Trigger autoTrigger(BooleanSupplier condition) {
-  //     return new Trigger(condition).and(DriverStation::isAutonomousEnabled);
-  //   }
+  private Trigger autoTrigger(BooleanSupplier condition) {
+    return new Trigger(condition).and(DriverStation::isAutonomousEnabled);
+  }
 
-  private static Trigger atStartOfAuto(Command command) {
+  private Trigger atStartOfAuto(Command command) {
     return new Trigger(DriverStation::isAutonomousEnabled).onTrue(command);
   }
 
+  private Trigger atStartOfAuto(Command command, ChoreoTrajectory firstTraj) {
+    return new Trigger(DriverStation::isAutonomousEnabled)
+        .onTrue(
+            command.alongWith(
+                Commands.runOnce(() -> poseManager.setPose(AllianceFlipUtil.apply(firstTraj.getInitialPose())))));
+  }
+  
   private Runnable driveSysIdQuasistatic(SysIdRoutine.Direction direction) {
     return () -> {
       atStartOfAuto(drive.sysIdQuasistatic(direction));

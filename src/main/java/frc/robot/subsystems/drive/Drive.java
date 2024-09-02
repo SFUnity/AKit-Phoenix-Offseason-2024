@@ -595,30 +595,16 @@ public class Drive extends SubsystemBase {
 
   // Auto Commands
   public Command runChoreoTraj(ChoreoTrajectory traj) {
-    return this.runChoreoTraj(traj, false);
-  }
-
-  public Command runChoreoTraj(ChoreoTrajectory traj, boolean resetPose) {
     return choreoFullFollowSwerveCommand(
-            traj,
-            poseManager::getPose,
-            Choreo.choreoSwerveController(
-                new PIDController(choreoxP.get(), 0.0, 0.0),
-                new PIDController(choreoyP.get(), 0.0, 0.0),
-                new PIDController(choreorP.get(), 0.0, 0.0)),
-            (ChassisSpeeds speeds) -> runVelocity(speeds),
-            AllianceFlipUtil::shouldFlip,
-            this)
-        .beforeStarting(
-            runOnce(
-                    () -> {
-                      if (AllianceFlipUtil.shouldFlip()) {
-                        poseManager.setPose(traj.getInitialState().flipped().getPose());
-                      } else {
-                        poseManager.setPose(traj.getInitialPose());
-                      }
-                    })
-                .onlyIf(() -> resetPose));
+        traj,
+        poseManager::getPose,
+        Choreo.choreoSwerveController(
+            new PIDController(choreoxP.get(), 0.0, 0.0),
+            new PIDController(choreoyP.get(), 0.0, 0.0),
+            new PIDController(choreorP.get(), 0.0, 0.0)),
+        (ChassisSpeeds speeds) -> runVelocity(speeds),
+        AllianceFlipUtil::shouldFlip,
+        this);
   }
 
   /**
