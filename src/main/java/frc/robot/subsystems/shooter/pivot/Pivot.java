@@ -126,6 +126,7 @@ public class Pivot extends SubsystemBase {
     desiredAngle = PivotConstants.kDesiredEjectAngleRevRotations;
   }
 
+  @AutoLogOutput(key = "Shooter/Pivot/atDesiredAngle")
   public boolean atDesiredAngle() {
     if (!EqualsUtil.equalsWithTolerance(inputs.positionRots, desiredAngle, 0.15)) {
       atGoalTimer.reset();
