@@ -96,6 +96,7 @@ public class Pivot extends SubsystemBase {
     desiredAngle = PivotConstants.kSpeakerManualAngleRevRotations;
   }
 
+  // TODO needs testing and maybe some bs numbers. not sure
   public void readyShootSpeakerAutomatic() {
     Translation3d speakerOpening = FieldConstants.Speaker.centerSpeakerOpening;
     double heightOfTarget = speakerOpening.getY();
