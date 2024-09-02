@@ -75,7 +75,7 @@ public class Shooter extends VirtualSubsystem {
     return pivot
         .setAutoSpeakerAngle()
         .alongWith(flywheels.shootSpeaker())
-        .withName("setManualSpeakerShot");
+        .withName("setAutoAimShot");
   }
 
   public Command setAmpShot() {
