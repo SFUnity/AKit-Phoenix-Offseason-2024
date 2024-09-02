@@ -297,13 +297,9 @@ public class RobotContainer {
     return new Trigger(DriverStation::isAutonomousEnabled).onTrue(command);
   }
 
-  private Trigger atStartOfAuto(Command command, ChoreoTrajectory firstTraj) {
-    return new Trigger(DriverStation::isAutonomousEnabled)
-        .onTrue(
-            command.alongWith(
-                Commands.runOnce(
-                    () ->
-                        poseManager.setPose(AllianceFlipUtil.apply(firstTraj.getInitialPose())))));
+  private Trigger resetPoseAtStart(ChoreoTrajectory firstTraj) {
+    return atStartOfAuto(Commands.runOnce(
+      () -> poseManager.setPose(AllianceFlipUtil.apply(firstTraj.getInitialPose()))));
   }
 
   private Translation2d getFinalPosition(ChoreoTrajectory traj) {
@@ -330,9 +326,9 @@ public class RobotContainer {
       intakingIndex = 0;
       shootingIndex = 1;
 
+      resetPoseAtStart(trajs[0]);
       atStartOfAuto(
-          shooter.setManualSpeakerShot().until(shooter::atDesiredAngle).andThen(shootCmd()),
-          trajs[0]);
+          shooter.setManualSpeakerShot().until(shooter::atDesiredAngle).andThen(shootCmd()));
       autoTrigger(shooter::noteInShooter)
           .onFalse(trajCmds[intakingIndex].andThen(trajCmds[shootingIndex]));
       loggedAutoTrigger(
