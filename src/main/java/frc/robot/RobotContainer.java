@@ -235,9 +235,9 @@ public class RobotContainer {
     operator
         .square()
         .whileTrue(
-            intake
-                .intakeCmd(operator.cross())
-                .alongWith(shooter.setIntaking(intake.intakeWorking))
+            shooter
+                .setIntaking(intake.intakeWorking)
+                .deadlineWith(intake.intakeCmd(operator.cross()))
                 .withName("setIntaking"));
     operator
         .circle()

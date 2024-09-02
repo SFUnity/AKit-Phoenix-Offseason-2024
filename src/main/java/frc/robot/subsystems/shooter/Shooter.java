@@ -87,10 +87,10 @@ public class Shooter extends VirtualSubsystem {
   }
 
   public Command setIntaking(LoggedShuffleboardBoolean intakeWorking) {
-    return pivot
-        .setIntakeAngle()
-        .alongWith(flywheels.intake(intakeWorking))
-        .alongWith(feeder.intake().until(this::noteInShooter))
+    return feeder
+        .intake()
+        .until(this::noteInShooter)
+        .deadlineWith(pivot.setIntakeAngle().alongWith(flywheels.intake(intakeWorking)))
         .withName("setIntaking");
   }
 
