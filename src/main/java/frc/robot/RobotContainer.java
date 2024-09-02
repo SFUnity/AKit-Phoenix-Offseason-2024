@@ -248,7 +248,11 @@ public class RobotContainer {
                 .withName("shootNote"));
 
     operator.povUp().onTrue(shooter.stopFlywheels());
-    operator.povDown().whileTrue(Commands.startEnd(() -> shooter.setSimNoteInShooter(false), () -> shooter.setSimNoteInShooter(true)));
+    operator
+        .povDown()
+        .whileTrue(
+            Commands.startEnd(
+                () -> shooter.setSimNoteInShooter(false), () -> shooter.setSimNoteInShooter(true)));
 
     operator.L1().onTrue(shooter.setAmpShot());
     operator.R1().onTrue(shooter.setAutoAimShot());
