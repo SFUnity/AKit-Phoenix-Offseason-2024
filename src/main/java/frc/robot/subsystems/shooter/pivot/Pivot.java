@@ -15,6 +15,7 @@ package frc.robot.subsystems.shooter.pivot;
 
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.networktables.GenericEntry;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.util.Color;
@@ -34,6 +35,7 @@ public class Pivot extends SubsystemBase {
   private final PivotVisualizer measuredVisualizer;
   private final PivotVisualizer setpointVisualizer;
   private ShuffleboardTab driversTab = Shuffleboard.getTab("Drivers");
+  private final Timer atGoalTimer = new Timer();
 
   private GenericEntry feedingAngleEntry =
       driversTab
@@ -69,6 +71,9 @@ public class Pivot extends SubsystemBase {
       default:
         break;
     }
+
+    atGoalTimer.reset();
+    atGoalTimer.start();
 
     measuredVisualizer = new PivotVisualizer("Measured", Color.kRed);
     setpointVisualizer = new PivotVisualizer("Setpoint", Color.kBlue);
@@ -125,7 +130,10 @@ public class Pivot extends SubsystemBase {
   }
 
   public boolean atDesiredAngle() {
-    return EqualsUtil.equalsWithTolerance(inputs.positionRots, desiredAngle, 0.5);
+    if (!EqualsUtil.equalsWithTolerance(inputs.positionRots, desiredAngle, 0.15)) {
+      atGoalTimer.reset();
+    }
+    return atGoalTimer.hasElapsed(Constants.loopPeriodSecs);
   }
 
   // TODO any setter methods used in these commands should be made private
