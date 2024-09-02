@@ -2,12 +2,15 @@ package frc.robot.subsystems.shooter;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import frc.robot.Constants;
 import frc.robot.subsystems.leds.Leds;
 import frc.robot.subsystems.shooter.feeder.Feeder;
 import frc.robot.subsystems.shooter.flywheels.Flywheels;
 import frc.robot.subsystems.shooter.pivot.Pivot;
 import frc.robot.util.VirtualSubsystem;
 import frc.robot.util.loggedShuffleboardClasses.LoggedShuffleboardBoolean;
+
+import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
 public class Shooter extends VirtualSubsystem {
@@ -21,6 +24,7 @@ public class Shooter extends VirtualSubsystem {
   private final BeamBreakInputsAutoLogged beamBreakInputs = new BeamBreakInputsAutoLogged();
   private final LoggedShuffleboardBoolean beamBreakWorkingEntry =
       new LoggedShuffleboardBoolean("Beam Break Working", "Shooter", true);
+  private boolean simNoteInShooter = true;
 
   public Shooter(Flywheels flywheels, Pivot pivot, BeamBreakIO beamBreakIO, Feeder feeder) {
     this.flywheels = flywheels;
@@ -41,13 +45,24 @@ public class Shooter extends VirtualSubsystem {
    *
    * @return boolean value of if there is a note in shooter
    */
+  @AutoLogOutput
   public boolean noteInShooter() {
+    if (Constants.currentMode != Constants.Mode.SIM) simNoteInShooter = true;
     return beamBreakInputs.distSensorRange <= kDistSensorRangeWhenNoteInches
-        && distanceSensorWorking();
+        && distanceSensorWorking()
+        && simNoteInShooter;
   }
 
   public boolean distanceSensorWorking() {
     return beamBreakInputs.isRangeValid && beamBreakWorkingEntry.get();
+  }
+
+  public void setSimNoteInShooter(boolean simNoteInShooter) {
+    this.simNoteInShooter = simNoteInShooter;
+  }
+
+  public boolean atDesiredAngle() {
+    return pivot.atDesiredAngle();
   }
 
   public Command setManualSpeakerShot() {
