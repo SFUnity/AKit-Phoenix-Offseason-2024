@@ -17,6 +17,7 @@ import com.choreo.lib.Choreo;
 import com.choreo.lib.ChoreoTrajectory;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -61,6 +62,7 @@ import frc.robot.util.AllianceFlipUtil;
 import frc.robot.util.PoseManager;
 import frc.robot.util.loggedShuffleboardClasses.LoggedShuffleboardChooser;
 import java.util.function.BooleanSupplier;
+import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.LoggedDashboardNumber;
 
 /**
@@ -172,7 +174,7 @@ public class RobotContainer {
 
     // Set up auto routines
     autoChooser.addDefaultOption("nothing", () -> {});
-    // autoChooser.addOption("source43", source43());
+    autoChooser.addOption("source43", source43());
 
     // Set up test routines
     if (!DriverStation.isFMSAttached()) {
@@ -275,6 +277,9 @@ public class RobotContainer {
     if (autoChooser.hasChanged(hashCode())) {
       autoChooser.get().run();
     }
+
+    Logger.recordOutput("Drive/Choreo/intakingIndex", intakingIndex);
+    Logger.recordOutput("Drive/Choreo/shootingIndex", shootingIndex);
   }
 
   private Trigger autoTrigger(BooleanSupplier condition) {
@@ -293,7 +298,58 @@ public class RobotContainer {
                     () ->
                         poseManager.setPose(AllianceFlipUtil.apply(firstTraj.getInitialPose())))));
   }
-  
+
+  private Translation2d getFinalPosition(ChoreoTrajectory traj) {
+    return AllianceFlipUtil.apply(traj.getFinalPose().getTranslation());
+  }
+
+  private int intakingIndex;
+  private int shootingIndex;
+
+  private Runnable source43() {
+    return () -> {
+      ChoreoTrajectory[] trajs = {
+        Choreo.getTrajectory("SourceTo4"),
+        Choreo.getTrajectory("4ToShoot"),
+        Choreo.getTrajectory("ShootTo3"),
+        Choreo.getTrajectory("3ToShoot")
+      };
+      Command[] trajCmds = {
+        drive.runChoreoTraj(trajs[0]),
+        drive.runChoreoTraj(trajs[1]),
+        drive.runChoreoTraj(trajs[2]),
+        drive.runChoreoTraj(trajs[3])
+      };
+      intakingIndex = 0;
+      shootingIndex = 1;
+
+      atStartOfAuto(
+          shooter.setManualSpeakerShot().until(shooter::atDesiredAngle).andThen(shootCmd()),
+          trajs[0]);
+      autoTrigger(shooter::noteInShooter)
+          .onFalse(trajCmds[intakingIndex].andThen(trajCmds[shootingIndex]));
+      autoTrigger(() -> poseManager.nearTo(getFinalPosition(trajs[intakingIndex]), 1))
+          .onTrue(
+              shooter
+                  .setIntaking(intake.intakeWorking)
+                  .deadlineWith(intake.fullIntakeCmd())
+                  .andThen(() -> intakingIndex += 2));
+      // May need to change this to only happen once the path has fully finished
+      autoTrigger(() -> poseManager.nearTo(getFinalPosition(trajs[shootingIndex]), .5))
+          .and(shooter::noteInShooter)
+          .onTrue(
+              shooter
+                  .setAutoAimShot()
+                  .alongWith(
+                      drive.fullAutoDrive(
+                          () ->
+                              new Pose2d(
+                                  getFinalPosition(trajs[shootingIndex]),
+                                  poseManager.getHorizontalAngleTo(
+                                      FieldConstants.Speaker.centerSpeakerOpening)))));
+    };
+  }
+
   private Runnable driveSysIdQuasistatic(SysIdRoutine.Direction direction) {
     return () -> {
       atStartOfAuto(drive.sysIdQuasistatic(direction));
