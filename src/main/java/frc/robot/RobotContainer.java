@@ -276,6 +276,8 @@ public class RobotContainer {
                 operator.getHID().getPort())); // Should not be an XBox controller
   }
 
+  // Auto stuff
+
   public void setAutoIfChanged() {
     if (autoChooser.hasChanged(hashCode())) {
       autoChooser.get().run();
