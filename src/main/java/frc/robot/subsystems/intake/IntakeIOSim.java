@@ -88,7 +88,7 @@ public class IntakeIOSim implements IntakeIO {
   }
 
   @Override
-  public void setPID(double p) {
+  public void setP(double p) {
     controller.setPID(p, 0, 0);
   }
 

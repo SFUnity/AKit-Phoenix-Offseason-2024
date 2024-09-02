@@ -60,7 +60,7 @@ public class IntakeIOSparkMax implements IntakeIO {
   }
 
   @Override
-  public void setPID(double p) {
+  public void setP(double p) {
     pid.setP(p);
   }
 }

@@ -8,7 +8,6 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
-import frc.robot.Constants;
 import frc.robot.subsystems.leds.Leds;
 import frc.robot.util.GeneralUtil;
 import frc.robot.util.LoggedTunableNumber;
@@ -47,19 +46,7 @@ public class Intake extends SubsystemBase {
   public Intake(IntakeIO io) {
     this.io = io;
 
-    // Switch constants based on mode (the physics simulator is treated as a
-    // separate robot with different tuning)
-    switch (Constants.currentMode) {
-      case REAL:
-      case REPLAY:
-        io.setPID(0.08);
-        break;
-      case SIM:
-        io.setPID(20);
-        break;
-      default:
-        break;
-    }
+    io.setP(gains.kP());
 
     measuredVisualizer = new IntakeVisualizer("Measured", Color.kRed);
     setpointVisualizer = new IntakeVisualizer("Setpoint", Color.kBlue);
@@ -70,7 +57,7 @@ public class Intake extends SubsystemBase {
     Logger.processInputs("Intake", inputs);
 
     // Update controllers
-    LoggedTunableNumber.ifChanged(hashCode(), () -> io.setPID(kP.get()), kP);
+    LoggedTunableNumber.ifChanged(hashCode(), () -> io.setP(kP.get()), kP);
 
     // Update LEDs
     Leds.getInstance().intakeWorking = intakeWorking.get();

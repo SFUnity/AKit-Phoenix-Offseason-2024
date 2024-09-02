@@ -68,10 +68,10 @@ public class PivotIOSparkMax implements PivotIO {
   }
 
   @Override
-  public void configurePID(double kP, double kI, double kD) {
+  public void setP(double kP) {
     pid.setP(kP, 0);
-    pid.setI(kI, 0);
-    pid.setD(kD, 0);
+    pid.setI(0, 0);
+    pid.setD(0, 0);
     pid.setFF(0, 0);
   }
 }

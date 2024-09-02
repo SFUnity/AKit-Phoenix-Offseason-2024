@@ -18,9 +18,11 @@ import static frc.robot.subsystems.shooter.pivot.PivotConstants.pivotLength;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.simulation.SingleJointedArmSim;
 
 public class PivotIOSim implements PivotIO {
+  private static final double autoStartAngle = Units.degreesToRadians(0.0);
   private final SingleJointedArmSim sim =
       new SingleJointedArmSim(
           DCMotor.getNEO(1),
@@ -31,16 +33,30 @@ public class PivotIOSim implements PivotIO {
           Math.toRadians(125.0),
           false,
           Units.degreesToRadians(0.0));
-  private PIDController pid = new PIDController(0.0, 0.0, 0.0);
 
-  private boolean closedLoop = false;
+  private final PIDController pid;
   private double appliedVolts = 0.0;
+
+  private boolean controllerNeedsReset = false;
+  private boolean wasNotAuto = true;
+
+  public PivotIOSim() {
+    pid = new PIDController(0.0, 0.0, 0.0);
+    sim.setState(0.0, 0.0);
+  }
 
   @Override
   public void updateInputs(PivotIOInputs inputs) {
-    if (closedLoop) {
-      inputs.appliedVolts = appliedVolts;
+    if (DriverStation.isDisabled()) {
+      controllerNeedsReset = true;
     }
+
+    // Reset at start of auto
+    if (wasNotAuto && DriverStation.isAutonomousEnabled()) {
+      sim.setState(autoStartAngle, 0.0);
+      wasNotAuto = false;
+    }
+    wasNotAuto = !DriverStation.isAutonomousEnabled();
 
     sim.update(0.02);
 
@@ -54,7 +70,6 @@ public class PivotIOSim implements PivotIO {
 
   @Override
   public void setVoltage(double volts) {
-    closedLoop = false;
     appliedVolts = volts;
     sim.setInputVoltage(volts);
   }
@@ -65,7 +80,7 @@ public class PivotIOSim implements PivotIO {
   }
 
   @Override
-  public void configurePID(double kP, double kI, double kD) {
-    pid.setPID(kP, kI, kD);
+  public void setP(double kP) {
+    pid.setPID(kP, 0, 0);
   }
 }
