@@ -289,7 +289,9 @@ public class RobotContainer {
     return new Trigger(DriverStation::isAutonomousEnabled)
         .onTrue(
             command.alongWith(
-                Commands.runOnce(() -> poseManager.setPose(AllianceFlipUtil.apply(firstTraj.getInitialPose())))));
+                Commands.runOnce(
+                    () ->
+                        poseManager.setPose(AllianceFlipUtil.apply(firstTraj.getInitialPose())))));
   }
   
   private Runnable driveSysIdQuasistatic(SysIdRoutine.Direction direction) {
