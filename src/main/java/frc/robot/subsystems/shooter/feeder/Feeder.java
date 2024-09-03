@@ -26,6 +26,7 @@ public class Feeder extends SubsystemBase {
   }
 
   public Command shoot() {
+    // Note: something weird happens when you change to runEnd
     return Commands.startEnd(() -> io.runPercent(kShootingSpeedPercent), () -> io.runPercent(0));
   }
 
