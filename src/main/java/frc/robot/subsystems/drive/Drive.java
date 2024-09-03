@@ -606,6 +606,11 @@ public class Drive extends SubsystemBase {
             Units.degreesToRadians(thetaToleranceDeg.get()));
   }
 
+  @AutoLogOutput
+  private boolean autoAlignActive() {
+    return headingDriveActive || fullAutoDriveActive;
+  }
+
   // Auto Commands
   public Command runChoreoTraj(ChoreoTrajectory traj) {
     return choreoFullFollowSwerveCommand(
