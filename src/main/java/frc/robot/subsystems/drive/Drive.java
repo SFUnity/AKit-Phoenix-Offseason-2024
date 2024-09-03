@@ -34,6 +34,7 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -95,6 +96,8 @@ public class Drive extends SubsystemBase {
 
   private final ProfiledPIDController thetaController;
   private final ProfiledPIDController linearController;
+  private String headingDriveCmdName = "Heading Drive";
+  private String fullAutoDriveCmdName = "Full Auto Drive";
 
   // Subsystem stuff
   private final GyroIO gyroIO;
@@ -415,7 +418,7 @@ public class Drive extends SubsystemBase {
               resetThetaController();
             })
         .finallyDo(() -> Leds.getInstance().alignedWithTarget = false)
-        .withName("Heading Drive");
+        .withName(headingDriveCmdName);
   }
 
   /**
@@ -463,7 +466,7 @@ public class Drive extends SubsystemBase {
               resetControllers(goalPose.get());
             })
         .finallyDo(() -> Leds.getInstance().alignedWithTarget = false)
-        .withName("Full Auto Drive");
+        .withName(fullAutoDriveCmdName);
   }
 
   private Translation2d getLinearVelocityFromJoysticks() {
@@ -581,16 +584,27 @@ public class Drive extends SubsystemBase {
   /** Returns true if within tolerance of aiming at goal */
   @AutoLogOutput(key = "Drive/Commands/Linear/AtGoal")
   public boolean linearAtGoal() {
-    return linearController.atGoal();
+    try {
+      return CommandScheduler.getInstance().requiring(this).getName() == fullAutoDriveCmdName
+          && linearController.atGoal();
+    } catch (NullPointerException e) {
+      return false;
+    }
   }
 
   /** Returns true if within tolerance of aiming at speaker */
   @AutoLogOutput(key = "Drive/Commands/Theta/AtGoal")
   public boolean thetaAtGoal() {
-    return EqualsUtil.equalsWithTolerance(
-        thetaController.getSetpoint().position,
-        thetaController.getGoal().position,
-        Units.degreesToRadians(thetaToleranceDeg.get()));
+    try {
+      return CommandScheduler.getInstance().requiring(this).getName() == headingDriveCmdName
+          || CommandScheduler.getInstance().requiring(this).getName() == fullAutoDriveCmdName
+              && EqualsUtil.equalsWithTolerance(
+                  thetaController.getSetpoint().position,
+                  thetaController.getGoal().position,
+                  Units.degreesToRadians(thetaToleranceDeg.get()));
+    } catch (NullPointerException e) {
+      return false;
+    }
   }
 
   // Auto Commands
