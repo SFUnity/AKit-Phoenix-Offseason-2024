@@ -26,14 +26,18 @@ public class Feeder extends SubsystemBase {
   }
 
   public Command shoot() {
-    return Commands.startEnd(() -> io.runPercent(kShootingSpeedPercent), () -> io.runPercent(0));
+    // Note: something weird happens when you change to runEnd
+    return Commands.startEnd(
+        () -> io.runPercent(kShootingSpeedPercent), () -> io.runPercent(0), this);
   }
 
   public Command intake() {
-    return Commands.startEnd(() -> io.runPercent(kIntakingSpeedPercent), () -> io.runPercent(0));
+    return Commands.startEnd(
+        () -> io.runPercent(kIntakingSpeedPercent), () -> io.runPercent(0), this);
   }
 
   public Command outtake() {
-    return Commands.startEnd(() -> io.runPercent(-kIntakingSpeedPercent), () -> io.runPercent(0));
+    return Commands.startEnd(
+        () -> io.runPercent(-kIntakingSpeedPercent), () -> io.runPercent(0), this);
   }
 }
