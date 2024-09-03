@@ -337,8 +337,7 @@ public class RobotContainer {
                   .andThen(() -> intakingIndex += 2)
                   .withName("nearIntakePose"));
       // May need to change this to only happen once the path has fully finished
-      autoTrigger(
-              () -> poseManager.near(getFinalPosition(trajs[shootingIndex]), .5))
+      autoTrigger(() -> poseManager.near(getFinalPosition(trajs[shootingIndex]), .5))
           .and(shooter::noteInShooter)
           .onTrue(
               shooter
