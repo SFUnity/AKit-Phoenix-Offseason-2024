@@ -322,7 +322,11 @@ public class RobotContainer {
 
       resetPoseAtStart(trajs[0]);
       atStartOfAuto(
-          shooter.setManualSpeakerShot().until(shooter::atDesiredAngle).andThen(shootCmd()));
+          shooter
+              .setManualSpeakerShot()
+              .until(shooter::atDesiredAngle)
+              .andThen(shootCmd())
+              .withName("first shot"));
       autoTrigger(shooter::noteInShooter)
           .onFalse(trajCmds[intakingIndex].andThen(trajCmds[shootingIndex]).withName("followTraj"));
       autoTrigger(() -> poseManager.near(getFinalPosition(trajs[intakingIndex]), 1))
