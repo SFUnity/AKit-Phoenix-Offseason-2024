@@ -176,7 +176,7 @@ public class RobotContainer {
     autoChooser.addDefaultOption("nothing", () -> {});
     autoChooser.addOption("source43", source43());
     autoChooser.addOption("centerCBA1", centerCBA1());
-    
+
     // Set up test routines
     if (!DriverStation.isFMSAttached()) {
       // Set up SysId routines
