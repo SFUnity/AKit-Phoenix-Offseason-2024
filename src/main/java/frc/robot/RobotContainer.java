@@ -291,8 +291,9 @@ public class RobotContainer {
   }
 
   private Trigger resetPoseAtStart(ChoreoTrajectory firstTraj) {
-    return atStartOfAuto(Commands.runOnce(
-      () -> poseManager.setPose(AllianceFlipUtil.apply(firstTraj.getInitialPose()))));
+    return atStartOfAuto(
+        Commands.runOnce(
+            () -> poseManager.setPose(AllianceFlipUtil.apply(firstTraj.getInitialPose()))));
   }
 
   private Translation2d getFinalPosition(ChoreoTrajectory traj) {
