@@ -34,7 +34,6 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -96,8 +95,8 @@ public class Drive extends SubsystemBase {
 
   private final ProfiledPIDController thetaController;
   private final ProfiledPIDController linearController;
-  private String headingDriveCmdName = "Heading Drive";
-  private String fullAutoDriveCmdName = "Full Auto Drive";
+  private boolean headingDriveActive = false;
+  private boolean fullAutoDriveActive = false;
 
   // Subsystem stuff
   private final GyroIO gyroIO;
@@ -416,9 +415,14 @@ public class Drive extends SubsystemBase {
         .beforeStarting(
             () -> {
               resetThetaController();
+              headingDriveActive = true;
             })
-        .finallyDo(() -> Leds.getInstance().alignedWithTarget = false)
-        .withName(headingDriveCmdName);
+        .finallyDo(
+            () -> {
+              headingDriveActive = false;
+              Leds.getInstance().alignedWithTarget = false;
+            })
+        .withName("Heading Drive");
   }
 
   /**
@@ -464,9 +468,14 @@ public class Drive extends SubsystemBase {
         .beforeStarting(
             () -> {
               resetControllers(goalPose.get());
+              fullAutoDriveActive = true;
             })
-        .finallyDo(() -> Leds.getInstance().alignedWithTarget = false)
-        .withName(fullAutoDriveCmdName);
+        .finallyDo(
+            () -> {
+              fullAutoDriveActive = false;
+              Leds.getInstance().alignedWithTarget = false;
+            })
+        .withName("Full Auto Drive");
   }
 
   private Translation2d getLinearVelocityFromJoysticks() {
@@ -584,27 +593,17 @@ public class Drive extends SubsystemBase {
   /** Returns true if within tolerance of aiming at goal */
   @AutoLogOutput(key = "Drive/Commands/Linear/AtGoal")
   public boolean linearAtGoal() {
-    try {
-      return CommandScheduler.getInstance().requiring(this).getName() == fullAutoDriveCmdName
-          && linearController.atGoal();
-    } catch (NullPointerException e) {
-      return false;
-    }
+    return linearController.atGoal() && fullAutoDriveActive;
   }
 
   /** Returns true if within tolerance of aiming at speaker */
   @AutoLogOutput(key = "Drive/Commands/Theta/AtGoal")
   public boolean thetaAtGoal() {
-    try {
-      return CommandScheduler.getInstance().requiring(this).getName() == headingDriveCmdName
-          || CommandScheduler.getInstance().requiring(this).getName() == fullAutoDriveCmdName
-              && EqualsUtil.equalsWithTolerance(
-                  thetaController.getSetpoint().position,
-                  thetaController.getGoal().position,
-                  Units.degreesToRadians(thetaToleranceDeg.get()));
-    } catch (NullPointerException e) {
-      return false;
-    }
+    return (headingDriveActive || fullAutoDriveActive)
+        && EqualsUtil.equalsWithTolerance(
+            thetaController.getSetpoint().position,
+            thetaController.getGoal().position,
+            Units.degreesToRadians(thetaToleranceDeg.get()));
   }
 
   // Auto Commands
