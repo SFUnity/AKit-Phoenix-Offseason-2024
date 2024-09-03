@@ -175,7 +175,7 @@ public class RobotContainer {
     // Set up auto routines
     autoChooser.addDefaultOption("nothing", () -> {});
     autoChooser.addOption("source43", source43());
-
+     autoChooser.addOption("centerCBA1", centerCBA1());
     // Set up test routines
     if (!DriverStation.isFMSAttached()) {
       // Set up SysId routines
@@ -189,6 +189,7 @@ public class RobotContainer {
           "Drive SysId (Dynamic Forward)", driveSysIdDynamic(SysIdRoutine.Direction.kForward));
       autoChooser.addOption(
           "Drive SysId (Dynamic Reverse)", driveSysIdDynamic(SysIdRoutine.Direction.kReverse));
+       
     }
 
     // Configure the button bindings
@@ -350,6 +351,39 @@ public class RobotContainer {
                                   poseManager.getHorizontalAngleTo(
                                       FieldConstants.Speaker.centerSpeakerOpening)))));
     };
+  }
+
+  private Runnable centerCBA1(){
+    return() -> {
+        ChoreoTrajectory[] trajs = {
+            Choreo.getTrajectory("CenterToC"),
+            Choreo.getTrajectory("CToB"),
+            Choreo.getTrajectory("BToA"),
+            Choreo.getTrajectory("ATo1"),
+            Choreo.getTrajectory("1ToShoot")
+        };
+        Command[] trajCmds = {
+        drive.runChoreoTraj(trajs[0]),
+        drive.runChoreoTraj(trajs[1]),
+        drive.runChoreoTraj(trajs[2]),
+        drive.runChoreoTraj(trajs[3]),
+        drive.runChoreoTraj(trajs[4])
+      };
+
+
+      resetPoseAtStart(trajs[0]);
+      atStartOfAuto(
+          shooter
+              .setManualSpeakerShot()
+              .until(shooter::atDesiredAngle)
+              .andThen(shootCmd())
+              .withName("first shot"));
+         autoTrigger(shooter::noteInShooter)
+         .onFalse(trajCmds[intakingIndex].andThen(trajCmds[shootingIndex]).withName("followTraj"));
+         
+    };
+    
+
   }
 
   private Runnable driveSysIdQuasistatic(SysIdRoutine.Direction direction) {
