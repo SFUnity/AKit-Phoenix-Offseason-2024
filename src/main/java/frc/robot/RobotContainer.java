@@ -334,7 +334,8 @@ public class RobotContainer {
               shooter
                   .setIntaking(intake.intakeWorking)
                   .deadlineWith(intake.fullIntakeCmd())
-                  .andThen(() -> intakingIndex += 2).withName("nearIntakePose"));
+                  .andThen(() -> intakingIndex += 2)
+                  .withName("nearIntakePose"));
       // May need to change this to only happen once the path has fully finished
       autoTrigger(
               () -> poseManager.near(getFinalPosition(trajs[shootingIndex]), .5))
