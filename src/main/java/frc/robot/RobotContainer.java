@@ -329,7 +329,17 @@ public class RobotContainer {
               .andThen(shootCmd())
               .withName("first shot"));
       autoTrigger(shooter::noteInShooter)
-          .onFalse(trajCmds[intakingIndex].andThen(trajCmds[shootingIndex]).withName("followTraj"));
+          .onFalse(
+              trajCmds[intakingIndex]
+                  .andThen(trajCmds[shootingIndex])
+                  .andThen(
+                      drive
+                          .headingDrive(
+                              () ->
+                                  poseManager.getHorizontalAngleTo(
+                                      FieldConstants.Speaker.centerSpeakerOpening))
+                          .until(drive::thetaAtGoal))
+                  .withName("followTrajsThenAim"));
       autoTrigger(() -> poseManager.near(getFinalPosition(trajs[intakingIndex]), 1))
           .onTrue(
               shooter
@@ -340,16 +350,8 @@ public class RobotContainer {
       // May need to change this to only happen once the path has fully finished
       autoTrigger(() -> poseManager.near(getFinalPosition(trajs[shootingIndex]), .5))
           .and(shooter::noteInShooter)
-          .onTrue(
-              shooter
-                  .setAutoAimShot()
-                  .alongWith(
-                      drive.fullAutoDrive(
-                          () ->
-                              new Pose2d(
-                                  getFinalPosition(trajs[shootingIndex]),
-                                  poseManager.getHorizontalAngleTo(
-                                      FieldConstants.Speaker.centerSpeakerOpening)))));
+          .onTrue(shooter.setAutoAimShot());
+      autoTrigger(drive::thetaAtGoal).and(shooter::atDesiredAngle).onTrue(shootCmd());
     };
   }
 
