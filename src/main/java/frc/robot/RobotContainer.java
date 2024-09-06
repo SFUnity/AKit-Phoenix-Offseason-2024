@@ -351,7 +351,7 @@ public class RobotContainer {
       autoTrigger(() -> poseManager.near(getFinalPosition(trajs[shootingIndex]), .5))
           .and(shooter::noteInShooter)
           .onTrue(shooter.setAutoAimShot());
-      autoTrigger(drive::thetaAtGoal).and(shooter::atDesiredAngle).onTrue(shootCmd());
+      autoTrigger(drive::thetaAtGoal).and(shooter::atDesiredAngle).onTrue(shootCmd().andThen(() -> shootingIndex += 2));
     };
   }
 
