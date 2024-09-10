@@ -352,7 +352,9 @@ public class RobotContainer {
       autoTrigger(() -> poseManager.near(getFinalPosition(trajs[shootingIndex]), .5))
           .and(shooter::noteInShooter)
           .onTrue(shooter.setAutoAimShot());
-      autoTrigger(drive::thetaAtGoal).and(shooter::atDesiredAngle).onTrue(shootCmd().andThen(() -> shootingIndex += 2));
+      autoTrigger(drive::thetaAtGoal)
+          .and(shooter::atDesiredAngle)
+          .onTrue(shootCmd().andThen(() -> shootingIndex += 2));
     };
   }
 
@@ -446,20 +448,17 @@ public class RobotContainer {
   private Runnable sourceCBA() {
     intakingIndex = 0;
     return () -> {
-        
       ChoreoTrajectory[] trajs = {
         Choreo.getTrajectory("AmpToC"),
         Choreo.getTrajectory("CToB"),
         Choreo.getTrajectory("BToA"),
         Choreo.getTrajectory("ATo1"),
-        
       };
       Command[] trajCmds = {
         drive.runChoreoTraj(trajs[0]),
         drive.runChoreoTraj(trajs[1]),
         drive.runChoreoTraj(trajs[2]),
         drive.runChoreoTraj(trajs[3]),
-        
       };
       atStartOfAuto(
           shooter
@@ -479,7 +478,7 @@ public class RobotContainer {
                                       FieldConstants.Speaker.centerSpeakerOpening))
                           .until(drive::thetaAtGoal))
                   .withName("followTrajsThenAim"));
-        autoTrigger(() -> poseManager.near(getFinalPosition(trajs[intakingIndex]), 1))
+      autoTrigger(() -> poseManager.near(getFinalPosition(trajs[intakingIndex]), 1))
           .onTrue(
               shooter
                   .setIntaking(intake.intakeWorking)
@@ -511,8 +510,6 @@ public class RobotContainer {
                   .withName("note4"));
     };
   }
-  
-  
 
   private Runnable driveSysIdQuasistatic(SysIdRoutine.Direction direction) {
     return () -> {
