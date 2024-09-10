@@ -354,7 +354,10 @@ public class RobotContainer {
           .onTrue(shooter.setAutoAimShot());
       autoTrigger(drive::thetaAtGoal)
           .and(shooter::atDesiredAngle)
-          .onTrue(shootCmd().andThen(() -> shootingIndex += 2));
+          .onTrue(
+              shootCmd()
+                  .deadlineWith(Commands.runOnce(() -> shootingIndex += 2))
+                  .withName("shootNote"));
     };
   }
 
