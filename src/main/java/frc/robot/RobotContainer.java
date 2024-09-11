@@ -223,12 +223,7 @@ public class RobotContainer {
                     drive)
                 .ignoringDisable(true));
     driver.leftBumper().onTrue(Commands.runOnce(() -> slowMode = !slowMode, drive));
-    driver
-        .b()
-        .whileTrue(
-            drive.headingDrive(
-                () ->
-                    poseManager.getHorizontalAngleTo(FieldConstants.Speaker.centerSpeakerOpening)));
+    driver.b().whileTrue(drive.pointAtSpeakerCmd());
     driver
         .y()
         .whileTrue(drive.fullAutoDrive(() -> new Pose2d(1.815, 7.8, new Rotation2d(-Math.PI / 2))));
@@ -377,14 +372,7 @@ public class RobotContainer {
       // TODO try to recombine this with the onFalse trigger
       autoTrigger(nearEndOf(shootingTraj(), .1))
           .and(shooter::noteInShooter)
-          .onTrue(
-              drive
-                  .headingDrive(
-                      () ->
-                          poseManager.getHorizontalAngleTo(
-                              FieldConstants.Speaker.centerSpeakerOpening))
-                  .until(drive::thetaAtGoal)
-                  .withName("Heading Drive"));
+          .onTrue(drive.pointAtSpeakerCmd().withName("Heading Drive"));
       autoTrigger(drive::thetaAtGoal).and(shooter::atDesiredAngle).onTrue(shootCmd());
     };
   }
