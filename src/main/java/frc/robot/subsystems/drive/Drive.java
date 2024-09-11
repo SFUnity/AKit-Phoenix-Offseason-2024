@@ -38,7 +38,6 @@ import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
-import frc.robot.Constants;
 import frc.robot.FieldConstants;
 import frc.robot.subsystems.drive.DriveConstants.DriveCommandsConfig;
 import frc.robot.subsystems.leds.Leds;
@@ -670,8 +669,8 @@ public class Drive extends SubsystemBase {
         () -> {
           timer.restart();
           Logger.recordOutput(
-                "Drive/Choreo/Active Traj",
-                (mirrorTrajectory.getAsBoolean() ? trajectory.flipped() : trajectory).getPoses());
+              "Drive/Choreo/Active Traj",
+              (mirrorTrajectory.getAsBoolean() ? trajectory.flipped() : trajectory).getPoses());
         },
         () -> {
           Logger.recordOutput(
