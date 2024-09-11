@@ -112,9 +112,12 @@ public class Pivot extends SubsystemBase {
     desiredAngle = feedingAngleEntry.getDouble(PivotConstants.kFeedingAngleRevRotations);
   }
 
-  // TODO what if we want to source intake?
   public void readyShooterIntake() {
     desiredAngle = PivotConstants.kDesiredIntakeAngleRevRotations;
+  }
+
+  public void readyShooterSourceIntake() {
+    desiredAngle = PivotConstants.kDesiredSourceIntakeAngleRevRotations;
   }
 
   public void readyShooterEject() {
@@ -184,5 +187,12 @@ public class Pivot extends SubsystemBase {
               io.setAngleMotorSpeeds(desiredAngle);
             })
         .withName("setIntakeAngle");
+  }
+  public Command setSourceIntakeAngle(){
+    return run(() -> {
+      readyShooterSourceIntake();
+      io.setAngleMotorSpeeds(desiredAngle);
+    })
+    .withName("setSourceIntakeAngle");
   }
 }
