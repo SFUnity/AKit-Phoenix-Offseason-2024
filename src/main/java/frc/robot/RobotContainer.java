@@ -17,10 +17,10 @@ import com.choreo.lib.Choreo;
 import com.choreo.lib.ChoreoTrajectory;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandPS5Controller;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -62,6 +62,7 @@ import frc.robot.util.AllianceFlipUtil;
 import frc.robot.util.PoseManager;
 import frc.robot.util.loggedShuffleboardClasses.LoggedShuffleboardChooser;
 import java.util.function.BooleanSupplier;
+import java.util.function.Supplier;
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.LoggedDashboardNumber;
 
@@ -298,27 +299,48 @@ public class RobotContainer {
             () -> poseManager.setPose(AllianceFlipUtil.apply(firstTraj.getInitialPose()))));
   }
 
-  private Translation2d getFinalPosition(ChoreoTrajectory traj) {
-    return AllianceFlipUtil.apply(traj.getFinalPose().getTranslation());
+  private BooleanSupplier nearEndOf(Supplier<ChoreoTrajectory> traj, double tolerance) {
+    return () ->
+        poseManager.near(AllianceFlipUtil.apply(traj.get().getFinalPose().getTranslation()), .1);
   }
 
   private int intakingIndex;
   private int shootingIndex;
+  private ChoreoTrajectory[] trajs;
+
+  private Supplier<ChoreoTrajectory> intakingTraj() {
+    return () -> trajs[intakingIndex];
+  }
+
+  private Supplier<ChoreoTrajectory> shootingTraj() {
+    return () -> trajs[shootingIndex];
+  }
+
+  private Command intakingTrajCmd() {
+    return drive.runChoreoTrajSupplied(intakingTraj());
+  }
+
+  private Command shootingTrajCmd() {
+    return drive.runChoreoTrajSupplied(shootingTraj());
+  }
+
+  private Command moveToNextIntakingPath() {
+    return Commands.runOnce(() -> intakingIndex += 2);
+  }
+
+  private Command moveToNextShootingPath() {
+    return Commands.runOnce(() -> shootingIndex += 2);
+  }
 
   private Runnable source43() {
     return () -> {
-      ChoreoTrajectory[] trajs = {
-        Choreo.getTrajectory("SourceTo4"),
-        Choreo.getTrajectory("4ToShoot"),
-        Choreo.getTrajectory("ShootTo3"),
-        Choreo.getTrajectory("3ToShoot")
-      };
-      Command[] trajCmds = {
-        drive.runChoreoTraj(trajs[0]),
-        drive.runChoreoTraj(trajs[1]),
-        drive.runChoreoTraj(trajs[2]),
-        drive.runChoreoTraj(trajs[3])
-      };
+      trajs =
+          new ChoreoTrajectory[] {
+            Choreo.getTrajectory("SourceTo4"),
+            Choreo.getTrajectory("4ToShoot"),
+            Choreo.getTrajectory("ShootTo3"),
+            Choreo.getTrajectory("3ToShoot")
+          };
       intakingIndex = 0;
       shootingIndex = 1;
 
@@ -331,187 +353,194 @@ public class RobotContainer {
               .withName("first shot"));
       autoTrigger(shooter::noteInShooter)
           .onFalse(
-              trajCmds[intakingIndex]
-                  .andThen(trajCmds[shootingIndex])
-                  .andThen(
-                      drive
-                          .headingDrive(
-                              () ->
-                                  poseManager.getHorizontalAngleTo(
-                                      FieldConstants.Speaker.centerSpeakerOpening))
-                          .until(drive::thetaAtGoal))
-                  .withName("followTrajsThenAim"));
-      autoTrigger(() -> poseManager.near(getFinalPosition(trajs[intakingIndex]), 1))
+              Commands.runOnce(
+                  () ->
+                      CommandScheduler.getInstance()
+                          .schedule(
+                              intakingTrajCmd()
+                                  .andThen(shootingTrajCmd())
+                                  .withName("followTrajsThenAim"))));
+      autoTrigger(nearEndOf(intakingTraj(), 1))
           .onTrue(
               shooter
                   .setIntaking(intake.intakeWorking)
                   .deadlineWith(intake.fullIntakeCmd())
-                  .andThen(() -> intakingIndex += 2)
+                  .andThen(moveToNextIntakingPath())
                   .withName("nearIntakePose"));
-      autoTrigger(() -> poseManager.near(getFinalPosition(trajs[shootingIndex]), .5))
+      autoTrigger(nearEndOf(shootingTraj(), .5))
           .and(shooter::noteInShooter)
-          .onTrue(shooter.setAutoAimShot());
-      autoTrigger(drive::thetaAtGoal)
-          .and(shooter::atDesiredAngle)
           .onTrue(
-              shootCmd()
-                  .deadlineWith(Commands.runOnce(() -> shootingIndex += 2))
-                  .withName("shootNote"));
+              shooter
+                  .setAutoAimShot()
+                  .deadlineWith(moveToNextShootingPath())
+                  .withName("setAutoAim"));
+      // TODO try to recombine this with the onFalse trigger
+      autoTrigger(nearEndOf(shootingTraj(), .1))
+          .and(shooter::noteInShooter)
+          .onTrue(
+              drive
+                  .headingDrive(
+                      () ->
+                          poseManager.getHorizontalAngleTo(
+                              FieldConstants.Speaker.centerSpeakerOpening))
+                  .until(drive::thetaAtGoal)
+                  .withName("Heading Drive"));
+      autoTrigger(drive::thetaAtGoal).and(shooter::atDesiredAngle).onTrue(shootCmd());
     };
   }
 
-//   private Runnable centerCBA1() {
-//     intakingIndex = 1;
-//     shootingIndex = 6;
-//     return () -> {
-//       ChoreoTrajectory[] trajs = {
-//         Choreo.getTrajectory("CenterToC"),
-//         Choreo.getTrajectory("CToB"),
-//         Choreo.getTrajectory("BToA"),
-//         Choreo.getTrajectory("ATo1"),
-//         Choreo.getTrajectory("1ToShoot")
-//       };
-//       Command[] trajCmds = {
-//         drive.runChoreoTraj(trajs[0]),
-//         drive.runChoreoTraj(trajs[1]),
-//         drive.runChoreoTraj(trajs[2]),
-//         drive.runChoreoTraj(trajs[3]),
-//         drive.runChoreoTraj(trajs[4])
-//       };
+  //   private Runnable centerCBA1() {
+  //     intakingIndex = 1;
+  //     shootingIndex = 6;
+  //     return () -> {
+  //       ChoreoTrajectory[] trajs = {
+  //         Choreo.getTrajectory("CenterToC"),
+  //         Choreo.getTrajectory("CToB"),
+  //         Choreo.getTrajectory("BToA"),
+  //         Choreo.getTrajectory("ATo1"),
+  //         Choreo.getTrajectory("1ToShoot")
+  //       };
+  //       Command[] trajCmds = {
+  //         drive.runChoreoTraj(trajs[0]),
+  //         drive.runChoreoTraj(trajs[1]),
+  //         drive.runChoreoTraj(trajs[2]),
+  //         drive.runChoreoTraj(trajs[3]),
+  //         drive.runChoreoTraj(trajs[4])
+  //       };
 
-//       resetPoseAtStart(trajs[0]);
-//       atStartOfAuto(
-//           shooter
-//               .setManualSpeakerShot()
-//               .until(shooter::atDesiredAngle)
-//               .andThen(shootCmd())
-//               .withName("first shot"));
-//       autoTrigger(shooter::noteInShooter)
-//           .onFalse(
-//               trajCmds[intakingIndex]
-//                   .andThen(trajCmds[shootingIndex])
-//                   .andThen(
-//                       drive
-//                           .headingDrive(
-//                               () ->
-//                                   poseManager.getHorizontalAngleTo(
-//                                       FieldConstants.Speaker.centerSpeakerOpening))
-//                           .until(drive::thetaAtGoal))
-//                   .withName("followTrajsThenAim"));
+  //       resetPoseAtStart(trajs[0]);
+  //       atStartOfAuto(
+  //           shooter
+  //               .setManualSpeakerShot()
+  //               .until(shooter::atDesiredAngle)
+  //               .andThen(shootCmd())
+  //               .withName("first shot"));
+  //       autoTrigger(shooter::noteInShooter)
+  //           .onFalse(
+  //               trajCmds[intakingIndex]
+  //                   .andThen(trajCmds[shootingIndex])
+  //                   .andThen(
+  //                       drive
+  //                           .headingDrive(
+  //                               () ->
+  //                                   poseManager.getHorizontalAngleTo(
+  //                                       FieldConstants.Speaker.centerSpeakerOpening))
+  //                           .until(drive::thetaAtGoal))
+  //                   .withName("followTrajsThenAim"));
 
-//       autoTrigger(() -> poseManager.near(getFinalPosition(trajs[intakingIndex]), 1))
-//           .onTrue(
-//               shooter
-//                   .setIntaking(intake.intakeWorking)
-//                   .deadlineWith(intake.fullIntakeCmd())
-//                   .andThen(() -> intakingIndex += 1)
-//                   .andThen(() -> shooter.setAutoAimShot())
-//                   .until(shooter::atDesiredAngle)
-//                   .andThen(shootCmd())
-//                   .withName("note2"));
-//       autoTrigger(() -> poseManager.near(getFinalPosition(trajs[intakingIndex]), 1))
-//           .onTrue(
-//               shooter
-//                   .setIntaking(intake.intakeWorking)
-//                   .deadlineWith(intake.fullIntakeCmd())
-//                   .andThen(() -> intakingIndex += 1)
-//                   .andThen(() -> shooter.setAutoAimShot())
-//                   .until(shooter::atDesiredAngle)
-//                   .andThen(shootCmd())
-//                   .withName("note3"));
-//       autoTrigger(() -> poseManager.near(getFinalPosition(trajs[intakingIndex]), 1))
-//           .onTrue(
-//               shooter
-//                   .setIntaking(intake.intakeWorking)
-//                   .deadlineWith(intake.fullIntakeCmd())
-//                   .andThen(() -> intakingIndex += 1)
-//                   .andThen(() -> shooter.setAutoAimShot())
-//                   .until(shooter::atDesiredAngle)
-//                   .andThen(shootCmd())
-//                   .withName("note4"));
-//       autoTrigger(() -> poseManager.near(getFinalPosition(trajs[intakingIndex]), 1))
-//           .onTrue(
-//               shooter
-//                   .setIntaking(intake.intakeWorking)
-//                   .deadlineWith(intake.fullIntakeCmd())
-//                   .andThen(() -> intakingIndex += 1)
-//                   .withName("note5Intake"));
-//       autoTrigger(() -> poseManager.near(getFinalPosition(trajs[shootingIndex]), 1))
-//           .onTrue(
-//               shooter
-//                   .setAutoAimShot()
-//                   .until(shooter::atDesiredAngle)
-//                   .andThen(shootCmd())
-//                   .withName("note5Shoot"));
-//     };
-//   }
-//   ;
+  //       autoTrigger(() -> poseManager.near(getFinalPosition(trajs[intakingIndex]), 1))
+  //           .onTrue(
+  //               shooter
+  //                   .setIntaking(intake.intakeWorking)
+  //                   .deadlineWith(intake.fullIntakeCmd())
+  //                   .andThen(() -> intakingIndex += 1)
+  //                   .andThen(() -> shooter.setAutoAimShot())
+  //                   .until(shooter::atDesiredAngle)
+  //                   .andThen(shootCmd())
+  //                   .withName("note2"));
+  //       autoTrigger(() -> poseManager.near(getFinalPosition(trajs[intakingIndex]), 1))
+  //           .onTrue(
+  //               shooter
+  //                   .setIntaking(intake.intakeWorking)
+  //                   .deadlineWith(intake.fullIntakeCmd())
+  //                   .andThen(() -> intakingIndex += 1)
+  //                   .andThen(() -> shooter.setAutoAimShot())
+  //                   .until(shooter::atDesiredAngle)
+  //                   .andThen(shootCmd())
+  //                   .withName("note3"));
+  //       autoTrigger(() -> poseManager.near(getFinalPosition(trajs[intakingIndex]), 1))
+  //           .onTrue(
+  //               shooter
+  //                   .setIntaking(intake.intakeWorking)
+  //                   .deadlineWith(intake.fullIntakeCmd())
+  //                   .andThen(() -> intakingIndex += 1)
+  //                   .andThen(() -> shooter.setAutoAimShot())
+  //                   .until(shooter::atDesiredAngle)
+  //                   .andThen(shootCmd())
+  //                   .withName("note4"));
+  //       autoTrigger(() -> poseManager.near(getFinalPosition(trajs[intakingIndex]), 1))
+  //           .onTrue(
+  //               shooter
+  //                   .setIntaking(intake.intakeWorking)
+  //                   .deadlineWith(intake.fullIntakeCmd())
+  //                   .andThen(() -> intakingIndex += 1)
+  //                   .withName("note5Intake"));
+  //       autoTrigger(() -> poseManager.near(getFinalPosition(trajs[shootingIndex]), 1))
+  //           .onTrue(
+  //               shooter
+  //                   .setAutoAimShot()
+  //                   .until(shooter::atDesiredAngle)
+  //                   .andThen(shootCmd())
+  //                   .withName("note5Shoot"));
+  //     };
+  //   }
+  //   ;
 
-//   private Runnable sourceCBA() {
-//     intakingIndex = 0;
-//     return () -> {
-//       ChoreoTrajectory[] trajs = {
-//         Choreo.getTrajectory("AmpToC"),
-//         Choreo.getTrajectory("CToB"),
-//         Choreo.getTrajectory("BToA"),
-//         Choreo.getTrajectory("ATo1"),
-//       };
-//       Command[] trajCmds = {
-//         drive.runChoreoTraj(trajs[0]),
-//         drive.runChoreoTraj(trajs[1]),
-//         drive.runChoreoTraj(trajs[2]),
-//         drive.runChoreoTraj(trajs[3]),
-//       };
-//       atStartOfAuto(
-//           shooter
-//               .setManualSpeakerShot()
-//               .until(shooter::atDesiredAngle)
-//               .andThen(shootCmd())
-//               .withName("first shot"));
-//       autoTrigger(shooter::noteInShooter)
-//           .onFalse(
-//               trajCmds[intakingIndex]
-//                   .andThen(trajCmds[shootingIndex])
-//                   .andThen(
-//                       drive
-//                           .headingDrive(
-//                               () ->
-//                                   poseManager.getHorizontalAngleTo(
-//                                       FieldConstants.Speaker.centerSpeakerOpening))
-//                           .until(drive::thetaAtGoal))
-//                   .withName("followTrajsThenAim"));
-//       autoTrigger(() -> poseManager.near(getFinalPosition(trajs[intakingIndex]), 1))
-//           .onTrue(
-//               shooter
-//                   .setIntaking(intake.intakeWorking)
-//                   .deadlineWith(intake.fullIntakeCmd())
-//                   .andThen(() -> intakingIndex += 1)
-//                   .andThen(() -> shooter.setAutoAimShot())
-//                   .until(shooter::atDesiredAngle)
-//                   .andThen(shootCmd())
-//                   .withName("note2"));
-//       autoTrigger(() -> poseManager.near(getFinalPosition(trajs[intakingIndex]), 1))
-//           .onTrue(
-//               shooter
-//                   .setIntaking(intake.intakeWorking)
-//                   .deadlineWith(intake.fullIntakeCmd())
-//                   .andThen(() -> intakingIndex += 1)
-//                   .andThen(() -> shooter.setAutoAimShot())
-//                   .until(shooter::atDesiredAngle)
-//                   .andThen(shootCmd())
-//                   .withName("note3"));
-//       autoTrigger(() -> poseManager.near(getFinalPosition(trajs[intakingIndex]), 1))
-//           .onTrue(
-//               shooter
-//                   .setIntaking(intake.intakeWorking)
-//                   .deadlineWith(intake.fullIntakeCmd())
-//                   .andThen(() -> intakingIndex += 1)
-//                   .andThen(() -> shooter.setAutoAimShot())
-//                   .until(shooter::atDesiredAngle)
-//                   .andThen(shootCmd())
-//                   .withName("note4"));
-//     };
-//   }
+  //   private Runnable sourceCBA() {
+  //     intakingIndex = 0;
+  //     return () -> {
+  //       ChoreoTrajectory[] trajs = {
+  //         Choreo.getTrajectory("AmpToC"),
+  //         Choreo.getTrajectory("CToB"),
+  //         Choreo.getTrajectory("BToA"),
+  //         Choreo.getTrajectory("ATo1"),
+  //       };
+  //       Command[] trajCmds = {
+  //         drive.runChoreoTraj(trajs[0]),
+  //         drive.runChoreoTraj(trajs[1]),
+  //         drive.runChoreoTraj(trajs[2]),
+  //         drive.runChoreoTraj(trajs[3]),
+  //       };
+  //       atStartOfAuto(
+  //           shooter
+  //               .setManualSpeakerShot()
+  //               .until(shooter::atDesiredAngle)
+  //               .andThen(shootCmd())
+  //               .withName("first shot"));
+  //       autoTrigger(shooter::noteInShooter)
+  //           .onFalse(
+  //               trajCmds[intakingIndex]
+  //                   .andThen(trajCmds[shootingIndex])
+  //                   .andThen(
+  //                       drive
+  //                           .headingDrive(
+  //                               () ->
+  //                                   poseManager.getHorizontalAngleTo(
+  //                                       FieldConstants.Speaker.centerSpeakerOpening))
+  //                           .until(drive::thetaAtGoal))
+  //                   .withName("followTrajsThenAim"));
+  //       autoTrigger(() -> poseManager.near(getFinalPosition(trajs[intakingIndex]), 1))
+  //           .onTrue(
+  //               shooter
+  //                   .setIntaking(intake.intakeWorking)
+  //                   .deadlineWith(intake.fullIntakeCmd())
+  //                   .andThen(() -> intakingIndex += 1)
+  //                   .andThen(() -> shooter.setAutoAimShot())
+  //                   .until(shooter::atDesiredAngle)
+  //                   .andThen(shootCmd())
+  //                   .withName("note2"));
+  //       autoTrigger(() -> poseManager.near(getFinalPosition(trajs[intakingIndex]), 1))
+  //           .onTrue(
+  //               shooter
+  //                   .setIntaking(intake.intakeWorking)
+  //                   .deadlineWith(intake.fullIntakeCmd())
+  //                   .andThen(() -> intakingIndex += 1)
+  //                   .andThen(() -> shooter.setAutoAimShot())
+  //                   .until(shooter::atDesiredAngle)
+  //                   .andThen(shootCmd())
+  //                   .withName("note3"));
+  //       autoTrigger(() -> poseManager.near(getFinalPosition(trajs[intakingIndex]), 1))
+  //           .onTrue(
+  //               shooter
+  //                   .setIntaking(intake.intakeWorking)
+  //                   .deadlineWith(intake.fullIntakeCmd())
+  //                   .andThen(() -> intakingIndex += 1)
+  //                   .andThen(() -> shooter.setAutoAimShot())
+  //                   .until(shooter::atDesiredAngle)
+  //                   .andThen(shootCmd())
+  //                   .withName("note4"));
+  //     };
+  //   }
 
   private Runnable driveSysIdQuasistatic(SysIdRoutine.Direction direction) {
     return () -> {

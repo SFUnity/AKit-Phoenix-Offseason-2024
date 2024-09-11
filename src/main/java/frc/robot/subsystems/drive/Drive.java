@@ -411,6 +411,7 @@ public class Drive extends SubsystemBase {
                       : poseManager.getRotation()));
 
           Leds.getInstance().alignedWithTarget = thetaAtGoal();
+          Logger.recordOutput("Drive/Commands/Theta/HeadingGoal", goalHeading.get());
         })
         .beforeStarting(
             () -> {
@@ -623,6 +624,10 @@ public class Drive extends SubsystemBase {
         (ChassisSpeeds speeds) -> runVelocity(speeds),
         AllianceFlipUtil::shouldFlip,
         this);
+  }
+
+  public Command runChoreoTrajSupplied(Supplier<ChoreoTrajectory> traj) {
+    return runChoreoTraj(traj.get());
   }
 
   /**
