@@ -320,11 +320,17 @@ public class RobotContainer {
   }
 
   private Command moveToNextIntakingPath() {
-    return Commands.runOnce(() -> intakingIndex += 2);
+    return Commands.runOnce(
+        () -> {
+          if (trajs.length - 3 >= intakingIndex) intakingIndex += 2;
+        });
   }
 
   private Command moveToNextShootingPath() {
-    return Commands.runOnce(() -> shootingIndex += 2);
+    return Commands.runOnce(
+        () -> {
+          if (trajs.length - 3 >= shootingIndex) shootingIndex += 2;
+        });
   }
 
   private Runnable source43() {
