@@ -70,6 +70,11 @@ public class PoseManager {
     return getDistanceTo(translation) < tolerance;
   }
 
+  public boolean near(Pose2d pose, double linearTolerance, double angularTolerance) {
+    return near(pose.getTranslation(), linearTolerance)
+        && Math.abs(getRotation().minus(pose.getRotation()).getRadians()) < angularTolerance;
+  }
+
   public Rotation2d getHorizontalAngleTo(Pose2d pose) {
     return getHorizontalAngleTo(pose.getTranslation());
   }
