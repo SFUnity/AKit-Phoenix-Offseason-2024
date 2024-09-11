@@ -622,7 +622,7 @@ public class Drive extends SubsystemBase {
 
   // Auto Commands
   public Command runChoreoTraj(ChoreoTrajectory traj) {
-    return choreoFullFollowSwerveCommand(
+    return customChoreoSwerveCommand(
         traj,
         poseManager::getPose,
         Choreo.choreoSwerveController(
@@ -658,7 +658,7 @@ public class Drive extends SubsystemBase {
    * @param requirements The subsystem(s) to require, typically your drive subsystem only.
    * @return A command that follows a Choreo path.
    */
-  public static Command choreoFullFollowSwerveCommand(
+  private Command customChoreoSwerveCommand(
       ChoreoTrajectory trajectory,
       Supplier<Pose2d> poseSupplier,
       ChoreoControlFunction controller,
@@ -669,11 +669,9 @@ public class Drive extends SubsystemBase {
     return new FunctionalCommand(
         () -> {
           timer.restart();
-          if (Constants.currentMode != Constants.Mode.REAL) {
-            Logger.recordOutput(
+          Logger.recordOutput(
                 "Drive/Choreo/Active Traj",
                 (mirrorTrajectory.getAsBoolean() ? trajectory.flipped() : trajectory).getPoses());
-          }
         },
         () -> {
           Logger.recordOutput(
@@ -698,13 +696,8 @@ public class Drive extends SubsystemBase {
                   : trajectory.getFinalState().getPose();
           Logger.recordOutput("Drive/Choreo/Current Traj End Pose", finalPose);
           return timer.hasElapsed(trajectory.getTotalTime())
-              && (MathUtil.isNear(finalPose.getX(), poseSupplier.get().getX(), 0.4)
-                  && MathUtil.isNear(finalPose.getY(), poseSupplier.get().getY(), 0.4)
-                  && Math.abs(
-                          (poseSupplier.get().getRotation().getDegrees()
-                                  - finalPose.getRotation().getDegrees())
-                              % 360)
-                      < 20.0);
+              && poseManager.near(
+                  finalPose, .4, Math.toRadians(20)); // May need to tune angular tolerance
         },
         requirements);
   }
