@@ -360,6 +360,7 @@ public class RobotContainer {
                           .schedule(
                               intakingTrajCmd()
                                   .andThen(shootingTrajCmd())
+                                  .andThen(drive.pointAtSpeakerCmd())
                                   .withName("followTrajsThenAim"))));
       autoTrigger(nearEndOf(intakingTraj(), 1))
           .onTrue(
@@ -375,10 +376,6 @@ public class RobotContainer {
                   .setAutoAimShot()
                   .deadlineWith(moveToNextShootingPath())
                   .withName("setAutoAim"));
-      // TODO try to recombine this with the onFalse trigger
-      autoTrigger(nearEndOf(shootingTraj(), .1))
-          .and(shooter::noteInShooter)
-          .onTrue(drive.pointAtSpeakerCmd().withName("Heading Drive"));
       autoTrigger(drive::thetaAtGoal).and(shooter::atDesiredAngle).onTrue(shootCmd());
     };
   }
