@@ -387,9 +387,6 @@ public class RobotContainer {
   }
 
   private Runnable centerCBA1() {
-    pathIndex = 0;
-    intakingIndex = 5;
-    shootingIndex = 6;
     return () -> {
       trajs =
           new ChoreoTrajectory[] {
@@ -399,8 +396,9 @@ public class RobotContainer {
             Choreo.getTrajectory("ATo1"),
             Choreo.getTrajectory("1ToShoot")
           };
-      intakingIndex = 0;
-      shootingIndex = 1;
+      pathIndex = 0;
+      intakingIndex = 5;
+      shootingIndex = 6;
 
       resetPoseAtStart(trajs[0]);
       atStartOfAuto(
@@ -421,15 +419,13 @@ public class RobotContainer {
                                   .withName("followTrajsThenAim"))));
       autoTrigger(nearEndOf(pathTraj(), 1))
           .onTrue(
-            //i know this is kinda spagetti but ill fix it after avi restructures again
+              // i know this is kinda spagetti but ill fix it after avi restructures again
               shooter
                   .setIntaking(intake.intakeWorking)
                   .deadlineWith(intake.fullIntakeCmd())
                   .until(shooter::noteInShooter)
                   .andThen(shooter.setAutoAimShot()));
-        autoTrigger(drive::thetaAtGoal).and(shooter::atDesiredAngle)
-        .onTrue(shootCmd());
-                  
+      autoTrigger(drive::thetaAtGoal).and(shooter::atDesiredAngle).onTrue(shootCmd());
     };
   }
 
