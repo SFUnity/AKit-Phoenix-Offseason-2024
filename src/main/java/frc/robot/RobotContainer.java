@@ -426,9 +426,10 @@ public class RobotContainer {
                   .setIntaking(intake.intakeWorking)
                   .deadlineWith(intake.fullIntakeCmd())
                   .until(shooter::noteInShooter)
-                  .andThen(shooter.setAutoAimShot()))
-                  .until(drive::thetaAtGoal).and(shooter::atDesiredAngle)
-                  .andThen(shootCmd());
+                  .andThen(shooter.setAutoAimShot()));
+        autoTrigger(drive::thetaAtGoal).and(shooter::atDesiredAngle)
+        .onTrue(shootCmd());
+                  
     };
   }
 
