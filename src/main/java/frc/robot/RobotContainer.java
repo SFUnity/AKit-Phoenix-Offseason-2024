@@ -276,8 +276,7 @@ public class RobotContainer {
       autoChooser.get().run();
     }
 
-    Logger.recordOutput("Drive/Choreo/intakingIndex", intakingIndex);
-    Logger.recordOutput("Drive/Choreo/shootingIndex", shootingIndex);
+    Logger.recordOutput("Drive/Choreo/currentPathIndex", currentPathIndex);
   }
 
   private Trigger autoTrigger(BooleanSupplier condition) {
@@ -299,49 +298,7 @@ public class RobotContainer {
         poseManager.near(AllianceFlipUtil.apply(traj.get().getFinalPose().getTranslation()), .1);
   }
 
-  private int intakingIndex;
-  private int shootingIndex;
-  private int pathIndex;
-
-  private ChoreoTrajectory[] trajs;
-
-  private Supplier<ChoreoTrajectory> intakingTraj() {
-    return () -> trajs[intakingIndex];
-  }
-
-  private Supplier<ChoreoTrajectory> shootingTraj() {
-    return () -> trajs[shootingIndex];
-  }
-
-  private Supplier<ChoreoTrajectory> pathTraj() {
-    return () -> trajs[pathIndex];
-  }
-
-  private Command intakingTrajCmd() {
-    return drive.runChoreoTrajSupplied(intakingTraj());
-  }
-
-  private Command shootingTrajCmd() {
-    return drive.runChoreoTrajSupplied(shootingTraj());
-  }
-
-  private Command regPathTrajCmd() {
-    return drive.runChoreoTrajSupplied(pathTraj());
-  }
-
-  private Command moveToNextIntakingPath() {
-    return Commands.runOnce(
-        () -> {
-          if (trajs.length - 3 >= intakingIndex) intakingIndex += 2;
-        });
-  }
-
-  private Command moveToNextShootingPath() {
-    return Commands.runOnce(
-        () -> {
-          if (trajs.length - 3 >= shootingIndex) shootingIndex += 2;
-        });
-  }
+  private int currentPathIndex = 0;
 
   private Runnable source43() {
     return () -> {
