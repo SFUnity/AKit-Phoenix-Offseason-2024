@@ -324,8 +324,8 @@ public class RobotContainer {
   private Command shootingTrajCmd() {
     return drive.runChoreoTrajSupplied(shootingTraj());
   }
-  
-  private Command regPathTrajCmd(){
+
+  private Command regPathTrajCmd() {
     return drive.runChoreoTrajSupplied(pathTraj());
   }
 
