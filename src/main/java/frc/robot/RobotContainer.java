@@ -324,6 +324,10 @@ public class RobotContainer {
   private Command shootingTrajCmd() {
     return drive.runChoreoTrajSupplied(shootingTraj());
   }
+  
+  private Command regPathTrajCmd(){
+    return drive.runChoreoTrajSupplied(pathTraj());
+  }
 
   private Command moveToNextIntakingPath() {
     return Commands.runOnce(
@@ -413,8 +417,8 @@ public class RobotContainer {
                   () ->
                       CommandScheduler.getInstance()
                           .schedule(
-                              intakingTrajCmd()
-                                  .andThen(shootingTrajCmd())
+                              regPathTrajCmd()
+                                  .andThen(regPathTrajCmd())
                                   .andThen(drive.pointAtSpeakerCmd())
                                   .withName("followTrajsThenAim"))));
       autoTrigger(nearEndOf(pathTraj(), 1))
