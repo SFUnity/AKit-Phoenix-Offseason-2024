@@ -347,48 +347,48 @@ public class RobotContainer {
     };
   }
 
-  private Runnable centerCBA1() {
-    return () -> {
-      trajs =
-          new ChoreoTrajectory[] {
-            Choreo.getTrajectory("CenterToC"),
-            Choreo.getTrajectory("CToB"),
-            Choreo.getTrajectory("BToA"),
-            Choreo.getTrajectory("ATo1"),
-            Choreo.getTrajectory("1ToShoot")
-          };
-      pathIndex = 0;
-      intakingIndex = 5;
-      shootingIndex = 6;
+//   private Runnable centerCBA1() {
+//     return () -> {
+//       trajs =
+//           new ChoreoTrajectory[] {
+//             Choreo.getTrajectory("CenterToC"),
+//             Choreo.getTrajectory("CToB"),
+//             Choreo.getTrajectory("BToA"),
+//             Choreo.getTrajectory("ATo1"),
+//             Choreo.getTrajectory("1ToShoot")
+//           };
+//       pathIndex = 0;
+//       intakingIndex = 5;
+//       shootingIndex = 6;
 
-      resetPoseAtStart(trajs[0]);
-      atStartOfAuto(
-          shooter
-              .setManualSpeakerShot()
-              .until(shooter::atDesiredAngle)
-              .andThen(shootCmd())
-              .withName("first shot"));
-      autoTrigger(shooter::noteInShooter)
-          .onFalse(
-              Commands.runOnce(
-                  () ->
-                      CommandScheduler.getInstance()
-                          .schedule(
-                              regPathTrajCmd()
-                                  .andThen(regPathTrajCmd())
-                                  .andThen(drive.pointAtSpeakerCmd())
-                                  .withName("followTrajsThenAim"))));
-      autoTrigger(nearEndOf(pathTraj(), 1))
-          .onTrue(
-              // i know this is kinda spagetti but ill fix it after avi restructures again
-              shooter
-                  .setIntaking(intake.intakeWorking)
-                  .deadlineWith(intake.fullIntakeCmd())
-                  .until(shooter::noteInShooter)
-                  .andThen(shooter.setAutoAimShot()));
-      autoTrigger(drive::thetaAtGoal).and(shooter::atDesiredAngle).onTrue(shootCmd());
-    };
-  }
+//       resetPoseAtStart(trajs[0]);
+//       atStartOfAuto(
+//           shooter
+//               .setManualSpeakerShot()
+//               .until(shooter::atDesiredAngle)
+//               .andThen(shootCmd())
+//               .withName("first shot"));
+//       autoTrigger(shooter::noteInShooter)
+//           .onFalse(
+//               Commands.runOnce(
+//                   () ->
+//                       CommandScheduler.getInstance()
+//                           .schedule(
+//                               regPathTrajCmd()
+//                                   .andThen(regPathTrajCmd())
+//                                   .andThen(drive.pointAtSpeakerCmd())
+//                                   .withName("followTrajsThenAim"))));
+//       autoTrigger(nearEndOf(pathTraj(), 1))
+//           .onTrue(
+//               // i know this is kinda spagetti but ill fix it after avi restructures again
+//               shooter
+//                   .setIntaking(intake.intakeWorking)
+//                   .deadlineWith(intake.fullIntakeCmd())
+//                   .until(shooter::noteInShooter)
+//                   .andThen(shooter.setAutoAimShot()));
+//       autoTrigger(drive::thetaAtGoal).and(shooter::atDesiredAngle).onTrue(shootCmd());
+//     };
+//   }
 
   private Runnable driveSysIdQuasistatic(SysIdRoutine.Direction direction) {
     return () -> {
