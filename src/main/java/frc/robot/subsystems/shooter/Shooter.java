@@ -7,6 +7,7 @@ import frc.robot.subsystems.leds.Leds;
 import frc.robot.subsystems.shooter.feeder.Feeder;
 import frc.robot.subsystems.shooter.flywheels.Flywheels;
 import frc.robot.subsystems.shooter.pivot.Pivot;
+import frc.robot.util.PoseManager;
 import frc.robot.util.VirtualSubsystem;
 import frc.robot.util.loggedShuffleboardClasses.LoggedShuffleboardBoolean;
 import org.littletonrobotics.junction.AutoLogOutput;
@@ -19,23 +20,29 @@ public class Shooter extends VirtualSubsystem {
   private final Feeder feeder;
   private final Pivot pivot;
   private final BeamBreakIO beamBreakIO;
+  private final PoseManager poseManager;
 
   private final BeamBreakInputsAutoLogged beamBreakInputs = new BeamBreakInputsAutoLogged();
   private final LoggedShuffleboardBoolean beamBreakWorkingEntry =
       new LoggedShuffleboardBoolean("Beam Break Working", "Shooter", true);
   private boolean simNoteInShooter = true;
 
-  public Shooter(Flywheels flywheels, Pivot pivot, BeamBreakIO beamBreakIO, Feeder feeder) {
+  public Shooter(
+      Flywheels flywheels,
+      Pivot pivot,
+      BeamBreakIO beamBreakIO,
+      Feeder feeder,
+      PoseManager poseManager) {
     this.flywheels = flywheels;
     this.pivot = pivot;
     this.beamBreakIO = beamBreakIO;
     this.feeder = feeder;
+    this.poseManager = poseManager;
   }
 
   public void periodic() {
     beamBreakIO.updateInputs(beamBreakInputs);
     Logger.processInputs("Shooter/BeamBreak", beamBreakInputs);
-
     Leds.getInstance().noteInShooter = noteInShooter();
   }
 
@@ -50,6 +57,16 @@ public class Shooter extends VirtualSubsystem {
     return beamBreakInputs.distSensorRange <= kDistSensorRangeWhenNoteInches
         && distanceSensorWorking()
         && simNoteInShooter;
+  }
+
+  /**
+   * returns whether the robot is on the opposing side of the field
+   *
+   * @return
+   */
+  public boolean onEnemyField() {
+    // (TODO): should probably get a better way of obtaining this constant value
+    return poseManager.getPose().getX() > 10.17059;
   }
 
   public boolean distanceSensorWorking() {

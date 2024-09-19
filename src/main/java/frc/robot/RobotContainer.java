@@ -118,7 +118,8 @@ public class RobotContainer {
                 new Flywheels(new FlywheelsIOSparkMax()),
                 new Pivot(new PivotIOSparkMax(), poseManager),
                 new BeamBreakIORev(),
-                new Feeder(new FeederIOSparkMax()));
+                new Feeder(new FeederIOSparkMax()),
+                poseManager);
         break;
 
       case SIM:
@@ -139,7 +140,8 @@ public class RobotContainer {
                 new Flywheels(new FlywheelsIOSim()),
                 new Pivot(new PivotIOSim(), poseManager),
                 new BeamBreakIOSim(),
-                new Feeder(new FeederIOSim()));
+                new Feeder(new FeederIOSim()),
+                poseManager);
         break;
 
       default:
@@ -160,9 +162,13 @@ public class RobotContainer {
                 new Flywheels(new FlywheelsIO() {}),
                 new Pivot(new PivotIO() {}, poseManager),
                 new BeamBreakIO() {},
-                new Feeder(new FeederIO() {}));
+                new Feeder(new FeederIO() {}),
+                poseManager);
         break;
     }
+
+    // (TODO): Tell the robot to stop the flywheels if on the enemy field
+    new Trigger(shooter::onEnemyField).onTrue(shooter.stopFlywheels());
 
     // Set up auto routines
     autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
