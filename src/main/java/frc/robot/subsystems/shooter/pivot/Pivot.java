@@ -132,12 +132,12 @@ public class Pivot extends SubsystemBase {
   public Command setManualSpeakerAngle() {
     return run(() -> {
           readyShootSpeakerManual();
-          io.setAngleMotorSpeeds(desiredAngle);
+          io.setPivotAngle(desiredAngle);
         })
         .finallyDo(
             () -> {
               readyShootAmp();
-              io.setAngleMotorSpeeds(desiredAngle);
+              io.setPivotAngle(desiredAngle);
             })
         .withName("setManualShootAngle");
   }
@@ -145,12 +145,12 @@ public class Pivot extends SubsystemBase {
   public Command setAutoSpeakerAngle() {
     return run(() -> {
           readyShootSpeakerAutomatic();
-          io.setAngleMotorSpeeds(desiredAngle);
+          io.setPivotAngle(desiredAngle);
         })
         .finallyDo(
             () -> {
               readyShootAmp();
-              io.setAngleMotorSpeeds(desiredAngle);
+              io.setPivotAngle(desiredAngle);
             })
         .withName("setAutoShootAngle");
   }
@@ -158,7 +158,7 @@ public class Pivot extends SubsystemBase {
   public Command setAmpAngle() {
     return run(() -> {
           readyShootAmp();
-          io.setAngleMotorSpeeds(desiredAngle);
+          io.setPivotAngle(desiredAngle);
         })
         .withName("setAmpAngle");
   }
@@ -166,12 +166,12 @@ public class Pivot extends SubsystemBase {
   public Command setFeedAngle() {
     return run(() -> {
           readyShootFeed();
-          io.setAngleMotorSpeeds(desiredAngle);
+          io.setPivotAngle(desiredAngle);
         })
         .finallyDo(
             () -> {
               readyShootAmp();
-              io.setAngleMotorSpeeds(desiredAngle);
+              io.setPivotAngle(desiredAngle);
             })
         .withName("gotta be a team player");
   }
@@ -179,19 +179,19 @@ public class Pivot extends SubsystemBase {
   public Command setIntakeAngle() {
     return run(() -> {
           readyShooterIntake();
-          io.setAngleMotorSpeeds(desiredAngle);
+          io.setPivotAngle(desiredAngle);
         })
         .finallyDo(
             () -> {
               readyShootAmp();
-              io.setAngleMotorSpeeds(desiredAngle);
+              io.setPivotAngle(desiredAngle);
             })
         .withName("setIntakeAngle");
   }
   public Command setSourceIntakeAngle(){
     return run(() -> {
       readyShooterSourceIntake();
-      io.setAngleMotorSpeeds(desiredAngle);
+      io.setPivotAngle(desiredAngle);
     })
     .withName("setSourceIntakeAngle");
   }

@@ -63,7 +63,7 @@ public class PivotIOSparkMax implements PivotIO {
   }
 
   @Override
-  public void setAngleMotorSpeeds(double desiredAngle) {
+  public void setPivotAngle(double desiredAngle) {
     pid.setReference(desiredAngle, ControlType.kPosition);
   }
 

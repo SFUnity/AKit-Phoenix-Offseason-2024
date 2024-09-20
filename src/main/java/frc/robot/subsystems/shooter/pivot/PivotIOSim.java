@@ -67,7 +67,7 @@ public class PivotIOSim implements PivotIO {
   }
 
   // TODO make a setAngleMotorSpeeds method
-
+  
   @Override
   public void setVoltage(double volts) {
     appliedVolts = volts;

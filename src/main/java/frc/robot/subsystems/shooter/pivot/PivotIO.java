@@ -30,11 +30,10 @@ public interface PivotIO {
   /** Run open loop at the specified voltage. */
   public default void setVoltage(double volts) {}
 
-  // TODO delete or implement
+  
   public default void atDesiredAngle(double desiredAngle) {}
 
-  // TODO When reading this function's name it sounds like you're setting a motor speed to an angle
-  public default void setAngleMotorSpeeds(double desiredAngle) {}
+  public default void setPivotAngle(double desiredAngle) {}
   /** Stop in open loop. */
   public default void stop() {}
 
