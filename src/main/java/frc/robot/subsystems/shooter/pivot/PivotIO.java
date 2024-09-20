@@ -30,9 +30,6 @@ public interface PivotIO {
   /** Run open loop at the specified voltage. */
   public default void setVoltage(double volts) {}
 
-  
-  public default void atDesiredAngle(double desiredAngle) {}
-
   public default void setPivotAngle(double desiredAngle) {}
   /** Stop in open loop. */
   public default void stop() {}

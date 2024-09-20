@@ -15,6 +15,7 @@ package frc.robot.subsystems.shooter.pivot;
 
 import static frc.robot.subsystems.shooter.pivot.PivotConstants.pivotLength;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.util.Units;
@@ -41,7 +42,7 @@ public class PivotIOSim implements PivotIO {
   private boolean wasNotAuto = true;
 
   public PivotIOSim() {
-    pid = new PIDController(0.0, 0.0, 0.0);
+    pid = new PIDController(1.0, 0.0, 0.0);
     sim.setState(0.0, 0.0);
   }
 
@@ -67,7 +68,16 @@ public class PivotIOSim implements PivotIO {
   }
 
   // TODO make a setAngleMotorSpeeds method
-  
+  @Override
+  public void setPivotAngle(double desiredAngle) {
+
+    double setpointRads = Units.rotationsToRadians(desiredAngle) / 100;
+    double volts = pid.calculate(sim.getAngleRads(), setpointRads);
+    double pivotAppliedVoltage = MathUtil.clamp(volts, -12.0, 12.0);
+    sim.setInputVoltage(pivotAppliedVoltage);
+  }
+  ;
+
   @Override
   public void setVoltage(double volts) {
     appliedVolts = volts;

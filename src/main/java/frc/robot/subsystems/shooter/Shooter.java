@@ -100,11 +100,9 @@ public class Shooter extends VirtualSubsystem {
         .alongWith(Commands.waitUntil(pivot::atDesiredAngle).andThen(feeder.outtake()))
         .withName("setOuttaking");
   }
-  public Command sourceIntake(){
-    return pivot
-      .setSourceIntakeAngle();
-      
-      
+
+  public Command sourceIntake() {
+    return pivot.setSourceIntakeAngle();
   }
 
   public Command feedNoteToFlywheels() {

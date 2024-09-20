@@ -188,11 +188,12 @@ public class Pivot extends SubsystemBase {
             })
         .withName("setIntakeAngle");
   }
-  public Command setSourceIntakeAngle(){
+
+  public Command setSourceIntakeAngle() {
     return run(() -> {
-      readyShooterSourceIntake();
-      io.setPivotAngle(desiredAngle);
-    })
-    .withName("setSourceIntakeAngle");
+          readyShooterSourceIntake();
+          io.setPivotAngle(desiredAngle);
+        })
+        .withName("setSourceIntakeAngle");
   }
 }
