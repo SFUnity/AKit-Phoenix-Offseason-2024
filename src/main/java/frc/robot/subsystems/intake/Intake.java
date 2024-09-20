@@ -125,8 +125,12 @@ public class Intake extends SubsystemBase {
         .withName("raise and stop");
   }
 
+  private Command ifIntakeWorking(Command command) {
+    return Commands.either(command, raiseAndStopCmd(), intakeWorking::get);
+  }
+
   public Command intakeCmd(Trigger lowerTrig) {
-    return Commands.either(
+    return ifIntakeWorking(
         run(() -> {
               boolean lower = lowerTrig.getAsBoolean();
               indexerIn();
@@ -138,20 +142,16 @@ public class Intake extends SubsystemBase {
                 rollersStop();
               }
             })
-            .withName("intake"),
-        raiseAndStopCmd(),
-        intakeWorking::get);
+            .withName("intake"));
   }
 
   public Command poopCmd() {
-    return Commands.either(
+    return ifIntakeWorking(
         run(() -> {
               raise();
               rollersOut();
               indexerOut();
             })
-            .withName("poop"),
-        raiseAndStopCmd(),
-        intakeWorking::get);
+            .withName("poop"));
   }
 }
