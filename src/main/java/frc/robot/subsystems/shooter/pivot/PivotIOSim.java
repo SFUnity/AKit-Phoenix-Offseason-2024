@@ -61,7 +61,7 @@ public class PivotIOSim implements PivotIO {
 
     sim.update(0.02);
 
-    inputs.positionRots = 0.0;
+    inputs.positionRots = Units.radiansToRotations(sim.getAngleRads()) * 100;
     inputs.velocityRotsPerSec = Units.radiansToRotations(sim.getVelocityRadPerSec());
     inputs.appliedVolts = appliedVolts;
     inputs.currentAmps = new double[] {sim.getCurrentDrawAmps()};
