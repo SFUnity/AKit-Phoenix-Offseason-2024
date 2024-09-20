@@ -13,14 +13,11 @@
 
 package frc.robot;
 
-import com.choreo.lib.Choreo;
-import com.choreo.lib.ChoreoTrajectory;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandPS5Controller;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -58,12 +55,8 @@ import frc.robot.subsystems.shooter.pivot.PivotIOSim;
 import frc.robot.subsystems.shooter.pivot.PivotIOSparkMax;
 import frc.robot.util.Alert;
 import frc.robot.util.Alert.AlertType;
-import frc.robot.util.AllianceFlipUtil;
 import frc.robot.util.PoseManager;
 import frc.robot.util.loggedShuffleboardClasses.LoggedShuffleboardChooser;
-import java.util.function.BooleanSupplier;
-import java.util.function.Supplier;
-import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.LoggedDashboardNumber;
 
 /**
@@ -175,8 +168,8 @@ public class RobotContainer {
 
     // Set up auto routines
     autoChooser.addDefaultOption("nothing", () -> {});
-    autoChooser.addOption("source43", source43());
-    autoChooser.addOption("centerCBA1", centerCBA1());
+    // autoChooser.addOption("source43", source43());
+    // autoChooser.addOption("centerCBA1", centerCBA1());
     // autoChooser.addOption("sourceCBA", sourceCBA());
 
     // Set up test routines
@@ -276,119 +269,119 @@ public class RobotContainer {
       autoChooser.get().run();
     }
 
-    Logger.recordOutput("Drive/Choreo/currentPathIndex", currentPathIndex);
+    // Logger.recordOutput("Drive/Choreo/currentPathIndex", currentPathIndex);
   }
 
-  private Trigger autoTrigger(BooleanSupplier condition) {
-    return new Trigger(condition).and(DriverStation::isAutonomousEnabled);
-  }
+  // private Trigger autoTrigger(BooleanSupplier condition) {
+  //   return new Trigger(condition).and(DriverStation::isAutonomousEnabled);
+  // }
 
   private Trigger atStartOfAuto(Command command) {
     return new Trigger(DriverStation::isAutonomousEnabled).onTrue(command);
   }
 
-  private Trigger resetPoseAtStart(ChoreoTrajectory firstTraj) {
-    return atStartOfAuto(
-        Commands.runOnce(
-            () -> poseManager.setPose(AllianceFlipUtil.apply(firstTraj.getInitialPose()))));
-  }
+  // private Trigger resetPoseAtStart(ChoreoTrajectory firstTraj) {
+  //   return atStartOfAuto(
+  //       Commands.runOnce(
+  //           () -> poseManager.setPose(AllianceFlipUtil.apply(firstTraj.getInitialPose()))));
+  // }
 
-  private BooleanSupplier nearEndOf(Supplier<ChoreoTrajectory> traj, double tolerance) {
-    return () ->
-        poseManager.near(AllianceFlipUtil.apply(traj.get().getFinalPose().getTranslation()), .1);
-  }
+  // private BooleanSupplier nearEndOf(Supplier<ChoreoTrajectory> traj, double tolerance) {
+  //   return () ->
+  //       poseManager.near(AllianceFlipUtil.apply(traj.get().getFinalPose().getTranslation()), .1);
+  // }
 
-  private int currentPathIndex = 0;
+  // private int currentPathIndex = 0;
 
-  private Runnable source43() {
-    return () -> {
-      trajs =
-          new ChoreoTrajectory[] {
-            Choreo.getTrajectory("SourceTo4"),
-            Choreo.getTrajectory("4ToShoot"),
-            Choreo.getTrajectory("ShootTo3"),
-            Choreo.getTrajectory("3ToShoot")
-          };
-      intakingIndex = 0;
-      shootingIndex = 1;
+  // private Runnable source43() {
+  //   return () -> {
+  //     trajs =
+  //         new ChoreoTrajectory[] {
+  //           Choreo.getTrajectory("SourceTo4"),
+  //           Choreo.getTrajectory("4ToShoot"),
+  //           Choreo.getTrajectory("ShootTo3"),
+  //           Choreo.getTrajectory("3ToShoot")
+  //         };
+  //     intakingIndex = 0;
+  //     shootingIndex = 1;
 
-      resetPoseAtStart(trajs[0]);
-      atStartOfAuto(
-          shooter
-              .setManualSpeakerShot()
-              .until(shooter::atDesiredAngle)
-              .andThen(shootCmd())
-              .withName("first shot"));
-      autoTrigger(shooter::noteInShooter)
-          .onFalse(
-              Commands.runOnce(
-                  () ->
-                      CommandScheduler.getInstance()
-                          .schedule(
-                              intakingTrajCmd()
-                                  .andThen(shootingTrajCmd())
-                                  .andThen(drive.pointAtSpeakerCmd())
-                                  .withName("followTrajsThenAim"))));
-      autoTrigger(nearEndOf(intakingTraj(), 1))
-          .onTrue(
-              shooter
-                  .setIntaking(intake.intakeWorking)
-                  .deadlineWith(intake.fullIntakeCmd())
-                  .andThen(moveToNextIntakingPath())
-                  .withName("nearIntakePose"));
-      autoTrigger(nearEndOf(shootingTraj(), .5))
-          .and(shooter::noteInShooter)
-          .onTrue(
-              shooter
-                  .setAutoAimShot()
-                  .deadlineWith(moveToNextShootingPath())
-                  .withName("setAutoAim"));
-      autoTrigger(drive::thetaAtGoal).and(shooter::atDesiredAngle).onTrue(shootCmd());
-    };
-  }
+  //     resetPoseAtStart(trajs[0]);
+  //     atStartOfAuto(
+  //         shooter
+  //             .setManualSpeakerShot()
+  //             .until(shooter::atDesiredAngle)
+  //             .andThen(shootCmd())
+  //             .withName("first shot"));
+  //     autoTrigger(shooter::noteInShooter)
+  //         .onFalse(
+  //             Commands.runOnce(
+  //                 () ->
+  //                     CommandScheduler.getInstance()
+  //                         .schedule(
+  //                             intakingTrajCmd()
+  //                                 .andThen(shootingTrajCmd())
+  //                                 .andThen(drive.pointAtSpeakerCmd())
+  //                                 .withName("followTrajsThenAim"))));
+  //     autoTrigger(nearEndOf(intakingTraj(), 1))
+  //         .onTrue(
+  //             shooter
+  //                 .setIntaking(intake.intakeWorking)
+  //                 .deadlineWith(intake.fullIntakeCmd())
+  //                 .andThen(moveToNextIntakingPath())
+  //                 .withName("nearIntakePose"));
+  //     autoTrigger(nearEndOf(shootingTraj(), .5))
+  //         .and(shooter::noteInShooter)
+  //         .onTrue(
+  //             shooter
+  //                 .setAutoAimShot()
+  //                 .deadlineWith(moveToNextShootingPath())
+  //                 .withName("setAutoAim"));
+  //     autoTrigger(drive::thetaAtGoal).and(shooter::atDesiredAngle).onTrue(shootCmd());
+  //   };
+  // }
 
-//   private Runnable centerCBA1() {
-//     return () -> {
-//       trajs =
-//           new ChoreoTrajectory[] {
-//             Choreo.getTrajectory("CenterToC"),
-//             Choreo.getTrajectory("CToB"),
-//             Choreo.getTrajectory("BToA"),
-//             Choreo.getTrajectory("ATo1"),
-//             Choreo.getTrajectory("1ToShoot")
-//           };
-//       pathIndex = 0;
-//       intakingIndex = 5;
-//       shootingIndex = 6;
+  //   private Runnable centerCBA1() {
+  //     return () -> {
+  //       trajs =
+  //           new ChoreoTrajectory[] {
+  //             Choreo.getTrajectory("CenterToC"),
+  //             Choreo.getTrajectory("CToB"),
+  //             Choreo.getTrajectory("BToA"),
+  //             Choreo.getTrajectory("ATo1"),
+  //             Choreo.getTrajectory("1ToShoot")
+  //           };
+  //       pathIndex = 0;
+  //       intakingIndex = 5;
+  //       shootingIndex = 6;
 
-//       resetPoseAtStart(trajs[0]);
-//       atStartOfAuto(
-//           shooter
-//               .setManualSpeakerShot()
-//               .until(shooter::atDesiredAngle)
-//               .andThen(shootCmd())
-//               .withName("first shot"));
-//       autoTrigger(shooter::noteInShooter)
-//           .onFalse(
-//               Commands.runOnce(
-//                   () ->
-//                       CommandScheduler.getInstance()
-//                           .schedule(
-//                               regPathTrajCmd()
-//                                   .andThen(regPathTrajCmd())
-//                                   .andThen(drive.pointAtSpeakerCmd())
-//                                   .withName("followTrajsThenAim"))));
-//       autoTrigger(nearEndOf(pathTraj(), 1))
-//           .onTrue(
-//               // i know this is kinda spagetti but ill fix it after avi restructures again
-//               shooter
-//                   .setIntaking(intake.intakeWorking)
-//                   .deadlineWith(intake.fullIntakeCmd())
-//                   .until(shooter::noteInShooter)
-//                   .andThen(shooter.setAutoAimShot()));
-//       autoTrigger(drive::thetaAtGoal).and(shooter::atDesiredAngle).onTrue(shootCmd());
-//     };
-//   }
+  //       resetPoseAtStart(trajs[0]);
+  //       atStartOfAuto(
+  //           shooter
+  //               .setManualSpeakerShot()
+  //               .until(shooter::atDesiredAngle)
+  //               .andThen(shootCmd())
+  //               .withName("first shot"));
+  //       autoTrigger(shooter::noteInShooter)
+  //           .onFalse(
+  //               Commands.runOnce(
+  //                   () ->
+  //                       CommandScheduler.getInstance()
+  //                           .schedule(
+  //                               regPathTrajCmd()
+  //                                   .andThen(regPathTrajCmd())
+  //                                   .andThen(drive.pointAtSpeakerCmd())
+  //                                   .withName("followTrajsThenAim"))));
+  //       autoTrigger(nearEndOf(pathTraj(), 1))
+  //           .onTrue(
+  //               // i know this is kinda spagetti but ill fix it after avi restructures again
+  //               shooter
+  //                   .setIntaking(intake.intakeWorking)
+  //                   .deadlineWith(intake.fullIntakeCmd())
+  //                   .until(shooter::noteInShooter)
+  //                   .andThen(shooter.setAutoAimShot()));
+  //       autoTrigger(drive::thetaAtGoal).and(shooter::atDesiredAngle).onTrue(shootCmd());
+  //     };
+  //   }
 
   private Runnable driveSysIdQuasistatic(SysIdRoutine.Direction direction) {
     return () -> {
