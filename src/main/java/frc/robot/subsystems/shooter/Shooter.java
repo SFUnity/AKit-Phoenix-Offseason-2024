@@ -7,6 +7,7 @@ import frc.robot.subsystems.leds.Leds;
 import frc.robot.subsystems.shooter.feeder.Feeder;
 import frc.robot.subsystems.shooter.flywheels.Flywheels;
 import frc.robot.subsystems.shooter.pivot.Pivot;
+import frc.robot.util.AllianceFlipUtil;
 import frc.robot.util.PoseManager;
 import frc.robot.util.VirtualSubsystem;
 import frc.robot.util.loggedShuffleboardClasses.LoggedShuffleboardBoolean;
@@ -66,7 +67,7 @@ public class Shooter extends VirtualSubsystem {
    */
   public boolean onEnemyField() {
     // (TODO): should probably get a better way of obtaining this constant value
-    return poseManager.getPose().getX() > 10.17059;
+    return AllianceFlipUtil.apply(poseManager.getPose().getX()) > AllianceFlipUtil.apply(10.17059);
   }
 
   public boolean distanceSensorWorking() {
