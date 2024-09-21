@@ -40,6 +40,7 @@ public class PivotIOSim implements PivotIO {
 
   private boolean controllerNeedsReset = false;
   private boolean wasNotAuto = true;
+  private double desiredAngle = 0.0;
 
   public PivotIOSim() {
     pid = new PIDController(1.0, 0.0, 0.0);
