@@ -246,9 +246,7 @@ public class RobotContainer {
     operator.povUp().onTrue(shooter.stopFlywheels());
     operator
         .povDown()
-        .whileTrue(
-            Commands.startEnd(
-                () -> shooter.setSimNoteInShooter(false), () -> shooter.setSimNoteInShooter(true)));
+        .onTrue(Commands.runOnce(() -> shooter.setSimNoteInShooter(!shooter.noteInShooter())));
 
     operator.L1().onTrue(shooter.setAmpShot());
     operator.R1().onTrue(shooter.setAutoAimShot());
