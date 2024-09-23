@@ -82,21 +82,21 @@ public class Pivot extends SubsystemBase {
   }
 
   /** Run open loop at the specified voltage. */
-  public void runVolts(double volts) {
+  private void runVolts(double volts) {
     io.setVoltage(volts);
   }
 
   /** Stops the pivot. */
-  public void stop() {
+  private void stop() {
     io.stop();
   }
 
-  public void readyShootSpeakerManual() {
+  private void readyShootSpeakerManual() {
     desiredAngle = PivotConstants.kSpeakerManualAngleRevRotations;
   }
 
   // TODO needs testing and maybe some bs numbers. not sure
-  public void readyShootSpeakerAutomatic() {
+  private void readyShootSpeakerAutomatic() {
     Translation3d speakerOpening = FieldConstants.Speaker.centerSpeakerOpening;
     double heightOfTarget = speakerOpening.getY();
     double angleRad = Math.atan(heightOfTarget / poseManager.getDistanceTo(speakerOpening));
@@ -104,23 +104,23 @@ public class Pivot extends SubsystemBase {
     desiredAngle = angleDeg + angleOffset.getDouble(PivotConstants.kSpeakerAngleOffsetRevRotations);
   }
 
-  public void readyShootAmp() {
+  private void readyShootAmp() {
     desiredAngle = PivotConstants.kDesiredAmpAngleRevRotations;
   }
 
-  public void readyShootFeed() {
+  private void readyShootFeed() {
     desiredAngle = feedingAngleEntry.getDouble(PivotConstants.kFeedingAngleRevRotations);
   }
 
-  public void readyShooterIntake() {
+  private void readyShooterIntake() {
     desiredAngle = PivotConstants.kDesiredIntakeAngleRevRotations;
   }
 
-  public void readyShooterSourceIntake() {
+  private void readyShooterSourceIntake() {
     desiredAngle = PivotConstants.kDesiredSourceIntakeAngleRevRotations;
   }
 
-  public void readyShooterEject() {
+  private void readyShooterEject() {
     desiredAngle = PivotConstants.kDesiredEjectAngleRevRotations;
   }
 
