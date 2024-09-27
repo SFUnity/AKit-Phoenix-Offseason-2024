@@ -36,13 +36,13 @@ public class PivotIOSim implements PivotIO {
 
   private final PIDController pid;
   private double appliedVolts = 0.0;
+  private double desiredAngle = 0.0;
 
   private boolean controllerNeedsReset = false;
   private boolean wasNotAuto = true;
-  private double desiredAngle = 0.0;
 
   public PivotIOSim() {
-    pid = new PIDController(1.0, 0.0, 0.0);
+    pid = new PIDController(0.0, 0.0, 0.0);
     sim.setState(0.0, 0.0);
   }
 
@@ -61,15 +61,14 @@ public class PivotIOSim implements PivotIO {
 
     sim.update(0.02);
 
-    inputs.positionRots = 0.0;
+    inputs.positionRots = desiredAngle;
     inputs.velocityRotsPerSec = Units.radiansToRotations(sim.getVelocityRadPerSec());
     inputs.appliedVolts = appliedVolts;
     inputs.currentAmps = new double[] {sim.getCurrentDrawAmps()};
   }
 
-  // TODO make a setAngleMotorSpeeds method
   @Override
-  public void setPivotAngle(double desiredAngle) {
+  public void setAngleMotor(double desiredAngle) {
     this.desiredAngle = desiredAngle;
   }
 

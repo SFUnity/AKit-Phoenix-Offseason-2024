@@ -39,7 +39,7 @@ public class PivotVisualizer {
     root.append(pivot);
   }
 
-  /** Update visualizer with current intake angle */
+  /** Update intake visualizer with current intake angle */
   public void update(double angleRots) {
     // Log Mechanism2d
     double angleRads =

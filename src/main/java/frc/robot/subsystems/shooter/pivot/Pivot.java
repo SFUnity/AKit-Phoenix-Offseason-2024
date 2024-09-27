@@ -17,16 +17,19 @@ import static frc.robot.subsystems.shooter.pivot.PivotConstants.*;
 
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.networktables.GenericEntry;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants;
 import frc.robot.FieldConstants;
 import frc.robot.util.EqualsUtil;
 import frc.robot.util.GeneralUtil;
 import frc.robot.util.LoggedTunableNumber;
 import frc.robot.util.PoseManager;
+import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
 public class Pivot extends SubsystemBase {
@@ -39,6 +42,7 @@ public class Pivot extends SubsystemBase {
   private final PivotVisualizer measuredVisualizer;
   private final PivotVisualizer setpointVisualizer;
   private ShuffleboardTab driversTab = Shuffleboard.getTab("Drivers");
+  private final Timer atGoalTimer = new Timer();
 
   private GenericEntry feedingAngleEntry =
       driversTab
@@ -63,6 +67,9 @@ public class Pivot extends SubsystemBase {
 
     io.setP(gains.kP());
 
+    atGoalTimer.reset();
+    atGoalTimer.start();
+
     measuredVisualizer = new PivotVisualizer("Measured", Color.kRed);
     setpointVisualizer = new PivotVisualizer("Setpoint", Color.kBlue);
   }
@@ -77,26 +84,25 @@ public class Pivot extends SubsystemBase {
 
     measuredVisualizer.update(inputs.positionRots);
     setpointVisualizer.update(desiredAngle);
-    Logger.recordOutput("Shooter/Pivot/positionSetpointRots", desiredAngle);
     GeneralUtil.logSubsystem(this, "Shooter/Pivot");
   }
 
   /** Run open loop at the specified voltage. */
-  private void runVolts(double volts) {
+  public void runVolts(double volts) {
     io.setVoltage(volts);
   }
 
   /** Stops the pivot. */
-  private void stop() {
+  public void stop() {
     io.stop();
   }
 
-  private void readyShootSpeakerManual() {
+  public void readyShootSpeakerManual() {
     desiredAngle = PivotConstants.kSpeakerManualAngleRevRotations;
   }
 
   // TODO needs testing and maybe some bs numbers. not sure
-  private void readyShootSpeakerAutomatic() {
+  public void readyShootSpeakerAutomatic() {
     Translation3d speakerOpening = FieldConstants.Speaker.centerSpeakerOpening;
     double heightOfTarget = speakerOpening.getY();
     double angleRad = Math.atan(heightOfTarget / poseManager.getDistanceTo(speakerOpening));
@@ -104,40 +110,45 @@ public class Pivot extends SubsystemBase {
     desiredAngle = angleDeg + angleOffset.getDouble(PivotConstants.kSpeakerAngleOffsetRevRotations);
   }
 
-  private void readyShootAmp() {
+  public void readyShootAmp() {
     desiredAngle = PivotConstants.kDesiredAmpAngleRevRotations;
   }
 
-  private void readyShootFeed() {
+  public void readyShootFeed() {
     desiredAngle = feedingAngleEntry.getDouble(PivotConstants.kFeedingAngleRevRotations);
   }
 
-  private void readyShooterIntake() {
+  public void readyShooterSourceIntake() {
+    desiredAngle = PivotConstants.kDesiredSourceIntakeRevRotations;
+  }
+
+  // TODO what if we want to source intake?
+  public void readyShooterIntake() {
     desiredAngle = PivotConstants.kDesiredIntakeAngleRevRotations;
   }
 
-  private void readyShooterSourceIntake() {
-    desiredAngle = PivotConstants.kDesiredSourceIntakeAngleRevRotations;
-  }
-
-  private void readyShooterEject() {
+  public void readyShooterEject() {
     desiredAngle = PivotConstants.kDesiredEjectAngleRevRotations;
   }
 
+  @AutoLogOutput(key = "Shooter/Pivot/atDesiredAngle")
   public boolean atDesiredAngle() {
-    return EqualsUtil.equalsWithTolerance(inputs.positionRots, desiredAngle, 0.5);
+    if (!EqualsUtil.equalsWithTolerance(inputs.positionRots, desiredAngle, 0.15)) {
+      atGoalTimer.reset();
+    }
+    return atGoalTimer.hasElapsed(Constants.loopPeriodSecs);
   }
 
   // TODO any setter methods used in these commands should be made private
   public Command setManualSpeakerAngle() {
     return run(() -> {
           readyShootSpeakerManual();
-          io.setPivotAngle(desiredAngle);
+          io.setAngleMotor(desiredAngle);
         })
         .finallyDo(
             () -> {
               readyShootAmp();
-              io.setPivotAngle(desiredAngle);
+              io.setAngleMotor(desiredAngle);
             })
         .withName("setManualShootAngle");
   }
@@ -145,12 +156,12 @@ public class Pivot extends SubsystemBase {
   public Command setAutoSpeakerAngle() {
     return run(() -> {
           readyShootSpeakerAutomatic();
-          io.setPivotAngle(desiredAngle);
+          io.setAngleMotor(desiredAngle);
         })
         .finallyDo(
             () -> {
               readyShootAmp();
-              io.setPivotAngle(desiredAngle);
+              io.setAngleMotor(desiredAngle);
             })
         .withName("setAutoShootAngle");
   }
@@ -158,7 +169,7 @@ public class Pivot extends SubsystemBase {
   public Command setAmpAngle() {
     return run(() -> {
           readyShootAmp();
-          io.setPivotAngle(desiredAngle);
+          io.setAngleMotor(desiredAngle);
         })
         .withName("setAmpAngle");
   }
@@ -166,12 +177,12 @@ public class Pivot extends SubsystemBase {
   public Command setFeedAngle() {
     return run(() -> {
           readyShootFeed();
-          io.setPivotAngle(desiredAngle);
+          io.setAngleMotor(desiredAngle);
         })
         .finallyDo(
             () -> {
               readyShootAmp();
-              io.setPivotAngle(desiredAngle);
+              io.setAngleMotor(desiredAngle);
             })
         .withName("gotta be a team player");
   }
@@ -179,12 +190,12 @@ public class Pivot extends SubsystemBase {
   public Command setIntakeAngle() {
     return run(() -> {
           readyShooterIntake();
-          io.setPivotAngle(desiredAngle);
+          io.setAngleMotor(desiredAngle);
         })
         .finallyDo(
             () -> {
               readyShootAmp();
-              io.setPivotAngle(desiredAngle);
+              io.setAngleMotor(desiredAngle);
             })
         .withName("setIntakeAngle");
   }
@@ -192,8 +203,13 @@ public class Pivot extends SubsystemBase {
   public Command setSourceIntakeAngle() {
     return run(() -> {
           readyShooterSourceIntake();
-          io.setPivotAngle(desiredAngle);
+          io.setAngleMotor(desiredAngle);
         })
-        .withName("setSourceIntakeAngle");
+        .finallyDo(
+            () -> {
+              readyShootAmp();
+              io.setAngleMotor(desiredAngle);
+            })
+        .withName("sourceIntake");
   }
 }
