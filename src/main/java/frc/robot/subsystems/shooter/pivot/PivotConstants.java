@@ -12,7 +12,8 @@ public class PivotConstants {
   public static final double kSourceAngleRevRotations = -1;
   public static final double kFeedingAngleRevRotations = -5;
   public static final double kIntakeAngleRevRotations = -63;
-  public static final double kSpeakerAngleOffsetRevRotations = -74;
+  //TODO needs tuning
+  public static final double kSpeakerAngleOffsetRevRotations = -44;
   public static final double kDesiredIntakeAngleRevRotations = -63;
   public static final double kDesiredEjectAngleRevRotations = 0;
   // TODO: find this value

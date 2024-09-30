@@ -107,7 +107,8 @@ public class Pivot extends SubsystemBase {
     double heightOfTarget = speakerOpening.getY();
     double angleRad = Math.atan(heightOfTarget / poseManager.getDistanceTo(speakerOpening));
     double angleDeg = Math.toDegrees(angleRad);
-    desiredAngle = angleDeg + angleOffset.getDouble(PivotConstants.kSpeakerAngleOffsetRevRotations);
+    desiredAngle =
+        angleDeg + angleOffset.getDouble(PivotConstants.kSpeakerAngleOffsetRevRotations);
   }
 
   public void readyShootAmp() {
@@ -122,7 +123,6 @@ public class Pivot extends SubsystemBase {
     desiredAngle = PivotConstants.kDesiredSourceIntakeRevRotations;
   }
 
-  // TODO what if we want to source intake?
   public void readyShooterIntake() {
     desiredAngle = PivotConstants.kDesiredIntakeAngleRevRotations;
   }
