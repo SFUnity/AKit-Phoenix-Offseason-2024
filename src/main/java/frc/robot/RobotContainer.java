@@ -167,7 +167,6 @@ public class RobotContainer {
         break;
     }
 
-    // (TODO): Tell the robot to stop the flywheels if on the enemy field
     new Trigger(shooter::onEnemyField).onTrue(shooter.stopFlywheels());
 
     // Set up auto routines
